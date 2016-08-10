@@ -1,0 +1,15 @@
+{
+    "attribute": {
+        "width": 1200,
+        "height": 800,
+        "diameter": 1000
+    },
+    "normalization": {
+        "circle": true,
+        "bar": false
+    },
+    "legend": {
+        "scale": false,
+        "caption": false
+    }
+}

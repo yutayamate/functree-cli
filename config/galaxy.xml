@@ -1,0 +1,11 @@
+<tool id="functree-cli" name="FuncTree" version="0.0.1">
+    <description>A command-line based visualization tool for massive-scale omics data</description>
+    <command interpreter="node">../dist/app.js -i $input -o $output1 -o $output2</command>
+    <inputs>
+        <param format="tabular" name="input" type="data" label="Source file"/>
+    </inputs>
+    <outputs>
+        <data format="html" name="output1"/>
+        <data format="svg" name="output2"/>
+    </outputs>
+</tool>
