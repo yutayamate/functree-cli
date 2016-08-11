@@ -7,9 +7,13 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _argv = require('argv');
+var _path = require('path');
 
-var _argv2 = _interopRequireDefault(_argv);
+var _path2 = _interopRequireDefault(_path);
+
+var _yargs = require('yargs');
+
+var _yargs2 = _interopRequireDefault(_yargs);
 
 var _jsdom = require('jsdom');
 
@@ -33,42 +37,37 @@ var _calc2 = _interopRequireDefault(_calc);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var template = _fs2.default.readFileSync(__dirname + '/../data/template/index.html').toString();
+var template = _fs2.default.readFileSync(_path2.default.join(__dirname, '../data/template/index.html')).toString();
 var document = _jsdom2.default.jsdom(template);
 var window = document.defaultView;
 var $ = (0, _jquery2.default)(window);
 
 // Set up command-line arguments
-var args = _argv2.default.option([{
-    'name': 'input',
-    'short': 'i',
-    'type': 'path',
-    'description': 'Specify input file'
-}, {
-    'name': 'output',
-    'short': 'o',
-    'type': 'list,path',
-    'description': 'Specify output file'
-}, {
-    'name': 'database',
-    'short': 'd',
+var args = _yargs2.default.option('i', {
+    'alias': 'input',
     'type': 'string',
-    'description': 'Specify reference database (kegg or enteropathway)'
-}]).version('functree-cli (0.0.1)').run();
+    'default': '/dev/stdin',
+    'describe': 'specify input file'
+}).option('o', {
+    'alias': 'output',
+    'type': 'array',
+    'default': '/dev/stdout',
+    'describe': 'specify output file(s)'
+}).option('d', {
+    'alias': 'database',
+    'type': 'string',
+    'choices': ['kegg', 'enteropathway'],
+    'demand': true,
+    'describe': 'specify reference database'
+}).argv;
 
-// Check whether option was specifyed
-if (!args['options']['input'] || !args['options']['output']) {
-    _argv2.default.help();
-    process.exit(1);
-}
-
-var root = JSON.parse(_fs2.default.readFileSync(__dirname + '/../data/ref/enteropathway.json'));
+var root = JSON.parse(_fs2.default.readFileSync(_path2.default.join(__dirname, '../data/ref/', args.database + '.json')));
 root.x0 = 0;
 root.y0 = 0;
 
-var config = _parse2.default.parseArgsAndConfigFileObj(args, _fs2.default.readFileSync(__dirname + '/../config/config.json'));
+var config = _parse2.default.parseArgsAndConfigFileObj(args, _fs2.default.readFileSync(_path2.default.join(__dirname, '../config/config.json')));
 
-var data = _parse2.default.parseInputFileObj(_fs2.default.readFileSync(args['options']['input']), config);
+var data = _parse2.default.parseInputFileObj(_fs2.default.readFileSync(args.input), config);
 
 // Zero-initialize values of all nodes
 _calc2.default.initTree(root, config);
@@ -85,14 +84,15 @@ _draw2.default.updateLinks(window, config, root, root);
 _draw2.default.updateNodes(window, config, root, root);
 _draw2.default.updateCharts(window, config, root, root);
 
-// Output SVG to stdout
-// console.log(window.document.body.innerHTML);
-// console.log(window.document.documentElement);
-// console.log($('html').prop('outerHTML'));
+// Output results
+if (args.output.length >= 1) {
+    var fd = _fs2.default.openSync(args.output[0], 'w');
+    _fs2.default.writeSync(fd, $('#ft-main').prop('innerHTML') + '\n');
+}
 
-_fs2.default.writeFileSync(args['options']['output'][0], $('html').prop('outerHTML'));
-_fs2.default.writeFileSync(args['options']['output'][1], $('#viz').prop('innerHTML'));
-// fs.writeFileSync(args['options']['output'], window.document.body.innerHTML);
+if (args.output.length === 2) {
+    var _fd = _fs2.default.openSync(args.output[1], 'w');
+    _fs2.default.writeSync(_fd, $('html').prop('outerHTML') + '\n');
+}
 
-// let s = fs.readFileSync(__dirname + '/../content/index.html').toString();
-// fs.writeFileSync(args['options']['output'][1], s);
+process.exit(0);

@@ -3,7 +3,8 @@
 'use strict'
 
 import fs from 'fs';
-import argv from 'argv';
+import path from 'path';
+import yargs from 'yargs';
 import jsdom from 'jsdom';
 import jQuery from 'jquery';
 
@@ -12,56 +13,53 @@ import draw from './draw.js';
 import calc from './calc.js';
 
 
-let template = fs.readFileSync(__dirname + '/../data/template/index.html').toString();
+let template = fs.readFileSync(path.join(__dirname, '../data/template/index.html')).toString();
 let document = jsdom.jsdom(template);
 let window = document.defaultView;
 let $ = jQuery(window);
 
 
 // Set up command-line arguments
-let args = argv.option(
-    [
+let args = yargs
+    .option('i',
         {
-            'name': 'input',
-            'short': 'i',
-            'type': 'path',
-            'description': 'Specify input file'
-        },
-        {
-            'name': 'output',
-            'short': 'o',
-            'type': 'list,path',
-            'description': 'Specify output file'
-        },
-        {
-            'name': 'database',
-            'short': 'd',
+            'alias': 'input',
             'type': 'string',
-            'description': 'Specify reference database (kegg or enteropathway)'
+            'default': '/dev/stdin',
+            'describe': 'specify input file'
         }
-    ])
-    .version('functree-cli (0.0.1)')
-    .run();
+    )
+    .option('o',
+        {
+            'alias': 'output',
+            'type': 'array',
+            'default': '/dev/stdout',
+            'describe': 'specify output file(s)'
+        }
+    )
+    .option('d',
+        {
+            'alias': 'database',
+            'type': 'string',
+            'choices': ['kegg', 'enteropathway'],
+            'demand': true,
+            'describe': 'specify reference database'
+        }
+    )
+    .argv;
 
 
-// Check whether option was specifyed
-if (!args['options']['input'] || !args['options']['output']) {
-    argv.help();
-    process.exit(1);
-}
-
-
-let root = JSON.parse(fs.readFileSync(__dirname + '/../data/ref/enteropathway.json'));
+let root = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/ref/', args.database + '.json')));
     root.x0 = 0;
     root.y0 = 0;
 
 let config = parse.parseArgsAndConfigFileObj(
     args,
-    fs.readFileSync(__dirname + '/../config/config.json')
+    fs.readFileSync(path.join(__dirname, '../config/config.json'))
 );
 
 let data = parse.parseInputFileObj(
-    fs.readFileSync(args['options']['input']),
+    fs.readFileSync(args.input),
     config
 );
 
@@ -82,14 +80,15 @@ draw.updateNodes(window, config, root, root);
 draw.updateCharts(window, config, root, root);
 
 
-// Output SVG to stdout
-// console.log(window.document.body.innerHTML);
-// console.log(window.document.documentElement);
-// console.log($('html').prop('outerHTML'));
+// Output results
+if (args.output.length >= 1) {
+    let fd = fs.openSync(args.output[0], 'w');
+    fs.writeSync(fd, $('#ft-main').prop('innerHTML') + '\n');
+}
 
-fs.writeFileSync(args['options']['output'][0], $('html').prop('outerHTML'));
-fs.writeFileSync(args['options']['output'][1], $('#viz').prop('innerHTML'));
-// fs.writeFileSync(args['options']['output'], window.document.body.innerHTML);
+if (args.output.length === 2) {
+    let fd = fs.openSync(args.output[1], 'w');
+    fs.writeSync(fd, $('html').prop('outerHTML') + '\n');
+}
 
-// let s = fs.readFileSync(__dirname + '/../content/index.html').toString();
-// fs.writeFileSync(args['options']['output'][1], s);
+process.exit(0);
