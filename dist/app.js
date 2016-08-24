@@ -27,6 +27,10 @@ var _parse = require('./parse.js');
 
 var _parse2 = _interopRequireDefault(_parse);
 
+var _io = require('./io.js');
+
+var _io2 = _interopRequireDefault(_io);
+
 var _draw = require('./draw.js');
 
 var _draw2 = _interopRequireDefault(_draw);
@@ -43,23 +47,23 @@ var window = document.defaultView;
 var $ = (0, _jquery2.default)(window);
 
 // Set up command-line arguments
-var args = _yargs2.default.option('i', {
+var args = _yargs2.default.locale('en').option('i', {
     'alias': 'input',
     'type': 'string',
     'default': '/dev/stdin',
-    'describe': 'specify input file'
+    'describe': 'Specify input file'
 }).option('o', {
     'alias': 'output',
     'type': 'array',
     'default': '/dev/stdout',
-    'describe': 'specify output file(s)'
+    'describe': 'Specify output file(s)'
 }).option('d', {
     'alias': 'database',
     'type': 'string',
     'choices': ['kegg', 'enteropathway'],
     'demand': true,
-    'describe': 'specify reference database'
-}).argv;
+    'describe': 'Specify reference database'
+}).usage(' _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___ \n' + '|  ___| | | | \\ | |/ ___|_   _|  _ \\| ____| ____|     / ___| |   |_ _|\n' + '| |_  | | | |  \\| | |     | | | |_) |  _| |  _| _____| |   | |    | | \n' + '|  _| | |_| | |\\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | | \n' + '|_|    \\___/|_| \\_|\\____| |_| |_| \\_\\_____|_____|     \\____|_____|___|\n' + '                                                                      \n' + '[ A Command-line based visualization tool for massive-scale omics data ]\n' + '\n' + 'For details, please see:\n' + '  http://wwww.bioviz.tokyo/functree2\n').help('h').argv;
 
 var root = JSON.parse(_fs2.default.readFileSync(_path2.default.join(__dirname, '../data/ref/', args.database + '.json')));
 root.x0 = 0;
@@ -67,7 +71,7 @@ root.y0 = 0;
 
 var config = _parse2.default.parseArgsAndConfigFileObj(args, _fs2.default.readFileSync(_path2.default.join(__dirname, '../config/config.json')));
 
-var data = _parse2.default.parseInputFileObj(_fs2.default.readFileSync(args.input), config);
+var data = _io2.default.read_input(args.input);
 
 // Zero-initialize values of all nodes
 _calc2.default.initTree(root, config);

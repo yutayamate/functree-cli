@@ -9,6 +9,7 @@ import jsdom from 'jsdom';
 import jQuery from 'jquery';
 
 import parse from './parse.js';
+import io from './io.js';
 import draw from './draw.js';
 import calc from './calc.js';
 
@@ -21,12 +22,13 @@ let $ = jQuery(window);
 
 // Set up command-line arguments
 let args = yargs
+    .locale('en')
     .option('i',
         {
             'alias': 'input',
             'type': 'string',
             'default': '/dev/stdin',
-            'describe': 'specify input file'
+            'describe': 'Specify input file'
         }
     )
     .option('o',
@@ -34,7 +36,7 @@ let args = yargs
             'alias': 'output',
             'type': 'array',
             'default': '/dev/stdout',
-            'describe': 'specify output file(s)'
+            'describe': 'Specify output file(s)'
         }
     )
     .option('d',
@@ -43,9 +45,22 @@ let args = yargs
             'type': 'string',
             'choices': ['kegg', 'enteropathway'],
             'demand': true,
-            'describe': 'specify reference database'
+            'describe': 'Specify reference database'
         }
     )
+    .usage(
+        ' _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___ \n' +
+        '|  ___| | | | \\ | |/ ___|_   _|  _ \\| ____| ____|     / ___| |   |_ _|\n' +
+        '| |_  | | | |  \\| | |     | | | |_) |  _| |  _| _____| |   | |    | | \n' +
+        '|  _| | |_| | |\\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | | \n' +
+        '|_|    \\___/|_| \\_|\\____| |_| |_| \\_\\_____|_____|     \\____|_____|___|\n' +
+        '                                                                      \n' +
+        '[ A Command-line based visualization tool for massive-scale omics data ]\n' +
+        '\n' +
+        'For details, please see:\n' +
+        '  http://wwww.bioviz.tokyo/functree2\n'
+    )
+    .help('h')
     .argv;
 
 
@@ -58,10 +73,9 @@ let config = parse.parseArgsAndConfigFileObj(
     fs.readFileSync(path.join(__dirname, '../config/config.json'))
 );
 
-let data = parse.parseInputFileObj(
-    fs.readFileSync(args.input),
-    config
-);
+
+let data = io.read_input(args.input);
+
 
 // Zero-initialize values of all nodes
 calc.initTree(root, config);
