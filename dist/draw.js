@@ -18,7 +18,7 @@ module.exports.initImage = function (window, config) {
     var width = config.attr.width;
     var height = config.attr.height;
 
-    var svg = _d5.default.select(window.document.body).select('#ft-main').append('svg').attr({
+    var svg = _d5.default.select(window.document.body).select('#' + config.attr.id).append('svg').attr({
         'xmlns': 'http://www.w3.org/2000/svg',
         'version': '1.1',
         'width': width,

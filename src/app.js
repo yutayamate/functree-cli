@@ -13,12 +13,6 @@ import draw from './draw.js';
 import calc from './calc.js';
 
 
-let template = fs.readFileSync(path.join(__dirname, '../data/template/index.html')).toString();
-let document = jsdom.jsdom(template);
-let window = document.defaultView;
-let $ = jQuery(window);
-
-
 // Set up command-line arguments
 let args = yargs
     .locale('en')
@@ -63,10 +57,18 @@ let args = yargs
     .argv;
 
 
+let config = io.load_config(path.join(__dirname, '../config/config.json'));
+
+
+let template = io.load_template(path.join(__dirname, '../data/template/index.html'));
+let document = jsdom.jsdom(template);
+let window = document.defaultView;
+let $ = jQuery(window);
+
+
 let ref = io.load_ref(path.join(__dirname, '../data/ref/', args.database + '.json'));
     ref.x0 = 0;
     ref.y0 = 0;
-let config = io.load_config(path.join(__dirname, '../config/config.json'));
 let data = io.read_input(args.input);
 
 
@@ -91,12 +93,12 @@ draw.updateCharts(window, config, ref, ref);
 
 // Output results
 if (args.output.length >= 1) {
-    let str = $('#ft-main').prop('innerHTML') + '\n';
+    let str = $('#' + config.attr.id).prop('innerHTML') + '\n';
     io.write(args.output[0], str);
 }
 
 if (args.output.length === 2) {
-    let str = $('html').prop('outerHTML') + '\n'
+    let str = $('html').prop('outerHTML') + '\n';
     io.write(args.output[1], str);
 }
 

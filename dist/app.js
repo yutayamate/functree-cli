@@ -37,11 +37,6 @@ var _calc2 = _interopRequireDefault(_calc);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var template = _fs2.default.readFileSync(_path2.default.join(__dirname, '../data/template/index.html')).toString();
-var document = _jsdom2.default.jsdom(template);
-var window = document.defaultView;
-var $ = (0, _jquery2.default)(window);
-
 // Set up command-line arguments
 var args = _yargs2.default.locale('en').option('i', {
     'alias': 'input',
@@ -61,10 +56,16 @@ var args = _yargs2.default.locale('en').option('i', {
     'describe': 'Specify reference database'
 }).usage(' _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___ \n' + '|  ___| | | | \\ | |/ ___|_   _|  _ \\| ____| ____|     / ___| |   |_ _|\n' + '| |_  | | | |  \\| | |     | | | |_) |  _| |  _| _____| |   | |    | | \n' + '|  _| | |_| | |\\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | | \n' + '|_|    \\___/|_| \\_|\\____| |_| |_| \\_\\_____|_____|     \\____|_____|___|\n' + '                                                                      \n' + '[ A Command-line based visualization tool for massive-scale omics data ]\n' + '\n' + 'For details, please see:\n' + '  http://wwww.bioviz.tokyo/functree2\n').help('h').argv;
 
+var config = _io2.default.load_config(_path2.default.join(__dirname, '../config/config.json'));
+
+var template = _io2.default.load_template(_path2.default.join(__dirname, '../data/template/index.html'));
+var document = _jsdom2.default.jsdom(template);
+var window = document.defaultView;
+var $ = (0, _jquery2.default)(window);
+
 var ref = _io2.default.load_ref(_path2.default.join(__dirname, '../data/ref/', args.database + '.json'));
 ref.x0 = 0;
 ref.y0 = 0;
-var config = _io2.default.load_config(_path2.default.join(__dirname, '../config/config.json'));
 var data = _io2.default.read_input(args.input);
 
 // Zero-initialize values of all nodes
@@ -84,7 +85,7 @@ _draw2.default.updateCharts(window, config, ref, ref);
 
 // Output results
 if (args.output.length >= 1) {
-    var str = $('#ft-main').prop('innerHTML') + '\n';
+    var str = $('#' + config.attr.id).prop('innerHTML') + '\n';
     _io2.default.write(args.output[0], str);
 }
 

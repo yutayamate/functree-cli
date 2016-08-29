@@ -1,5 +1,6 @@
 {
     "attr": {
+        "id": "main",
         "width": 1200,
         "height": 800,
         "diameter": 1000

@@ -5,15 +5,32 @@ import process from 'process';
 import _ from 'underscore';
 
 
+module.exports.load_template = (fpath) => {
+
+    try {
+        let fd = fs.readFileSync(fpath);
+        let data = fd.toString();
+
+        return data;
+    }
+
+    catch(e) {
+        process.stderr.write('File I/O Error: "' + fpath + '"\n');
+        process.exit(1);
+    }
+
+};
+
+
 module.exports.load_ref = 
 module.exports.load_config = (fpath) => {
 
     try {
         let fd = fs.readFileSync(fpath);
         let str = fd.toString();
-        let config = JSON.parse(str);
+        let data = JSON.parse(str);
 
-        return config;
+        return data;
     }
 
     catch(e) {

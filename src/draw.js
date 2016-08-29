@@ -14,7 +14,7 @@ module.exports.initImage = (window, config) => {
     let width = config.attr.width;
     let height = config.attr.height;
 
-    let svg = d3.select(window.document.body).select('#ft-main')
+    let svg = d3.select(window.document.body).select('#' + config.attr.id)
         .append('svg')
         .attr({
             'xmlns': 'http://www.w3.org/2000/svg',

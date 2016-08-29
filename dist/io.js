@@ -14,14 +14,27 @@ var _underscore2 = _interopRequireDefault(_underscore);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+module.exports.load_template = function (fpath) {
+
+    try {
+        var fd = _fs2.default.readFileSync(fpath);
+        var data = fd.toString();
+
+        return data;
+    } catch (e) {
+        _process2.default.stderr.write('File I/O Error: "' + fpath + '"\n');
+        _process2.default.exit(1);
+    }
+};
+
 module.exports.load_ref = module.exports.load_config = function (fpath) {
 
     try {
         var fd = _fs2.default.readFileSync(fpath);
         var str = fd.toString();
-        var config = JSON.parse(str);
+        var data = JSON.parse(str);
 
-        return config;
+        return data;
     } catch (e) {
         _process2.default.stderr.write('File I/O Error: "' + fpath + '"\n');
         _process2.default.exit(1);
