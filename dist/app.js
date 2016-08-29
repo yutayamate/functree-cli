@@ -23,10 +23,6 @@ var _jquery = require('jquery');
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-var _parse = require('./parse.js');
-
-var _parse2 = _interopRequireDefault(_parse);
-
 var _io = require('./io.js');
 
 var _io2 = _interopRequireDefault(_io);
@@ -65,38 +61,36 @@ var args = _yargs2.default.locale('en').option('i', {
     'describe': 'Specify reference database'
 }).usage(' _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___ \n' + '|  ___| | | | \\ | |/ ___|_   _|  _ \\| ____| ____|     / ___| |   |_ _|\n' + '| |_  | | | |  \\| | |     | | | |_) |  _| |  _| _____| |   | |    | | \n' + '|  _| | |_| | |\\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | | \n' + '|_|    \\___/|_| \\_|\\____| |_| |_| \\_\\_____|_____|     \\____|_____|___|\n' + '                                                                      \n' + '[ A Command-line based visualization tool for massive-scale omics data ]\n' + '\n' + 'For details, please see:\n' + '  http://wwww.bioviz.tokyo/functree2\n').help('h').argv;
 
-var root = JSON.parse(_fs2.default.readFileSync(_path2.default.join(__dirname, '../data/ref/', args.database + '.json')));
-root.x0 = 0;
-root.y0 = 0;
-
-var config = _parse2.default.parseArgsAndConfigFileObj(args, _fs2.default.readFileSync(_path2.default.join(__dirname, '../config/config.json')));
-
+var ref = _io2.default.load_ref(_path2.default.join(__dirname, '../data/ref/', args.database + '.json'));
+ref.x0 = 0;
+ref.y0 = 0;
+var config = _io2.default.load_config(_path2.default.join(__dirname, '../config/config.json'));
 var data = _io2.default.read_input(args.input);
 
 // Zero-initialize values of all nodes
-_calc2.default.initTree(root, config);
+_calc2.default.initTree(ref, config);
 
 // Assign values of input data to tree
-_calc2.default.setValues(root, config, data);
+_calc2.default.setValues(ref, config, data);
 
 // Draw FuncTree on DOM (window.document.body)
 // If you want to use jQuery in modules, let $ to window.$
 _draw2.default.initImage(window, config);
 _draw2.default.updateLegend(window, config);
-_draw2.default.updateRings(window, config, root);
-_draw2.default.updateLinks(window, config, root, root);
-_draw2.default.updateNodes(window, config, root, root);
-_draw2.default.updateCharts(window, config, root, root);
+_draw2.default.updateRings(window, config, ref);
+_draw2.default.updateLinks(window, config, ref, ref);
+_draw2.default.updateNodes(window, config, ref, ref);
+_draw2.default.updateCharts(window, config, ref, ref);
 
 // Output results
 if (args.output.length >= 1) {
-    var fd = _fs2.default.openSync(args.output[0], 'w');
-    _fs2.default.writeSync(fd, $('#ft-main').prop('innerHTML') + '\n');
+    var str = $('#ft-main').prop('innerHTML') + '\n';
+    _io2.default.write(args.output[0], str);
 }
 
 if (args.output.length === 2) {
-    var _fd = _fs2.default.openSync(args.output[1], 'w');
-    _fs2.default.writeSync(_fd, $('html').prop('outerHTML') + '\n');
+    var _str = $('html').prop('outerHTML') + '\n';
+    _io2.default.write(args.output[1], _str);
 }
 
 process.exit(0);

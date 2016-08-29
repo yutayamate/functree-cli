@@ -14,6 +14,20 @@ var _underscore2 = _interopRequireDefault(_underscore);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+module.exports.load_ref = module.exports.load_config = function (fpath) {
+
+    try {
+        var fd = _fs2.default.readFileSync(fpath);
+        var str = fd.toString();
+        var config = JSON.parse(str);
+
+        return config;
+    } catch (e) {
+        _process2.default.stderr.write('File I/O Error: "' + fpath + '"\n');
+        _process2.default.exit(1);
+    }
+};
+
 module.exports.read_input = function (fpath) {
 
     try {
@@ -45,6 +59,7 @@ module.exports.read_input = function (fpath) {
                     };
                     data.push(d);
                 } catch (e) {
+                    // うまくcatchしない?
                     _process2.default.stderr.write('Unexpeceted input type: skipped');
                 }
             }
@@ -65,7 +80,18 @@ module.exports.read_input = function (fpath) {
 
         return data;
     } catch (e) {
-        _process2.default.stderr.write('File i/o error: "' + fpath + '"\n');
+        _process2.default.stderr.write('File I/O Error: "' + fpath + '"\n');
         _process2.default.exit(1);
+    }
+};
+
+module.exports.write = function (fpath, str) {
+
+    try {
+        var fd = _fs2.default.openSync(fpath, 'w');
+        _fs2.default.writeSync(fd, str);
+    } catch (e) {
+        _process2.default.stderr.write('File I/O Error: "' + fpath + '"\n');
+        // process.exit(1);
     }
 };

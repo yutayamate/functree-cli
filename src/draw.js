@@ -11,8 +11,8 @@ let getTreeLayout = _.memoize((diameter) => {
 
 
 module.exports.initImage = (window, config) => {
-    let width = config.user.attribute.width;
-    let height = config.user.attribute.height;
+    let width = config.attr.width;
+    let height = config.attr.height;
 
     let svg = d3.select(window.document.body).select('#ft-main')
         .append('svg')
@@ -96,7 +96,7 @@ module.exports.initImage = (window, config) => {
 module.exports.updateLegend = (window, config) => {
     d3.select(window.document.body).select('#ft-image-legend')
         .attr({
-            'visibility': config.user.legend.scale ? 'visible' : 'hidden'
+            'visibility': config.legend.scale ? 'visible' : 'hidden'
         });
 
     let scale = parseFloat(
@@ -150,7 +150,7 @@ module.exports.updateLegend = (window, config) => {
 
 
 module.exports.updateRings = (window, config, root) => {
-    let diameter = config.user.attribute.diameter;
+    let diameter = config.attr.diameter;
 
     let tree = getTreeLayout(diameter);
     let nodes = tree.nodes(root);
@@ -182,7 +182,7 @@ module.exports.updateRings = (window, config, root) => {
 
 
 module.exports.updateLinks = (window, config, root, source) => {
-    let diameter = config.user.attribute.diameter;
+    let diameter = config.attr.diameter;
 
     let tree = getTreeLayout(diameter);
     let nodes = tree.nodes(root);
@@ -264,7 +264,7 @@ module.exports.updateLinks = (window, config, root, source) => {
 
 
 module.exports.updateNodes = (window, config, root, source) => {
-    let diameter = config.user.attribute.diameter;
+    let diameter = config.attr.diameter;
 
     let tree = getTreeLayout(diameter);
     let nodes = tree.nodes(root);
@@ -347,7 +347,7 @@ module.exports.updateNodes = (window, config, root, source) => {
 
 
 module.exports.updateCharts = (window, config, root, source) => {
-    let diameter = config.user.attribute.diameter;
+    let diameter = config.attr.diameter;
 
     let tree = getTreeLayout(diameter);
     var nodes = tree.nodes(root);
@@ -436,7 +436,7 @@ module.exports.updateCharts = (window, config, root, source) => {
             // },
             'r': (d) => {
                 var max = getMax(d.depth);
-                return config.user.normalization.circle ? d.value / max * 30 : d.value;
+                return config.norm.circle ? d.value / max * 30 : d.value;
             },
             'fill': (d) => {
                 return d.color;
@@ -467,7 +467,7 @@ module.exports.updateCharts = (window, config, root, source) => {
         .attr({
             'r': (d) => {
                 var max = getMax(d.depth);
-                return config.user.normalization.circle ? d.value / max * 30 : d.value;
+                return config.norm.circle ? d.value / max * 30 : d.value;
             },
             'fill': (d) => {
                 return d.color;

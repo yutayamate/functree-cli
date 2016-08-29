@@ -8,7 +8,6 @@ import yargs from 'yargs';
 import jsdom from 'jsdom';
 import jQuery from 'jquery';
 
-import parse from './parse.js';
 import io from './io.js';
 import draw from './draw.js';
 import calc from './calc.js';
@@ -64,45 +63,41 @@ let args = yargs
     .argv;
 
 
-let root = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/ref/', args.database + '.json')));
-    root.x0 = 0;
-    root.y0 = 0;
-
-let config = parse.parseArgsAndConfigFileObj(
-    args,
-    fs.readFileSync(path.join(__dirname, '../config/config.json'))
-);
-
-
+let ref = io.load_ref(path.join(__dirname, '../data/ref/', args.database + '.json'));
+    ref.x0 = 0;
+    ref.y0 = 0;
+let config = io.load_config(path.join(__dirname, '../config/config.json'));
 let data = io.read_input(args.input);
 
 
 // Zero-initialize values of all nodes
-calc.initTree(root, config);
+calc.initTree(ref, config);
 
 // Assign values of input data to tree
-calc.setValues(root, config, data);
+calc.setValues(ref, config, data);
 
 
 // Draw FuncTree on DOM (window.document.body)
 // If you want to use jQuery in modules, let $ to window.$
 draw.initImage(window, config);
 draw.updateLegend(window, config);
-draw.updateRings(window, config, root);
-draw.updateLinks(window, config, root, root);
-draw.updateNodes(window, config, root, root);
-draw.updateCharts(window, config, root, root);
+draw.updateRings(window, config, ref);
+draw.updateLinks(window, config, ref, ref);
+draw.updateNodes(window, config, ref, ref);
+draw.updateCharts(window, config, ref, ref);
+
+
 
 
 // Output results
 if (args.output.length >= 1) {
-    let fd = fs.openSync(args.output[0], 'w');
-    fs.writeSync(fd, $('#ft-main').prop('innerHTML') + '\n');
+    let str = $('#ft-main').prop('innerHTML') + '\n';
+    io.write(args.output[0], str);
 }
 
 if (args.output.length === 2) {
-    let fd = fs.openSync(args.output[1], 'w');
-    fs.writeSync(fd, $('html').prop('outerHTML') + '\n');
+    let str = $('html').prop('outerHTML') + '\n'
+    io.write(args.output[1], str);
 }
 
 process.exit(0);

@@ -15,8 +15,8 @@ var getTreeLayout = _underscore2.default.memoize(function (diameter) {
 });
 
 module.exports.initImage = function (window, config) {
-    var width = config.user.attribute.width;
-    var height = config.user.attribute.height;
+    var width = config.attr.width;
+    var height = config.attr.height;
 
     var svg = _d5.default.select(window.document.body).select('#ft-main').append('svg').attr({
         'xmlns': 'http://www.w3.org/2000/svg',
@@ -87,7 +87,7 @@ module.exports.initImage = function (window, config) {
 
 module.exports.updateLegend = function (window, config) {
     _d5.default.select(window.document.body).select('#ft-image-legend').attr({
-        'visibility': config.user.legend.scale ? 'visible' : 'hidden'
+        'visibility': config.legend.scale ? 'visible' : 'hidden'
     });
 
     var scale = parseFloat(_d5.default.select(window.document.body).select('#ft-image-buffer').attr('transform').match(/\(.+?\)/g)[1].slice(1, -1));
@@ -126,7 +126,7 @@ module.exports.updateLegend = function (window, config) {
 };
 
 module.exports.updateRings = function (window, config, root) {
-    var diameter = config.user.attribute.diameter;
+    var diameter = config.attr.diameter;
 
     var tree = getTreeLayout(diameter);
     var nodes = tree.nodes(root);
@@ -156,7 +156,7 @@ module.exports.updateRings = function (window, config, root) {
 };
 
 module.exports.updateLinks = function (window, config, root, source) {
-    var diameter = config.user.attribute.diameter;
+    var diameter = config.attr.diameter;
 
     var tree = getTreeLayout(diameter);
     var nodes = tree.nodes(root);
@@ -237,7 +237,7 @@ module.exports.updateLinks = function (window, config, root, source) {
 };
 
 module.exports.updateNodes = function (window, config, root, source) {
-    var diameter = config.user.attribute.diameter;
+    var diameter = config.attr.diameter;
 
     var tree = getTreeLayout(diameter);
     var nodes = tree.nodes(root);
@@ -313,7 +313,7 @@ module.exports.updateNodes = function (window, config, root, source) {
 };
 
 module.exports.updateCharts = function (window, config, root, source) {
-    var diameter = config.user.attribute.diameter;
+    var diameter = config.attr.diameter;
 
     var tree = getTreeLayout(diameter);
     var nodes = tree.nodes(root);
@@ -388,7 +388,7 @@ module.exports.updateCharts = function (window, config, root, source) {
         // },
         'r': function r(d) {
             var max = getMax(d.depth);
-            return config.user.normalization.circle ? d.value / max * 30 : d.value;
+            return config.norm.circle ? d.value / max * 30 : d.value;
         },
         'fill': function fill(d) {
             return d.color;
@@ -418,7 +418,7 @@ module.exports.updateCharts = function (window, config, root, source) {
     var circleUpdate = circle.transition().duration(1000).attr({
         'r': function r(d) {
             var max = getMax(d.depth);
-            return config.user.normalization.circle ? d.value / max * 30 : d.value;
+            return config.norm.circle ? d.value / max * 30 : d.value;
         },
         'fill': function fill(d) {
             return d.color;
