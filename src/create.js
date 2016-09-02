@@ -51,7 +51,7 @@ module.exports.handler = (args) => {
     let config = io.load_config(path.join(__dirname, '../config/config.json'));
 
 
-    let template = io.load_template(path.join(__dirname, '../data/template/index.html'));
+    let template = io.read(path.join(__dirname, '../data/template/index.html'));
     let document = jsdom.jsdom(template);
     let window = document.defaultView;
     let $ = jQuery(window);
@@ -80,12 +80,12 @@ module.exports.handler = (args) => {
     draw.updateCharts(window, config, ref, ref);
 
 
-    // Write visualization to args.output
+    // Write a visualization to args.output
     if (args.format === 'svg') {
-        let str = $('#' + config.attr.id).prop('innerHTML') + '\n';
+        let str = $('#' + config.attr.id).prop('innerHTML').trim() + '\n';
         io.write(args.output, str);
     } else if (args.format === 'html') {
-        let str = $('html').prop('outerHTML') + '\n';
+        let str = $('html').prop('outerHTML').trim() + '\n';
         io.write(args.output, str);
     }
 

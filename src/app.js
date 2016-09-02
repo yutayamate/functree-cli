@@ -2,11 +2,13 @@
 
 'use strict'
 
+import path from 'path';
 import yargs from 'yargs';
+import io from './io.js';
 
-
-yargs.detectLocale(false)
+let args = yargs.detectLocale(false)
     .command(require('./create.js'))
+    .command(require('./stats.js'))
     .help()
     .version()
     .usage(
@@ -26,6 +28,5 @@ yargs.detectLocale(false)
     .argv;
 
 yargs.showHelp('log');
-
 
 process.exit(1);

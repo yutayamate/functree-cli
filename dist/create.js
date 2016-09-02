@@ -70,7 +70,7 @@ module.exports.handler = function (args) {
 
     var config = _io2.default.load_config(_path2.default.join(__dirname, '../config/config.json'));
 
-    var template = _io2.default.load_template(_path2.default.join(__dirname, '../data/template/index.html'));
+    var template = _io2.default.read(_path2.default.join(__dirname, '../data/template/index.html'));
     var document = _jsdom2.default.jsdom(template);
     var window = document.defaultView;
     var $ = (0, _jquery2.default)(window);
@@ -95,12 +95,12 @@ module.exports.handler = function (args) {
     _draw2.default.updateNodes(window, config, ref, ref);
     _draw2.default.updateCharts(window, config, ref, ref);
 
-    // Write visualization to args.output
+    // Write a visualization to args.output
     if (args.format === 'svg') {
-        var str = $('#' + config.attr.id).prop('innerHTML') + '\n';
+        var str = $('#' + config.attr.id).prop('innerHTML').trim() + '\n';
         _io2.default.write(args.output, str);
     } else if (args.format === 'html') {
-        var _str = $('html').prop('outerHTML') + '\n';
+        var _str = $('html').prop('outerHTML').trim() + '\n';
         _io2.default.write(args.output, _str);
     }
 
