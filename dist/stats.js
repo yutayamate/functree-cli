@@ -25,7 +25,7 @@ module.exports.builder = {
     'i': {
         'alias': 'input',
         'type': 'string',
-        'default': '/dev/stdin',
+        // 'default': '/dev/stdin',
         'describe': 'Specify input file'
     },
     'o': {
@@ -44,7 +44,7 @@ module.exports.builder = {
     'm': {
         'alias': 'method',
         'type': 'string',
-        'choices': ['hello', 'abundance'],
+        'choices': ['abundance'],
         'demand': true,
         'describe': 'Specify analyze method'
     }
@@ -52,31 +52,21 @@ module.exports.builder = {
 
 module.exports.handler = function (args) {
 
-    var fd = _fs2.default.readFileSync(args.input);
     var config = _io2.default.load_config(_path2.default.join(__dirname, '../config/config.json'));
     var str = '';
 
-    if (args.method === 'hello') {
+    if (args.method === 'abundance') {
+
+        var cmd = _path2.default.join(__dirname, '../tool/abundance.py');
+        var arg = args.input ? ['-d', args.database, '-m', 'sum', '-i', args.input] : ['-d', args.database, '-m', 'sum'];
 
         try {
-            var cmd = _path2.default.join(__dirname, '../tool/hello.py');
-            var _result = _child_process2.default.spawnSync(cmd, [fd]);
-            str = _result.stdout.toString();
-        } catch (e) {
-            process.stderr.write('Unexpeceted Error\n');
-            process.exit(1);
-        }
-    } else if (args.method === 'abundance') {
-
-        try {
-            var _cmd = _path2.default.join(__dirname, '../tool/abundance.py');
-            // let result = child_process.spawnSync(cmd, ['-d', args.database, '-m', 'sum'], {
-            //     'stdio': [ process.stdin, 'pipe', 'pipe' ]
-            // });
-            console.log(result.stderr.toString());
+            var result = _child_process2.default.spawnSync(cmd, arg, {
+                'stdio': [0, 'pipe', 2]
+            });
             str = result.stdout.toString();
         } catch (e) {
-            process.stderr.write('Unexpeceted Error\n');
+            process.stderr.write('Unexpected Error\n');
             process.exit(1);
         }
     }

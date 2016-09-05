@@ -15,7 +15,7 @@ module.exports.builder = {
     'i': {
         'alias': 'input',
         'type': 'string',
-        'default': '/dev/stdin',
+        // 'default': '/dev/stdin',
         'describe': 'Specify input file'
     },
     'o': {
@@ -34,44 +34,32 @@ module.exports.builder = {
     'm': { 
         'alias': 'method',
         'type': 'string',
-        'choices': ['hello', 'abundance'],
+        'choices': ['abundance'],
         'demand': true,
         'describe': 'Specify analyze method'
-    }
+    },
 };
 
 
 module.exports.handler = (args) => {
 
-    let fd = fs.readFileSync(args.input);
     let config = io.load_config(path.join(__dirname, '../config/config.json'));
     let str = '';
 
-    if (args.method === 'hello') {
+    if (args.method === 'abundance') {
+
+        let cmd = path.join(__dirname, '../tool/abundance.py');
+        let arg = args.input ? ['-d', args.database, '-m', 'sum', '-i', args.input] : ['-d', args.database, '-m', 'sum'];
 
         try {
-            let cmd = path.join(__dirname, '../tool/hello.py');
-            let result = child_process.spawnSync(cmd, [fd]);
-            str = result.stdout.toString();
-        }
-
-        catch (e) {
-            process.stderr.write('Unexpeceted Error\n');
-            process.exit(1);
-        }
-
-    } else if (args.method === 'abundance') {
-
-        try {
-            let cmd = path.join(__dirname, '../tool/abundance.py');
-            let result = child_process.spawnSync(cmd, ['-d', args.database, '-m', 'sum'], {
-                'stdio': [ process.stdin, 'pipe', 'pipe' ]
+            let result = child_process.spawnSync(cmd, arg, {
+                'stdio': [0, 'pipe', 2]
             });
             str = result.stdout.toString();
         }
 
         catch(e) {
-            process.stderr.write('Unexpeceted Error\n');
+            process.stderr.write('Unexpected Error\n');
             process.exit(1);
         }
 
