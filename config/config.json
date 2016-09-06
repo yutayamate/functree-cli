@@ -1,16 +1,12 @@
 {
-    "attr": {
-        "id": "main",
-        "width": 1200,
-        "height": 800,
-        "diameter": 1000
-    },
-    "norm": {
-        "circle": true,
-        "bar": false
-    },
-    "legend": {
-        "scale": false,
-        "caption": false
+    "target_id": "main",
+    "functree": {
+        "attribute": {
+            "width": 1200,
+            "height": 800,
+            "diameter": 1000
+        },
+        "normalize_circle": true,
+        "show_all_nodes": false
     }
 }

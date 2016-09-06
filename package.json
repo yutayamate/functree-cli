@@ -25,5 +25,8 @@
     "jsdom": "^9.0.0",
     "underscore": "^1.8.3",
     "yargs": "^5.0.0"
+  },
+  "bin": {
+    "functree": "./dist/app.js"
   }
 }

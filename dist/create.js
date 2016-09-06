@@ -24,13 +24,13 @@ var _io = require('./io.js');
 
 var _io2 = _interopRequireDefault(_io);
 
-var _draw = require('./draw.js');
+var _util = require('./util.js');
 
-var _draw2 = _interopRequireDefault(_draw);
+var _util2 = _interopRequireDefault(_util);
 
-var _calc = require('./calc.js');
+var _functree = require('./functree.js');
 
-var _calc2 = _interopRequireDefault(_calc);
+var _functree2 = _interopRequireDefault(_functree);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38,6 +38,14 @@ module.exports.command = 'create [options...]';
 module.exports.describe = 'Create a visualization';
 
 module.exports.builder = {
+    't': {
+        'alias': 'theme',
+        'type': 'string',
+        'default': 'functree',
+        'choices': ['functree'],
+        'demand': true,
+        'describe': 'Specify visualization theme'
+    },
     'i': {
         'alias': 'input',
         'type': 'string',
@@ -75,29 +83,28 @@ module.exports.handler = function (args) {
     var window = document.defaultView;
     var $ = (0, _jquery2.default)(window);
 
-    var ref = _io2.default.load_ref(_path2.default.join(__dirname, '../data/ref/', args.database + '.json'));
-    ref.x0 = 0;
-    ref.y0 = 0;
     var data = _io2.default.read_input(args.input);
+    var ref = _io2.default.load_ref(_path2.default.join(__dirname, '../data/ref/', args.database + '.json'));
+    var nodes = _util2.default.get_nodes(ref);
 
-    // Zero-initialize values of all nodes
-    _calc2.default.initTree(ref, config);
+    // Draw FuncTree
+    if (args.theme === 'functree') {
 
-    // Assign values of input data to tree
-    _calc2.default.setValues(ref, config, data);
+        // Set root position
+        ref.x0 = ref.y0 = 0;
 
-    // Draw FuncTree on DOM (window.document.body)
-    // If you want to use jQuery in modules, let $ to window.$
-    _draw2.default.initImage(window, config);
-    _draw2.default.updateLegend(window, config);
-    _draw2.default.updateRings(window, config, ref);
-    _draw2.default.updateLinks(window, config, ref, ref);
-    _draw2.default.updateNodes(window, config, ref, ref);
-    _draw2.default.updateCharts(window, config, ref, ref);
+        // Zero-initialize values of all nodes
+        _util2.default.init_nodes(nodes, config);
+        // Assign values of input data to tree
+        _util2.default.set_values(nodes, data, config);
+
+        // Draw FuncTree on DOM (window.document.body)
+        _functree2.default.main(window, ref, config);
+    }
 
     // Write a visualization to args.output
     if (args.format === 'svg') {
-        var str = $('#' + config.attr.id).prop('innerHTML').trim() + '\n';
+        var str = $('#' + config.target_id).prop('innerHTML').trim() + '\n';
         _io2.default.write(args.output, str);
     } else if (args.format === 'html') {
         var _str = $('html').prop('outerHTML').trim() + '\n';

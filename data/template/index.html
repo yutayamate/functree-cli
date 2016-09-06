@@ -5,13 +5,74 @@
         <meta name="author" content="Yuta Yamate">
         <meta name="copyright" content="Copyright © 2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology. All Rights Reserved.">
         <title>FuncTree</title>
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     </head>
     <body>
         <div id="main">
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
-        <script src="main.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+        <script>
+
+            !(function() {
+                var svg = d3.select('svg');
+                var width = svg.attr('width');
+                var height = svg.attr('height');
+                var buffer = svg.select('g');
+
+                svg.call(d3.behavior.zoom()
+                    .translate([width / 2, height / 2])
+                    .scaleExtent([0.5, 10])
+                    .on('zoom', function() {
+                        buffer.attr({
+                            'transform': 'translate(' + d3.event.translate + '),scale(' + d3.event.scale + ')'
+                        });
+                    })
+                );
+
+                d3.select('#nodes')
+                    .selectAll('circle')
+                    .on({
+                        'mouseover': function() {
+                            d3.select(this).style({
+                                'r': 10,
+                                'fill': '#000',
+                                'opacity': 0.5
+                            });
+                        },
+                        'mouseout': function() {
+                            d3.select(this).attr({
+                                'style': null
+                            });
+                        }
+                    });
+
+                d3.select('#charts')
+                    .selectAll('circle')
+                    .on({
+                        'mouseover': function() {
+                            d3.select(this).style({
+                                'fill': '#000',
+                                'opacity': 0.5
+                            });
+                            
+                        },
+                        'mouseout': function() {
+                            d3.select(this).attr({
+                                'style': null
+                            });
+                        }
+                    });
+
+                $('[data-toggle="tooltip"]').tooltip({
+                    container: 'body',
+                    placement: 'top'
+                });
+
+            })();
+
+        </script>
     </body>
 </html>
