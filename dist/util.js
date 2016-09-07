@@ -26,14 +26,16 @@ module.exports.get_nodes = function (d) {
 
 module.exports.init_nodes = function (nodes, config) {
 
+    var color = _d2.default.scale.category20();
+
     _underscore2.default.each(nodes, function (i) {
         i.value = 0;
         i.values = [];
         i.keys = [];
+        i.color = color(i.depth);
 
         if (!config.functree.show_all_nodes) {
 
-            // うまくいかない
             if (i.name.match(/M\d{5}|EPM\d{4}|Undefined MODULE/)) {
 
                 i._children = i.children;

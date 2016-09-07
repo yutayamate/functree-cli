@@ -1,18 +1,44 @@
 <tool id="functree-cli" name="FuncTree" version="0.0.1">
     <description>A command-line based visualization tool for massive-scale omics data</description>
-    <command interpreter="node">../dist/app.js create -i $input -d $database -o $output -f $format</command>
+    <command interpreter="node">
+        #if $args.command == "create"
+            ../dist/app.js $args.command -i $input -d $database -f $args.format -o $output 
+        #else
+            ../dist/app.js $args.command -i $input -d $database -m $args.method -o $output
+        #end if
+    </command>
+
     <inputs>
         <param format="tabular" name="input" type="data" label="Specify input file"/>
+
+        <conditional name="args">
+            <param name="command" type="select" label="Specify command">
+                <option value="create">Create a visualization</option>
+                <option value="stats">Statistical analysis</option>
+            </param>
+
+            <when value="create">
+                <param name="format" type="select" label="Specify output format">
+                    <option value="html">HTML (interactive)</option>
+                    <option value="svg">SVG</option>
+                </param>
+            </when>
+
+            <when value="stats">
+                <param name="method" type="select" label="Specify statistical analysis method">
+                    <option value="abundance">Calculate gene abundances</option>
+                </param>
+            </when>
+        </conditional>
+
         <param name="database" type="select" label="Specify reference database">
             <option value="kegg">KEGG</option>
             <option value="enteropathway">EnteroPathway</option>
         </param>
-        <param name="format" type="select" label="Specify output format">
-            <option value="svg">SVG</option>
-            <option value="html">HTML</option>
-        </param>
     </inputs>
+
     <outputs>
         <data format="html" name="output"/>
     </outputs>
+
 </tool>

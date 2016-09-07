@@ -171,4 +171,53 @@ var update_charts = function update_charts(window, config, nodes, source) {
             return d.name + ': ' + d.label;
         }
     });
+
+    // let bar = chart
+    //     .selectAll('rect')
+    //     .data((d) => {
+    //         return d.values;
+    //     });
+
+    // let bar_enter = bar
+    //     .enter()
+    //     .append('rect')
+    //     .attr({
+    //         'x': (d, i) => {
+    //             console.log(this);
+    //             return;
+    //             let values = this.parentNode.__data__.values;
+    //             let sum = d3.sum(values);
+    //             let subsum = d3.sum(i === 0 ? [] : values.slice(0, i) );
+    //             let opened = d3.max(_.pluck(nodes, 'depth'));
+    //             let height = (diameter / 2 - 120) / opened * 0.95;
+    //             return height / sum * subsum;
+    //         },
+    //         'y': () => {
+    //             let depth = this.parentNode.__data__.depth;
+    //             let opened = d3.max(_.pluck(nodes, 'depth'));
+    //             // return - (parseInt((5 - depth) / 2) + 1);
+    //             return - parseInt((opened / depth) / 2);
+    //         },
+    //         'width': (d) => {
+    //             let values = this.parentNode.__data__.values;
+    //             let sum = d3.sum(values);
+    //             let opened = d3.max(_.pluck(nodes, 'depth'));
+    //             let height = (diameter / 2 - 120) / opened * 0.95;
+    //             return height / sum * d
+    //         },
+    //         'height': () => {
+    //             var depth = this.parentNode.__data__.depth;
+    //             let opened = d3.max(_.pluck(nodes, 'depth'));
+    //             return parseInt((opened / depth) / 2) * 2;
+    //         },
+    //         'fill': (d, i) => {
+    //             // return color.chart(i);
+    //         },
+    //         'data-toggle': 'tooltip',
+    //         'data-original-title': function(d, i) {
+    //             var name = this.parentNode.__data__.name;
+    //             var label = this.parentNode.__data__.label;
+    //             return name + ': ' + label;;
+    //         }
+    // });
 };
