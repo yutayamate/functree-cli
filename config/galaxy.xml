@@ -26,8 +26,10 @@
                 </param>
             </when>
             <when value="stats">
-                <param name="method" type="select" label="Statistical analysis method">
-                    <option value="abundance">Calculate gene abundances</option>
+                <param name="method" type="select" label="Analysis method">
+                    <option value="sum">Summation</option>
+                    <option value="average">Average</option>
+                    <option value="variance">Variance</option>
                 </param>
             </when>
         </conditional>

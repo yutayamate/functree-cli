@@ -2,14 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-"""
-
-    abundance.py: Caluculate gene abundances for KEGG / EnteroPathway
-    http://www.bioviz.tokyo/functree2/
-
-
-"""
-
 import sys
 import os
 import argparse
@@ -23,15 +15,15 @@ import pandas as pd
 def main():
     # Setup command-line arguments
     parser = argparse.ArgumentParser(
-        prog='abundance.py',
-        description='abundance.py: Caluculate gene abundances for KEGG / EnteroPathway'
+        prog='stats.py',
+        description='stats.py: Yet another statistical analysis tool'
     )
 
     parser.add_argument(
         '-v',
         '--version',
         action='version',
-        version='%(prog)s 1.0.0'
+        version='%(prog)s 0.0.1'
     )
 
     parser.add_argument(
@@ -40,7 +32,7 @@ def main():
         nargs='?',
         type=argparse.FileType('r'),
         default=sys.stdin,
-        help='specify input table file'
+        help='specify input file'
     )
 
     parser.add_argument(
@@ -49,7 +41,7 @@ def main():
         nargs='?',
         type=argparse.FileType('w'),
         default=sys.stdout,
-        help='specify output table file'
+        help='specify output file'
     )
 
     parser.add_argument(
@@ -64,15 +56,16 @@ def main():
         '-m',
         '--method',
         required=True,
-        choices=['sum', 'average'],
-        help='specify abundance caluculation method'
+        choices=['sum', 'average', 'variance'],
+        help='specify analysis method'
     )
 
     args = parser.parse_args()
 
 
     # Load reference database JSON file
-    f = open(os.path.dirname(__file__) + '/../data/ref/' + args.database + '.json', 'r')
+    fpath = os.path.join(os.path.dirname(__file__), '../data/ref/', (args.database + '.json'))
+    f = open(fpath, 'r')
     root = json.load(f)
     nodes = get_nodes(root)
 
@@ -91,6 +84,8 @@ def main():
             d = ix.sum()
         elif args.method == 'average':
             d = ix.mean()
+        elif args.method == 'variance':
+            d = ix.var()
 
         df.ix[i['name']] = d
 

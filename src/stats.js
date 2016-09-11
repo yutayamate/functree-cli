@@ -34,9 +34,9 @@ module.exports.builder = {
     'm': { 
         'alias': 'method',
         'type': 'string',
-        'choices': ['abundance'],
+        'choices': ['sum', 'average', 'variance'],
         'demand': true,
-        'describe': 'Specify analyze method'
+        'describe': 'Specify analysis method'
     },
 };
 
@@ -46,24 +46,21 @@ module.exports.handler = (args) => {
     let config = io.load_config(path.join(__dirname, '../config/config.json'));
     let str = '';
 
-    if (args.method === 'abundance') {
+    let cmd = path.join(__dirname, '../tool/stats.py');
+    let arg = args.input ? ['-d', args.database, '-m', args.method, '-i', args.input] : ['-d', args.database, '-m', args.method];
 
-        let cmd = path.join(__dirname, '../tool/abundance.py');
-        let arg = args.input ? ['-d', args.database, '-m', 'sum', '-i', args.input] : ['-d', args.database, '-m', 'sum'];
-
-        try {
-            let result = child_process.spawnSync(cmd, arg, {
-                'stdio': [0, 'pipe', 2]
-            });
-            str = result.stdout.toString();
-        }
-
-        catch(e) {
-            process.stderr.write('Unexpected Error\n');
-            process.exit(1);
-        }
-
+    try {
+        let result = child_process.spawnSync(cmd, arg, {
+            'stdio': [0, 'pipe', 2]
+        });
+        str = result.stdout.toString();
     }
+
+    catch(e) {
+        process.stderr.write('Unexpected Error\n');
+        process.exit(1);
+    }
+
 
     io.write(args.output, str);
     process.exit(0);
