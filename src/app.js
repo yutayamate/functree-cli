@@ -19,9 +19,12 @@ let args = yargs.detectLocale(false)
         '|  _| | |_| | |\\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | | \n' +
         '|_|    \\___/|_| \\_|\\____| |_| |_| \\_\\_____|_____|     \\____|_____|___|\n' +
         '                                                                      \n' +
-        '[ A Command-line based visualization tool for massive-scale omics data ]\n'
+        '[ A Command-line based visualization tool for massive-scale omics data ]\n' +
+        '\n' +
+        'Copyright (c) 2015-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology.\n'
     )
     .epilogue(
+        '\n' +
         'For more information, please see below:\n' +
         '  http://wwww.bioviz.tokyo/functree2'
     )

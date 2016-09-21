@@ -37,7 +37,7 @@
     <outputs>
         <data format="html" name="output">
             <change_format>
-                <when input="args.command" value="stats" format="tabular" />
+                <when input="args.command" value="stats" format="tabular"/>
             </change_format>
         </data>
     </outputs>

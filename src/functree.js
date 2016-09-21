@@ -164,6 +164,9 @@ let update_nodes = (window, config, nodes, source) => {
 
 let update_charts = (window, config, nodes, source) => {
 
+    let diameter = config.functree.attribute.diameter;
+    let color = d3.scale.category20();
+
     let chart = d3.select(window.document.body)
         .select('#charts')
         .selectAll('g')
@@ -171,15 +174,18 @@ let update_charts = (window, config, nodes, source) => {
             return d.id;
         });
 
-    let get_max = _.memoize((depth) => {
+    let get_max = (depth, varname) => {
         return _.chain(nodes)
             .filter((i) => {
                 return i.depth === depth;
             })
-            .pluck('value')
+            .pluck(varname)
+            .map((i) => {
+                return typeof i === 'object' ? d3.sum(i) : i;
+            })
             .max()
             .value();
-    });
+    };
 
     let chart_enter = chart
         .enter()
@@ -201,7 +207,7 @@ let update_charts = (window, config, nodes, source) => {
         .append('circle')
         .attr({
             'r': (d) => {
-                let max = get_max(d.depth);
+                let max = get_max(d.depth, 'value');
                 return config.functree.normalize_circle ? d.value / max * 30 : d.value;
             },
             'fill': (d) => {
@@ -214,53 +220,58 @@ let update_charts = (window, config, nodes, source) => {
             }
         });
 
-    // let bar = chart
-    //     .selectAll('rect')
-    //     .data((d) => {
-    //         return d.values;
-    //     });
 
-    // let bar_enter = bar
-    //     .enter()
-    //     .append('rect')
-    //     .attr({
-    //         'x': (d, i) => {
-    //             console.log(this);
-    //             return;
-    //             let values = this.parentNode.__data__.values;
-    //             let sum = d3.sum(values);
-    //             let subsum = d3.sum(i === 0 ? [] : values.slice(0, i) );
-    //             let opened = d3.max(_.pluck(nodes, 'depth'));
-    //             let height = (diameter / 2 - 120) / opened * 0.95;
-    //             return height / sum * subsum;
-    //         },
-    //         'y': () => {
-    //             let depth = this.parentNode.__data__.depth;
-    //             let opened = d3.max(_.pluck(nodes, 'depth'));
-    //             // return - (parseInt((5 - depth) / 2) + 1);
-    //             return - parseInt((opened / depth) / 2);
-    //         },
-    //         'width': (d) => {
-    //             let values = this.parentNode.__data__.values;
-    //             let sum = d3.sum(values);
-    //             let opened = d3.max(_.pluck(nodes, 'depth'));
-    //             let height = (diameter / 2 - 120) / opened * 0.95;
-    //             return height / sum * d
-    //         },
-    //         'height': () => {
-    //             var depth = this.parentNode.__data__.depth;
-    //             let opened = d3.max(_.pluck(nodes, 'depth'));
-    //             return parseInt((opened / depth) / 2) * 2;
-    //         },
-    //         'fill': (d, i) => {
-    //             // return color.chart(i);
-    //         },
-    //         'data-toggle': 'tooltip',
-    //         'data-original-title': function(d, i) {
-    //             var name = this.parentNode.__data__.name;
-    //             var label = this.parentNode.__data__.label;
-    //             return name + ': ' + label;;
-    //         }
-    // });
+    let bar = chart
+        .selectAll('rect')
+        .data((d) => {
+            return d.values;
+        });
+
+    let bar_enter = bar
+        .enter()
+        .append('rect')
+        .attr({
+            'x': function(d, i) {
+                let values = this.parentNode.__data__.values;
+                // let sum = d3.sum(values);
+                let subsum = d3.sum(i === 0 ? [] : values.slice(0, i));
+                let opened = d3.max(_.pluck(nodes, 'depth'));
+                let height = (diameter / 2 - 120) / opened * 0.95;
+                // return height / sum * subsum;
+                let depth = this.parentNode.__data__.depth;
+                let max = get_max(depth, 'values');
+                return config.functree.normalize_bar ? subsum / max * height : subsum;
+            },
+            'y': function() {
+                let depth = this.parentNode.__data__.depth;
+                let opened = d3.max(_.pluck(nodes, 'depth'));
+                return - (2 + (opened - depth) / opened * 3) / 2;
+                // return - (parseInt((5 - depth) / 2) + 1);
+            },
+            'width': function(d) {
+                let values = this.parentNode.__data__.values;
+                // let sum = d3.sum(values);
+                let opened = d3.max(_.pluck(nodes, 'depth'));
+                let height = (diameter / 2 - 120) / opened * 0.95;
+                // return height / sum * d;
+                let depth = this.parentNode.__data__.depth;
+                let max = get_max(depth, 'values');
+                return config.functree.normalize_bar ? d / max * height : d;
+            },
+            'height': function() {
+                let depth = this.parentNode.__data__.depth;
+                let opened = d3.max(_.pluck(nodes, 'depth'));
+                return 2 + (opened - depth) / opened * 3;
+            },
+            'fill': (d, i) => {
+                return color(i);
+            },
+            'data-toggle': 'tooltip',
+            'data-original-title': function(d, i) {
+                var name = this.parentNode.__data__.name;
+                var label = this.parentNode.__data__.label;
+                return name + ': ' + label;;
+            }
+    });
 
 }

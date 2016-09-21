@@ -71,7 +71,7 @@ module.exports.read_input = (fpath) => {
             let d = {
                 'name': item[0],
                 'value': parseFloat(item[1]),
-                'values': _.map(item.slice(2), (i) => {
+                'values': _.map(item.slice(1), (i) => {
                     return parseFloat(i);
                 })
             };

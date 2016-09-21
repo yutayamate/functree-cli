@@ -74,7 +74,7 @@ module.exports.read_input = function (fpath) {
                 var d = {
                     'name': item[0],
                     'value': parseFloat(item[1]),
-                    'values': _underscore2.default.map(item.slice(2), function (i) {
+                    'values': _underscore2.default.map(item.slice(1), function (i) {
                         return parseFloat(i);
                     })
                 };

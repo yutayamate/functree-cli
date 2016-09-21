@@ -1,5 +1,7 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var _underscore = require('underscore');
 
 var _underscore2 = _interopRequireDefault(_underscore);
@@ -137,15 +139,20 @@ var update_nodes = function update_nodes(window, config, nodes, source) {
 
 var update_charts = function update_charts(window, config, nodes, source) {
 
+    var diameter = config.functree.attribute.diameter;
+    var color = _d3.default.scale.category20();
+
     var chart = _d3.default.select(window.document.body).select('#charts').selectAll('g').data(nodes, function (d) {
         return d.id;
     });
 
-    var get_max = _underscore2.default.memoize(function (depth) {
+    var get_max = function get_max(depth, varname) {
         return _underscore2.default.chain(nodes).filter(function (i) {
             return i.depth === depth;
-        }).pluck('value').max().value();
-    });
+        }).pluck(varname).map(function (i) {
+            return (typeof i === 'undefined' ? 'undefined' : _typeof(i)) === 'object' ? _d3.default.sum(i) : i;
+        }).max().value();
+    };
 
     var chart_enter = chart.enter().append('g').attr({
         'transform': function transform(d) {
@@ -159,7 +166,7 @@ var update_charts = function update_charts(window, config, nodes, source) {
 
     var circle_enter = circle.enter().append('circle').attr({
         'r': function r(d) {
-            var max = get_max(d.depth);
+            var max = get_max(d.depth, 'value');
             return config.functree.normalize_circle ? d.value / max * 30 : d.value;
         },
         'fill': function fill(d) {
@@ -172,52 +179,51 @@ var update_charts = function update_charts(window, config, nodes, source) {
         }
     });
 
-    // let bar = chart
-    //     .selectAll('rect')
-    //     .data((d) => {
-    //         return d.values;
-    //     });
+    var bar = chart.selectAll('rect').data(function (d) {
+        return d.values;
+    });
 
-    // let bar_enter = bar
-    //     .enter()
-    //     .append('rect')
-    //     .attr({
-    //         'x': (d, i) => {
-    //             console.log(this);
-    //             return;
-    //             let values = this.parentNode.__data__.values;
-    //             let sum = d3.sum(values);
-    //             let subsum = d3.sum(i === 0 ? [] : values.slice(0, i) );
-    //             let opened = d3.max(_.pluck(nodes, 'depth'));
-    //             let height = (diameter / 2 - 120) / opened * 0.95;
-    //             return height / sum * subsum;
-    //         },
-    //         'y': () => {
-    //             let depth = this.parentNode.__data__.depth;
-    //             let opened = d3.max(_.pluck(nodes, 'depth'));
-    //             // return - (parseInt((5 - depth) / 2) + 1);
-    //             return - parseInt((opened / depth) / 2);
-    //         },
-    //         'width': (d) => {
-    //             let values = this.parentNode.__data__.values;
-    //             let sum = d3.sum(values);
-    //             let opened = d3.max(_.pluck(nodes, 'depth'));
-    //             let height = (diameter / 2 - 120) / opened * 0.95;
-    //             return height / sum * d
-    //         },
-    //         'height': () => {
-    //             var depth = this.parentNode.__data__.depth;
-    //             let opened = d3.max(_.pluck(nodes, 'depth'));
-    //             return parseInt((opened / depth) / 2) * 2;
-    //         },
-    //         'fill': (d, i) => {
-    //             // return color.chart(i);
-    //         },
-    //         'data-toggle': 'tooltip',
-    //         'data-original-title': function(d, i) {
-    //             var name = this.parentNode.__data__.name;
-    //             var label = this.parentNode.__data__.label;
-    //             return name + ': ' + label;;
-    //         }
-    // });
+    var bar_enter = bar.enter().append('rect').attr({
+        'x': function x(d, i) {
+            var values = this.parentNode.__data__.values;
+            // let sum = d3.sum(values);
+            var subsum = _d3.default.sum(i === 0 ? [] : values.slice(0, i));
+            var opened = _d3.default.max(_underscore2.default.pluck(nodes, 'depth'));
+            var height = (diameter / 2 - 120) / opened * 0.95;
+            // return height / sum * subsum;
+            var depth = this.parentNode.__data__.depth;
+            var max = get_max(depth, 'values');
+            return config.functree.normalize_bar ? subsum / max * height : subsum;
+        },
+        'y': function y() {
+            var depth = this.parentNode.__data__.depth;
+            var opened = _d3.default.max(_underscore2.default.pluck(nodes, 'depth'));
+            return -(2 + (opened - depth) / opened * 3) / 2;
+            // return - (parseInt((5 - depth) / 2) + 1);
+        },
+        'width': function width(d) {
+            var values = this.parentNode.__data__.values;
+            // let sum = d3.sum(values);
+            var opened = _d3.default.max(_underscore2.default.pluck(nodes, 'depth'));
+            var height = (diameter / 2 - 120) / opened * 0.95;
+            // return height / sum * d;
+            var depth = this.parentNode.__data__.depth;
+            var max = get_max(depth, 'values');
+            return config.functree.normalize_bar ? d / max * height : d;
+        },
+        'height': function height() {
+            var depth = this.parentNode.__data__.depth;
+            var opened = _d3.default.max(_underscore2.default.pluck(nodes, 'depth'));
+            return 2 + (opened - depth) / opened * 3;
+        },
+        'fill': function fill(d, i) {
+            return color(i);
+        },
+        'data-toggle': 'tooltip',
+        'data-original-title': function dataOriginalTitle(d, i) {
+            var name = this.parentNode.__data__.name;
+            var label = this.parentNode.__data__.label;
+            return name + ': ' + label;;
+        }
+    });
 };
