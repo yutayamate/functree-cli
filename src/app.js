@@ -21,7 +21,7 @@ let args = yargs.detectLocale(false)
         '                                                                      \n' +
         '[ A Command-line based visualization tool for massive-scale omics data ]\n' +
         '\n' +
-        'Copyright (c) 2015-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology.\n'
+        'Copyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology. All Rights Reserved.\n'
     )
     .epilogue(
         '\n' +
