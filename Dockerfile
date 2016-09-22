@@ -1,9 +1,10 @@
-FROM node:6.6.0
+FROM node:latest
 
 MAINTAINER Yuta Yamate <yyamate@bio.titech.ac.jp>
 
-WORKDIR /root
+COPY . /tmp/functree-cli
 
-RUN git clone http://tsubaki.bio.titech.ac.jp/yyamate/functree-cli.git && \
-    cd functree-cli && \
+RUN cd /tmp/functree-cli && \
     npm install -g
+
+RUN rm -rf /tmp/functree-cli
