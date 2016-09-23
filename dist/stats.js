@@ -47,12 +47,17 @@ module.exports.builder = {
         'choices': ['sum', 'average', 'variance'],
         'demand': true,
         'describe': 'Specify analysis method'
+    },
+    'c': {
+        'alias': 'config',
+        'type': 'string',
+        'describe': 'Specify configuration file'
     }
 };
 
 module.exports.handler = function (args) {
 
-    var config = _io2.default.load_config(_path2.default.join(__dirname, '../config/config.json'));
+    var config = _io2.default.load_config(args.config || _path2.default.join(__dirname, '../config/config.json'));
     var str = '';
 
     var cmd = _path2.default.join(__dirname, '../tool/stats.py');

@@ -34,13 +34,13 @@ module.exports.init_nodes = function (nodes, config) {
         i.keys = [];
         i.color = color(i.depth);
 
-        if (!config.functree.show_all_nodes) {
+        if (config.functree.show_all_nodes) {
+            return false;
+        }
 
-            if (i.name.match(/M\d{5}|EPM\d{4}|Undefined MODULE/)) {
-
-                i._children = i.children;
-                i.children = null;
-            }
+        if (i.name.match(/M\d{5}|EPM\d{4}|Undefined MODULE/)) {
+            i._children = i.children;
+            i.children = null;
         }
     });
 };
@@ -48,8 +48,12 @@ module.exports.init_nodes = function (nodes, config) {
 module.exports.set_values = function (nodes, data, config) {
 
     _underscore2.default.each(data, function (i) {
+        if (i.name.match('Root')) {
+            return false;
+        }
+
         var match = _underscore2.default.find(nodes, function (j) {
-            return i['name'] === j['name'];
+            return i.name === j.name;
         });
         _underscore2.default.extend(match, i);
     });

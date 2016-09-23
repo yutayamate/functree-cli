@@ -80,10 +80,10 @@ let update_rings = (window, config, nodes) => {
         .attr({
             'fill': 'none',
             'r': (d) => {
-                return (diameter / 2 - 120) / max * (d + 0.5);
+                return (diameter / 2 - 120) / max * (d + 0.5) || 0
             },
             'stroke': '#f8f8f8',
-            'stroke-width': (diameter / 2 - 120) / max // 0
+            'stroke-width': (diameter / 2 - 120) / max || 0
         });
 
 };
@@ -208,7 +208,7 @@ let update_charts = (window, config, nodes, source) => {
         .attr({
             'r': (d) => {
                 let max = get_max(d.depth, 'value');
-                return config.functree.normalize_circle ? d.value / max * 30 : d.value;
+                return config.functree.normalize_circle ? (d.value / max * 30 || 0) : d.value;
             },
             'fill': (d) => {
                 return d.color;
@@ -240,7 +240,7 @@ let update_charts = (window, config, nodes, source) => {
                 // return height / sum * subsum;
                 let depth = this.parentNode.__data__.depth;
                 let max = get_max(depth, 'values');
-                return config.functree.normalize_bar ? subsum / max * height : subsum;
+                return config.functree.normalize_bar ? (subsum / max * height || 0) : subsum;
             },
             'y': function() {
                 let depth = this.parentNode.__data__.depth;
@@ -256,7 +256,7 @@ let update_charts = (window, config, nodes, source) => {
                 // return height / sum * d;
                 let depth = this.parentNode.__data__.depth;
                 let max = get_max(depth, 'values');
-                return config.functree.normalize_bar ? d / max * height : d;
+                return config.functree.normalize_bar ? (d / max * height || 0) : d;
             },
             'height': function() {
                 let depth = this.parentNode.__data__.depth;
@@ -268,8 +268,8 @@ let update_charts = (window, config, nodes, source) => {
             },
             'data-toggle': 'tooltip',
             'data-original-title': function(d, i) {
-                var name = this.parentNode.__data__.name;
-                var label = this.parentNode.__data__.label;
+                let name = this.parentNode.__data__.name;
+                let label = this.parentNode.__data__.label;
                 return name + ': ' + label;;
             }
     });

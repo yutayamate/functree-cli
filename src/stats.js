@@ -38,12 +38,17 @@ module.exports.builder = {
         'demand': true,
         'describe': 'Specify analysis method'
     },
+    'c': {
+        'alias': 'config',
+        'type': 'string',
+        'describe': 'Specify configuration file'
+    }
 };
 
 
 module.exports.handler = (args) => {
 
-    let config = io.load_config(path.join(__dirname, '../config/config.json'));
+    let config = io.load_config(args.config || path.join(__dirname, '../config/config.json'));
     let str = '';
 
     let cmd = path.join(__dirname, '../tool/stats.py');

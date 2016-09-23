@@ -27,16 +27,15 @@ module.exports.init_nodes = (nodes, config) => {
         i.keys = [];
         i.color = color(i.depth);
 
-        if (!config.functree.show_all_nodes) {
-
-            if (i.name.match(/M\d{5}|EPM\d{4}|Undefined MODULE/)) {
-
-                i._children = i.children;
-                i.children = null;
-
-            }
-
+        if (config.functree.show_all_nodes) {
+            return false;
         }
+
+        if (i.name.match(/M\d{5}|EPM\d{4}|Undefined MODULE/)) {
+            i._children = i.children;
+            i.children = null;
+        }
+
     });
 };
 
@@ -44,8 +43,12 @@ module.exports.init_nodes = (nodes, config) => {
 module.exports.set_values = (nodes, data, config) => {
 
     _.each(data, (i) => {
+        if (i.name.match('Root')) {
+            return false;
+        }
+
         let match = _.find(nodes, (j) => {
-            return i['name'] === j['name'];
+            return i.name === j.name;
         });
         _.extend(match, i);
     });

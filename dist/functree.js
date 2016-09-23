@@ -69,10 +69,10 @@ var update_rings = function update_rings(window, config, nodes) {
     var enter = ring.enter().append('circle').attr({
         'fill': 'none',
         'r': function r(d) {
-            return (diameter / 2 - 120) / max * (d + 0.5);
+            return (diameter / 2 - 120) / max * (d + 0.5) || 0;
         },
         'stroke': '#f8f8f8',
-        'stroke-width': (diameter / 2 - 120) / max // 0
+        'stroke-width': (diameter / 2 - 120) / max || 0
     });
 };
 
@@ -167,7 +167,7 @@ var update_charts = function update_charts(window, config, nodes, source) {
     var circle_enter = circle.enter().append('circle').attr({
         'r': function r(d) {
             var max = get_max(d.depth, 'value');
-            return config.functree.normalize_circle ? d.value / max * 30 : d.value;
+            return config.functree.normalize_circle ? d.value / max * 30 || 0 : d.value;
         },
         'fill': function fill(d) {
             return d.color;
@@ -193,7 +193,7 @@ var update_charts = function update_charts(window, config, nodes, source) {
             // return height / sum * subsum;
             var depth = this.parentNode.__data__.depth;
             var max = get_max(depth, 'values');
-            return config.functree.normalize_bar ? subsum / max * height : subsum;
+            return config.functree.normalize_bar ? subsum / max * height || 0 : subsum;
         },
         'y': function y() {
             var depth = this.parentNode.__data__.depth;
@@ -209,7 +209,7 @@ var update_charts = function update_charts(window, config, nodes, source) {
             // return height / sum * d;
             var depth = this.parentNode.__data__.depth;
             var max = get_max(depth, 'values');
-            return config.functree.normalize_bar ? d / max * height : d;
+            return config.functree.normalize_bar ? d / max * height || 0 : d;
         },
         'height': function height() {
             var depth = this.parentNode.__data__.depth;
