@@ -2,24 +2,20 @@
   "name": "functree-cli",
   "version": "0.0.1",
   "description": "A command-line based visualization tool for massive-scale omics data",
-  "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "babel": "gulp babel",
+    "build": "gulp build",
     "watch": "gulp watch"
   },
   "author": "Yuta Yamate <yyamate@bio.titech.ac.jp>",
-  "license": "ISC",
+  "homepage": "http://www.bioviz.tokyo/functree",
+  "license": "MIT",
   "devDependencies": {
     "babel-preset-es2015": "^6.6.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-plumber": "^1.1.0"
-  },
-  "babel": {
-    "presets": [
-      "es2015"
-    ]
   },
   "dependencies": {
     "d3": "^3.5.17",

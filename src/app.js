@@ -17,7 +17,7 @@ String.raw`
                                                                       
 [ A Command-line based visualization tool for massive-scale omics data ]
 
-Copyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology. All Rights Reserved.
+Copyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology.
 `,
 
 String.raw`

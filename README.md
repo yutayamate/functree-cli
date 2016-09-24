@@ -34,4 +34,4 @@ $ npm install -g
 
 
 ## License
-See `LICENSE` file.
+See `LICENSE`.

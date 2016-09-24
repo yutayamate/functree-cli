@@ -13,7 +13,9 @@ gulp.task('babel', () => {
 });
 
 gulp.task('watch', () => {
-    gulp.watch('./src/*.js', ['babel']);
+    return gulp.watch('./src/*.js', ['babel']);
 });
+
+gulp.task('build', ['babel']);
 
 gulp.task('default', ['watch']);
