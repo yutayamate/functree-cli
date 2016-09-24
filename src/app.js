@@ -2,7 +2,9 @@
 
 'use strict'
 
+import path from 'path';
 import yargs from 'yargs';
+import io from './io.js';
 
 
 let splash = [
@@ -27,12 +29,28 @@ For more information, please see below:
 let args = yargs.detectLocale(false)
     .command(require('./create.js'))
     .command(require('./stats.js'))
+    .option({
+        'show-config': {
+            'type': 'boolean',
+            'describe': 'Show default configuration'
+        }
+    })
     .help()
     .version()
     .usage(splash[0])
     .epilogue(splash[1])
     .argv;
 
-yargs.showHelp('log');
 
-process.exit(1);
+if (args.showConfig) {
+
+    let str = io.read(path.join(__dirname, '../config/config.json')) + '\n';
+    process.stdout.write(str);
+    process.exit(0);
+
+} else {
+
+    yargs.showHelp('log');
+    process.exit(1);
+
+}

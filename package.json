@@ -4,7 +4,9 @@
   "description": "A command-line based visualization tool for massive-scale omics data",
   "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel": "gulp babel",
+    "watch": "gulp watch"
   },
   "author": "Yuta Yamate <yyamate@bio.titech.ac.jp>",
   "license": "ISC",
