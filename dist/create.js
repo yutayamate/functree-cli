@@ -100,7 +100,7 @@ module.exports.handler = function (args) {
     }
 
     if (args.format === 'svg') {
-        var str = document.getElementById(config.target_id).innerHTML.trim() + '\n';
+        var str = document.getElementById('main').innerHTML.trim() + '\n';
         _io2.default.write(args.output, str);
     } else if (args.format === 'html') {
         var _str = _jsdom2.default.serializeDocument(document) + '\n';

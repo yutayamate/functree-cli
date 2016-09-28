@@ -15,7 +15,6 @@ module.exports.builder = {
     'i': {
         'alias': 'input',
         'type': 'string',
-        // 'default': '/dev/stdin',
         'describe': 'Specify input file'
     },
     'o': {

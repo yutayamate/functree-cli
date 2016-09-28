@@ -19,7 +19,13 @@ module.exports.get_nodes = (d, nodes=[]) => {
 
 module.exports.init_nodes = (nodes, config) => {
 
-    let color = d3.scale.category20();
+    let color = (n) => {
+        let colorset = config.colorset
+            .map((i) => {
+                return d3.rgb(i);
+            });
+        return colorset[n % colorset.length];
+    };
 
     _.each(nodes, (i) => {
         i.value = 0;

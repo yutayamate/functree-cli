@@ -26,7 +26,12 @@ module.exports.get_nodes = function (d) {
 
 module.exports.init_nodes = function (nodes, config) {
 
-    var color = _d2.default.scale.category20();
+    var color = function color(n) {
+        var colorset = config.colorset.map(function (i) {
+            return _d2.default.rgb(i);
+        });
+        return colorset[n % colorset.length];
+    };
 
     _underscore2.default.each(nodes, function (i) {
         i.value = 0;

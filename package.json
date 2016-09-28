@@ -25,6 +25,6 @@
     "yargs": "^5.0.0"
   },
   "bin": {
-    "functree": "./dist/app.js"
+    "functree": "./bin/functree"
   }
 }

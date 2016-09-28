@@ -1,13 +1,20 @@
 {
-    "target_id": "main",
     "functree": {
         "attribute": {
             "width": 1200,
             "height": 800,
             "diameter": 1000
         },
+        "style": "heatmap",
         "normalize_circle": true,
         "normalize_bar": true,
         "show_all_nodes": false
-    }
+    },
+    "colorset": [
+        "rgb(55,120,191)",
+        "rgb(254,179,8)",
+        "rgb(168,164,149)",
+        "rgb(123,178,116)",
+        "rgb(130,95,135)"
+    ]
 }

@@ -85,7 +85,7 @@ module.exports.handler = (args) => {
 
 
     if (args.format === 'svg') {
-        let str = document.getElementById(config.target_id).innerHTML.trim() + '\n';
+        let str = document.getElementById('main').innerHTML.trim() + '\n';
         io.write(args.output, str);
     } else if (args.format === 'html') {
         let str = jsdom.serializeDocument(document) + '\n';

@@ -30,7 +30,7 @@ var init_image = function init_image(window, config) {
     var width = config.functree.attribute.width;
     var height = config.functree.attribute.height;
 
-    var svg = _d3.default.select(window.document.body).select('#' + config.target_id).append('svg').attr({
+    var svg = _d3.default.select(window.document.body).select('#main').append('svg').attr({
         'xmlns': 'http://www.w3.org/2000/svg',
         'version': '1.1',
         'width': width,
@@ -140,7 +140,6 @@ var update_nodes = function update_nodes(window, config, nodes, source) {
 var update_charts = function update_charts(window, config, nodes, source) {
 
     var diameter = config.functree.attribute.diameter;
-    var color = _d3.default.scale.category20();
 
     var chart = _d3.default.select(window.document.body).select('#charts').selectAll('g').data(nodes, function (d) {
         return d.id;
@@ -152,6 +151,26 @@ var update_charts = function update_charts(window, config, nodes, source) {
         }).pluck(varname).map(function (i) {
             return (typeof i === 'undefined' ? 'undefined' : _typeof(i)) === 'object' ? _d3.default.sum(i) : i;
         }).max().value();
+    };
+
+    // todo: integrate with get_max()
+    var get_max2 = function get_max2(depth, varname) {
+        return _underscore2.default.chain(nodes).filter(function (i) {
+            return i.depth === depth;
+        }).pluck(varname).map(function (i) {
+            return (typeof i === 'undefined' ? 'undefined' : _typeof(i)) === 'object' ? _d3.default.max(i) : i;
+        }).max().value();
+    };
+
+    var color = {
+        'category': _d3.default.scale.category20(),
+        'linear': function linear(value, depth) {
+            var max = get_max2(depth, 'values');
+            var colorset = ["rgb(218,232,245)", "rgb(11,85,159)"];
+            return _d3.default.scale.linear().domain([0, max]).range(colorset.map(function (i) {
+                return _d3.default.rgb(i);
+            }))(value);
+        }
     };
 
     var chart_enter = chart.enter().append('g').attr({
@@ -172,6 +191,12 @@ var update_charts = function update_charts(window, config, nodes, source) {
         'fill': function fill(d) {
             return d.color;
         },
+        'stroke': function stroke(d) {
+            return _d3.default.rgb(d.color).darker();
+        },
+        'stroke-width': function strokeWidth(d) {
+            return 0.5;
+        },
         'opacity': 0.8,
         'data-toggle': 'tooltip',
         'data-original-title': function dataOriginalTitle(d) {
@@ -186,30 +211,43 @@ var update_charts = function update_charts(window, config, nodes, source) {
     var bar_enter = bar.enter().append('rect').attr({
         'x': function x(d, i) {
             var values = this.parentNode.__data__.values;
-            // let sum = d3.sum(values);
+            var sum = _d3.default.sum(values); // stack100
             var subsum = _d3.default.sum(i === 0 ? [] : values.slice(0, i));
             var opened = _d3.default.max(_underscore2.default.pluck(nodes, 'depth'));
-            var height = (diameter / 2 - 120) / opened * 0.95;
-            // return height / sum * subsum;
+            var height = (diameter / 2 - 120) / opened * 0.80;
             var depth = this.parentNode.__data__.depth;
             var max = get_max(depth, 'values');
-            return config.functree.normalize_bar ? subsum / max * height || 0 : subsum;
+
+            switch (config.functree.style) {
+                case 'stacked':
+                    return config.functree.normalize_bar ? subsum / max * height || 0 : subsum;
+                case 'stacked-100':
+                    return height / sum * subsum;
+                case 'heatmap':
+                    return height / values.length * i;
+            }
         },
         'y': function y() {
             var depth = this.parentNode.__data__.depth;
             var opened = _d3.default.max(_underscore2.default.pluck(nodes, 'depth'));
             return -(2 + (opened - depth) / opened * 3) / 2;
-            // return - (parseInt((5 - depth) / 2) + 1);
         },
         'width': function width(d) {
             var values = this.parentNode.__data__.values;
-            // let sum = d3.sum(values);
+            var sum = _d3.default.sum(values); // stack100
             var opened = _d3.default.max(_underscore2.default.pluck(nodes, 'depth'));
-            var height = (diameter / 2 - 120) / opened * 0.95;
-            // return height / sum * d;
+            var height = (diameter / 2 - 120) / opened * 0.80;
             var depth = this.parentNode.__data__.depth;
             var max = get_max(depth, 'values');
-            return config.functree.normalize_bar ? d / max * height || 0 : d;
+
+            switch (config.functree.style) {
+                case 'stacked':
+                    return config.functree.normalize_bar ? d / max * height || 0 : d;
+                case 'stacked-100':
+                    return height / sum * d;
+                case 'heatmap':
+                    return height / values.length;
+            }
         },
         'height': function height() {
             var depth = this.parentNode.__data__.depth;
@@ -217,7 +255,16 @@ var update_charts = function update_charts(window, config, nodes, source) {
             return 2 + (opened - depth) / opened * 3;
         },
         'fill': function fill(d, i) {
-            return color(i);
+            var depth = this.parentNode.__data__.depth;
+
+            switch (config.functree.style) {
+                case 'stacked':
+                    return color.category(i);
+                case 'stacked-100':
+                    return color.category(i);
+                case 'heatmap':
+                    return color.linear(d, depth);
+            }
         },
         'data-toggle': 'tooltip',
         'data-original-title': function dataOriginalTitle(d, i) {
