@@ -19,7 +19,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-module.exports.main = function () {
+(function () {
 
     var splash = [String.raw(_templateObject), String.raw(_templateObject2)];
 
@@ -40,4 +40,4 @@ module.exports.main = function () {
         _yargs2.default.showHelp('log');
         process.exit(1);
     }
-};
+})();

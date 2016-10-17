@@ -5,7 +5,6 @@ import path from 'path';
 import child_process from 'child_process';
 
 import jsdom from 'jsdom';
-// import jQuery from 'jquery';
 
 import io from './io.js';
 import util from './util.js';
@@ -36,7 +35,7 @@ module.exports.builder = {
         'default': '/dev/stdout',
         'describe': 'Specify output file'
     },
-    'd': { 
+    'd': {
         'alias': 'database',
         'type': 'string',
         'choices': ['kegg', 'enteropathway'],
@@ -46,7 +45,7 @@ module.exports.builder = {
     'f': {
         'alias': 'format',
         'type': 'string',
-        'choices': ['svg', 'html'],
+        'choices': ['svg', 'html', 'png'],
         'default': 'svg',
         'describe': 'Specify output format'
     },
@@ -65,7 +64,6 @@ module.exports.handler = (args) => {
     let template = io.read(path.join(__dirname, '../data/template/index.html'));
     let document = jsdom.jsdom(template);
     let window = document.defaultView;
-    // let $ = jQuery(window);
 
     let data = io.read_input(args.input);
     let ref = io.load_ref(path.join(__dirname, '../data/ref/', args.database + '.json'));
@@ -85,11 +83,17 @@ module.exports.handler = (args) => {
 
 
     if (args.format === 'svg') {
-        let str = document.getElementById('main').innerHTML.trim() + '\n';
+
+        let str = document.getElementById('main') + '\n';
         io.write(args.output, str);
+
     } else if (args.format === 'html') {
+
         let str = jsdom.serializeDocument(document) + '\n';
         io.write(args.output, str);
+
+    } else if (args.format === 'png') {
+
     }
 
     process.exit(0);

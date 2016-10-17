@@ -20,11 +20,11 @@ module.exports.get_nodes = (d, nodes=[]) => {
 module.exports.init_nodes = (nodes, config) => {
 
     let color = (n) => {
-        let colorset = config.colorset
+        let scheme = config.color_scheme.category
             .map((i) => {
                 return d3.rgb(i);
             });
-        return colorset[n % colorset.length];
+        return scheme[n % scheme.length];
     };
 
     _.each(nodes, (i) => {

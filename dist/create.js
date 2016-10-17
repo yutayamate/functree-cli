@@ -31,8 +31,6 @@ var _functree2 = _interopRequireDefault(_functree);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports.command = 'create [options...]';
-// import jQuery from 'jquery';
-
 module.exports.describe = 'Create a visualization';
 
 module.exports.builder = {
@@ -65,7 +63,7 @@ module.exports.builder = {
     'f': {
         'alias': 'format',
         'type': 'string',
-        'choices': ['svg', 'html'],
+        'choices': ['svg', 'html', 'png'],
         'default': 'svg',
         'describe': 'Specify output format'
     },
@@ -83,7 +81,6 @@ module.exports.handler = function (args) {
     var template = _io2.default.read(_path2.default.join(__dirname, '../data/template/index.html'));
     var document = _jsdom2.default.jsdom(template);
     var window = document.defaultView;
-    // let $ = jQuery(window);
 
     var data = _io2.default.read_input(args.input);
     var ref = _io2.default.load_ref(_path2.default.join(__dirname, '../data/ref/', args.database + '.json'));
@@ -100,12 +97,14 @@ module.exports.handler = function (args) {
     }
 
     if (args.format === 'svg') {
-        var str = document.getElementById('main').innerHTML.trim() + '\n';
+
+        var str = document.getElementById('main') + '\n';
         _io2.default.write(args.output, str);
     } else if (args.format === 'html') {
+
         var _str = _jsdom2.default.serializeDocument(document) + '\n';
         _io2.default.write(args.output, _str);
-    }
+    } else if (args.format === 'png') {}
 
     process.exit(0);
 };

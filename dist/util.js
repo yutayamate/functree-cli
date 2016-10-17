@@ -27,10 +27,10 @@ module.exports.get_nodes = function (d) {
 module.exports.init_nodes = function (nodes, config) {
 
     var color = function color(n) {
-        var colorset = config.colorset.map(function (i) {
+        var scheme = config.color_scheme.category.map(function (i) {
             return _d2.default.rgb(i);
         });
-        return colorset[n % colorset.length];
+        return scheme[n % scheme.length];
     };
 
     _underscore2.default.each(nodes, function (i) {

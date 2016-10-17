@@ -5,7 +5,7 @@ import yargs from 'yargs';
 import io from './io.js';
 
 
-module.exports.main = () => {
+(() => {
 
     let splash = [
 String.raw`
@@ -55,4 +55,4 @@ For more information, please see below:
 
     }
 
-};
+})();

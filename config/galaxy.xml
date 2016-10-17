@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <tool id="functree-cli" name="functree" version="0.0.1">
     <description>A command-line based visualization tool for massive-scale omics data</description>
-    <command>
+    <command interpreter="node">
 #if $args.command == "create"
-    node $__tool_directory__/../bin/functree $args.command -i $input -d $database -o $output -f $args.format 
+    node $__tool_directory__/../bin/functree $args.command -i $input -d $database -o $output -f $args.format
 #else
     node $__tool_directory__/../bin/functree $args.command -i $input -d $database -o $output -m $args.method
 #end if
