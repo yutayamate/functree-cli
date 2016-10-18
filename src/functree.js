@@ -15,9 +15,10 @@ module.exports.main = (window, ref, config) => {
     init_image(window, config);
     update_rings(window, config, nodes);
     update_links(window, config, nodes, links, ref);
-    update_nodes(window, config, nodes, ref);
-    update_charts(window, config, nodes, ref);
-    update_rounds(window, config, nodes, ref);
+    update_nodes(window, config, nodes);
+    update_charts(window, config, nodes);
+    update_rounds(window, config, nodes);
+    update_labels(window, config, nodes);
 
 };
 
@@ -65,6 +66,11 @@ let init_image = (window, config) => {
     let rounds = buffer.append('g')
         .attr({
             'id': 'rounds'
+        });
+
+    let labels = buffer.append('g')
+        .attr({
+            'id': 'labels'
         });
 
 };
@@ -136,7 +142,7 @@ let update_links = (window, config, nodes, links, source) => {
 };
 
 
-let update_nodes = (window, config, nodes, source) => {
+let update_nodes = (window, config, nodes) => {
 
     let node = d3.select(window.document.body)
         .select('#nodes')
@@ -168,11 +174,28 @@ let update_nodes = (window, config, nodes, source) => {
 };
 
 
-let update_charts = (window, config, nodes, source) => {
+let update_charts = (window, config, nodes) => {
+
+    if (config.functree.disable_display_charts) {
+        return;
+    }
 
     let diameter = config.functree.attribute.diameter;
 
     let get_max = (depth, varname) => {
+        return _.chain(nodes)
+            .filter((i) => {
+                return i.depth === depth;
+            })
+            .pluck(varname)
+            .map((i) => {
+                return typeof i === 'object' ? d3.sum(i) : i;
+            })
+            .max()
+            .value();
+    };
+
+    let get_max2 = (depth, varname) => {
         return _.chain(nodes)
             .filter((i) => {
                 return i.depth === depth;
@@ -188,7 +211,7 @@ let update_charts = (window, config, nodes, source) => {
     let color = {
         'category': d3.scale.category20(),
         'linear': (value, depth) => {
-            let max = get_max(depth, 'values');
+            let max = get_max2(depth, 'values');
             let scheme = config.color_scheme.linear;
             return d3.scale.linear()
                 .domain([0, max])
@@ -290,11 +313,14 @@ let update_charts = (window, config, nodes, source) => {
                 return name + ': ' + label;;
             }
         });
+};
 
-}
 
+let update_rounds = (window, config, nodes) => {
 
-let update_rounds = (window, config, nodes, source) => {
+    if (config.functree.disable_display_rounds) {
+        return;
+    }
 
     let get_max = (depth, varname) => {
         return _.chain(nodes)
@@ -342,5 +368,52 @@ let update_rounds = (window, config, nodes, source) => {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
             }
         });
+};
 
-}
+let update_labels = (window, config, nodes) => {
+
+    let range_check = (d, config, nodes) => {
+        let threshold = config.threshold;
+        let filtered = _.chain(nodes)
+            .filter((b) => {
+                return d.depth === b.depth && b.value > 0.0;
+            })
+            .sortBy('value')
+            .value();
+        let index = _.sortedIndex(filtered, d, 'value');
+        // console.log(d.value, filtered.length, index);
+        return index > Math.floor(filtered.length * (1 - threshold));
+    };
+
+    let filtered = nodes
+        .filter((d) => {
+            let layer_c = (d.depth === 1);
+            let range_c = range_check(d, config, nodes);
+            let undefined_c = d.label.match('Undefined');
+            return (layer_c || range_c) && !undefined_c;
+        });
+
+    let label = d3.select(window.document.body)
+        .select('#labels')
+        .selectAll('text')
+        .data(filtered, (d) => {
+            return d.id;
+        });
+
+    let enter = label
+        .enter()
+        .append('text')
+        .attr({
+            'y': -10,
+            'font-family': 'sans-serif',
+            'font-size': 10,
+            'text-anchor': 'middle',
+            'fill': '#333',
+            'transform': (d) => {
+                return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
+            }
+        })
+        .text((d) => {
+            return d.name;
+        });
+};

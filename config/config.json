@@ -8,8 +8,11 @@
     "style": "heatmap",
     "normalize_circle": true,
     "normalize_bar": true,
+    "disable_display_charts": false,
+    "disable_display_rounds": false,
     "show_all_nodes": false
   },
+  "threshold": 0.05,
   "color_scheme": {
     "category": [
       "rgb(0,104,183)",

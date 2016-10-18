@@ -22,9 +22,10 @@ module.exports.main = function (window, ref, config) {
     init_image(window, config);
     update_rings(window, config, nodes);
     update_links(window, config, nodes, links, ref);
-    update_nodes(window, config, nodes, ref);
-    update_charts(window, config, nodes, ref);
-    update_rounds(window, config, nodes, ref);
+    update_nodes(window, config, nodes);
+    update_charts(window, config, nodes);
+    update_rounds(window, config, nodes);
+    update_labels(window, config, nodes);
 };
 
 var init_image = function init_image(window, config) {
@@ -61,6 +62,10 @@ var init_image = function init_image(window, config) {
 
     var rounds = buffer.append('g').attr({
         'id': 'rounds'
+    });
+
+    var labels = buffer.append('g').attr({
+        'id': 'labels'
     });
 };
 
@@ -118,7 +123,7 @@ var update_links = function update_links(window, config, nodes, links, source) {
     });
 };
 
-var update_nodes = function update_nodes(window, config, nodes, source) {
+var update_nodes = function update_nodes(window, config, nodes) {
 
     var node = _d3.default.select(window.document.body).select('#nodes').selectAll('circle').data(nodes, function (d) {
         return d.id;
@@ -142,11 +147,23 @@ var update_nodes = function update_nodes(window, config, nodes, source) {
     });
 };
 
-var update_charts = function update_charts(window, config, nodes, source) {
+var update_charts = function update_charts(window, config, nodes) {
+
+    if (config.functree.disable_display_charts) {
+        return;
+    }
 
     var diameter = config.functree.attribute.diameter;
 
     var get_max = function get_max(depth, varname) {
+        return _underscore2.default.chain(nodes).filter(function (i) {
+            return i.depth === depth;
+        }).pluck(varname).map(function (i) {
+            return (typeof i === 'undefined' ? 'undefined' : _typeof(i)) === 'object' ? _d3.default.sum(i) : i;
+        }).max().value();
+    };
+
+    var get_max2 = function get_max2(depth, varname) {
         return _underscore2.default.chain(nodes).filter(function (i) {
             return i.depth === depth;
         }).pluck(varname).map(function (i) {
@@ -157,7 +174,7 @@ var update_charts = function update_charts(window, config, nodes, source) {
     var color = {
         'category': _d3.default.scale.category20(),
         'linear': function linear(value, depth) {
-            var max = get_max(depth, 'values');
+            var max = get_max2(depth, 'values');
             var scheme = config.color_scheme.linear;
             return _d3.default.scale.linear().domain([0, max]).range(scheme.map(function (i) {
                 return _d3.default.rgb(i);
@@ -246,7 +263,11 @@ var update_charts = function update_charts(window, config, nodes, source) {
     });
 };
 
-var update_rounds = function update_rounds(window, config, nodes, source) {
+var update_rounds = function update_rounds(window, config, nodes) {
+
+    if (config.functree.disable_display_rounds) {
+        return;
+    }
 
     var get_max = function get_max(depth, varname) {
         return _underscore2.default.chain(nodes).filter(function (i) {
@@ -282,5 +303,42 @@ var update_rounds = function update_rounds(window, config, nodes, source) {
         'transform': function transform(d) {
             return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
         }
+    });
+};
+
+var update_labels = function update_labels(window, config, nodes) {
+
+    var range_check = function range_check(d, config, nodes) {
+        var threshold = config.threshold;
+        var filtered = _underscore2.default.chain(nodes).filter(function (b) {
+            return d.depth === b.depth && b.value > 0.0;
+        }).sortBy('value').value();
+        var index = _underscore2.default.sortedIndex(filtered, d, 'value');
+        // console.log(d.value, filtered.length, index);
+        return index > Math.floor(filtered.length * (1 - threshold));
+    };
+
+    var filtered = nodes.filter(function (d) {
+        var layer_c = d.depth === 1;
+        var range_c = range_check(d, config, nodes);
+        var undefined_c = d.label.match('Undefined');
+        return (layer_c || range_c) && !undefined_c;
+    });
+
+    var label = _d3.default.select(window.document.body).select('#labels').selectAll('text').data(filtered, function (d) {
+        return d.id;
+    });
+
+    var enter = label.enter().append('text').attr({
+        'y': -10,
+        'font-family': 'sans-serif',
+        'font-size': 10,
+        'text-anchor': 'middle',
+        'fill': '#333',
+        'transform': function transform(d) {
+            return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
+        }
+    }).text(function (d) {
+        return d.name;
     });
 };
