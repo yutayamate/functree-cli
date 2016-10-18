@@ -17,6 +17,7 @@ module.exports.main = (window, ref, config) => {
     update_links(window, config, nodes, links, ref);
     update_nodes(window, config, nodes, ref);
     update_charts(window, config, nodes, ref);
+    update_rounds(window, config, nodes, ref);
 
 };
 
@@ -59,6 +60,11 @@ let init_image = (window, config) => {
     let charts = buffer.append('g')
         .attr({
             'id': 'charts'
+        });
+
+    let rounds = buffer.append('g')
+        .attr({
+            'id': 'rounds'
         });
 
 };
@@ -173,20 +179,6 @@ let update_charts = (window, config, nodes, source) => {
             })
             .pluck(varname)
             .map((i) => {
-                return typeof i === 'object' ? d3.sum(i) : i;
-            })
-            .max()
-            .value();
-    };
-
-    // todo: integrate with get_max()
-    let get_max2 = (depth, varname) => {
-        return _.chain(nodes)
-            .filter((i) => {
-                return i.depth === depth;
-            })
-            .pluck(varname)
-            .map((i) => {
                 return typeof i === 'object' ? d3.max(i) : i;
             })
             .max()
@@ -196,7 +188,7 @@ let update_charts = (window, config, nodes, source) => {
     let color = {
         'category': d3.scale.category20(),
         'linear': (value, depth) => {
-            let max = get_max2(depth, 'values');
+            let max = get_max(depth, 'values');
             let scheme = config.color_scheme.linear;
             return d3.scale.linear()
                 .domain([0, max])
@@ -206,14 +198,14 @@ let update_charts = (window, config, nodes, source) => {
         }
     };
 
-    let bar = d3.select(window.document.body)
+    let chart = d3.select(window.document.body)
         .select('#charts')
         .selectAll('g')
         .data(nodes, (d) => {
             return d.id;
         });
 
-    let bar_enter = bar
+    let chart_enter = chart
         .enter()
         .append('g')
         .attr({
@@ -222,7 +214,7 @@ let update_charts = (window, config, nodes, source) => {
             }
         });
 
-    let rect = bar
+    let rect = chart
         .selectAll('rect')
         .data((d) => {
             return d.values;
@@ -234,7 +226,7 @@ let update_charts = (window, config, nodes, source) => {
         .attr({
             'x': function(d, i) {
                 let values = this.parentNode.__data__.values;
-                let sum = d3.sum(values);   // stack100
+                let sum = d3.sum(values);   // for stacked-100
                 let subsum = d3.sum(i === 0 ? [] : values.slice(0, i));
                 let opened = d3.max(_.pluck(nodes, 'depth'));
                 let height = (diameter / 2 - 120) / opened * 0.80;
@@ -258,7 +250,7 @@ let update_charts = (window, config, nodes, source) => {
             },
             'width': function(d) {
                 let values = this.parentNode.__data__.values;
-                let sum = d3.sum(values);   // stack100
+                let sum = d3.sum(values);   // for stacked-100
                 let opened = d3.max(_.pluck(nodes, 'depth'));
                 let height = (diameter / 2 - 120) / opened * 0.80;
                 let depth = this.parentNode.__data__.depth;
@@ -297,55 +289,12 @@ let update_charts = (window, config, nodes, source) => {
                 let label = this.parentNode.__data__.label;
                 return name + ': ' + label;;
             }
-    });
-
-    let circle = d3.select(window.document.body)
-        .select('#charts')
-        .selectAll('circle')
-        .data(nodes, (d) => {
-            return d.id;
-        });
-
-    let circle_enter = circle
-        .enter()
-        .append('circle')
-        .attr({
-            'r': (d) => {
-                let max = get_max(d.depth, 'value');
-                return config.functree.normalize_circle ? (d.value / max * 30 || 0) : d.value;
-            },
-            'fill': (d) => {
-                return d.color;
-            },
-            'stroke': (d) => {
-                return d3.rgb(d.color).darker();
-            },
-            'stroke-width': (d) => {
-                return 0.5;
-            },
-            'opacity': 0.6,
-            'data-toggle': 'tooltip',
-            'data-original-title': (d) => {
-                return d.name + ': ' + d.label;
-            },
-            'transform': (d) => {
-                return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
-            }
         });
 
 }
 
-/* not consider the order of circles and charts
-let update_charts = (window, config, nodes, source) => {
 
-    let diameter = config.functree.attribute.diameter;
-
-    let chart = d3.select(window.document.body)
-        .select('#charts')
-        .selectAll('g')
-        .data(nodes, (d) => {
-            return d.id;
-        });
+let update_rounds = (window, config, nodes, source) => {
 
     let get_max = (depth, varname) => {
         return _.chain(nodes)
@@ -360,52 +309,14 @@ let update_charts = (window, config, nodes, source) => {
             .value();
     };
 
-    // todo: integrate with get_max()
-    let get_max2 = (depth, varname) => {
-        return _.chain(nodes)
-            .filter((i) => {
-                return i.depth === depth;
-            })
-            .pluck(varname)
-            .map((i) => {
-                return typeof i === 'object' ? d3.max(i) : i;
-            })
-            .max()
-            .value();
-    };
-
-    let color = {
-        'category': d3.scale.category20(),
-        'linear': (value, depth) => {
-            let max = get_max2(depth, 'values');
-            let colorset = [
-                "rgb(223,236,244)",
-                "rgb(45,69,91)"
-            ];
-            return d3.scale.linear()
-                .domain([0, max])
-                .range(colorset.map((i) => {
-                    return d3.rgb(i);
-                }))(value);
-        }
-    };
-
-    let chart_enter = chart
-        .enter()
-        .append('g')
-        .attr({
-            'transform': (d) => {
-                return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
-            }
-        });
-
-    let circle = chart
+    let circle = d3.select(window.document.body)
+        .select('#rounds')
         .selectAll('circle')
-        .data((d) => {
-            return [d];
+        .data(nodes, (d) => {
+            return d.id;
         });
 
-    let circle_enter = circle
+    let enter = circle
         .enter()
         .append('circle')
         .attr({
@@ -426,86 +337,10 @@ let update_charts = (window, config, nodes, source) => {
             'data-toggle': 'tooltip',
             'data-original-title': (d) => {
                 return d.name + ': ' + d.label;
+            },
+            'transform': (d) => {
+                return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
             }
         });
-
-
-    let bar = chart
-        .selectAll('rect')
-        .data((d) => {
-            return d.values;
-        });
-
-    let bar_enter = bar
-        .enter()
-        .append('rect')
-        .attr({
-            'x': function(d, i) {
-                let values = this.parentNode.__data__.values;
-                let sum = d3.sum(values);   // stack100
-                let subsum = d3.sum(i === 0 ? [] : values.slice(0, i));
-                let opened = d3.max(_.pluck(nodes, 'depth'));
-                let height = (diameter / 2 - 120) / opened * 0.80;
-                let depth = this.parentNode.__data__.depth;
-                let max = get_max(depth, 'values');
-
-                switch (config.functree.style) {
-                    case 'stacked':
-                        return config.functree.normalize_bar ? (subsum / max * height || 0) : subsum;
-                    case 'stacked-100':
-                        return height / sum * subsum;
-                    case 'heatmap':
-                        return height / values.length * i;
-                }
-
-            },
-            'y': function() {
-                let depth = this.parentNode.__data__.depth;
-                let opened = d3.max(_.pluck(nodes, 'depth'));
-                return - (2 + (opened - depth) / opened * 3) / 2;
-            },
-            'width': function(d) {
-                let values = this.parentNode.__data__.values;
-                let sum = d3.sum(values);   // stack100
-                let opened = d3.max(_.pluck(nodes, 'depth'));
-                let height = (diameter / 2 - 120) / opened * 0.80;
-                let depth = this.parentNode.__data__.depth;
-                let max = get_max(depth, 'values');
-
-                switch (config.functree.style) {
-                    case 'stacked':
-                        return config.functree.normalize_bar ? (d / max * height || 0) : d;
-                    case 'stacked-100':
-                        return height / sum * d;
-                    case 'heatmap':
-                        return height / values.length;
-                }
-
-            },
-            'height': function() {
-                let depth = this.parentNode.__data__.depth;
-                let opened = d3.max(_.pluck(nodes, 'depth'));
-                return 2 + (opened - depth) / opened * 3;
-            },
-            'fill': function(d, i) {
-                let depth = this.parentNode.__data__.depth;
-
-                switch (config.functree.style) {
-                    case 'stacked':
-                        return color.category(i);
-                    case 'stacked-100':
-                        return color.category(i);
-                    case 'heatmap':
-                        return color.linear(d, depth);
-                }
-            },
-            'data-toggle': 'tooltip',
-            'data-original-title': function(d, i) {
-                let name = this.parentNode.__data__.name;
-                let label = this.parentNode.__data__.label;
-                return name + ': ' + label;;
-            }
-    });
 
 }
-*/

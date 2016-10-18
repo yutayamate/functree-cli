@@ -78,7 +78,7 @@ module.exports.handler = function (args) {
 
     var config = _io2.default.load_config(args.config || _path2.default.join(__dirname, '../config/config.json'));
 
-    var template = _io2.default.read(_path2.default.join(__dirname, '../data/template/index.html'));
+    var template = _io2.default.read(_path2.default.join(__dirname, '../data/html/template.html'));
     var document = _jsdom2.default.jsdom(template);
     var window = document.defaultView;
 
@@ -104,7 +104,11 @@ module.exports.handler = function (args) {
 
         var _str = _jsdom2.default.serializeDocument(document) + '\n';
         _io2.default.write(args.output, _str);
-    } else if (args.format === 'png') {}
+    } else if (args.format === 'png') {
+
+        // in progress
+
+    }
 
     process.exit(0);
 };

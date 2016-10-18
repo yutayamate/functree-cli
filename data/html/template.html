@@ -46,7 +46,7 @@
                         }
                     });
 
-                d3.select('#charts')
+                d3.select('#rounds')
                     .selectAll('circle')
                     .on({
                         'mouseover': function() {
@@ -54,7 +54,7 @@
                                 'fill': '#000',
                                 'opacity': 0.5
                             });
-                            
+
                         },
                         'mouseout': function() {
                             d3.select(this).attr({
@@ -71,7 +71,7 @@
                                 'fill': '#000',
                                 'opacity': 0.5
                             });
-                            
+
                         },
                         'mouseout': function() {
                             d3.select(this).attr({

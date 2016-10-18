@@ -61,7 +61,7 @@ module.exports.handler = (args) => {
 
     let config = io.load_config(args.config || path.join(__dirname, '../config/config.json'));
 
-    let template = io.read(path.join(__dirname, '../data/template/index.html'));
+    let template = io.read(path.join(__dirname, '../data/html/template.html'));
     let document = jsdom.jsdom(template);
     let window = document.defaultView;
 
@@ -93,6 +93,8 @@ module.exports.handler = (args) => {
         io.write(args.output, str);
 
     } else if (args.format === 'png') {
+
+        // in progress
 
     }
 

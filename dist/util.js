@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // return list including all nodes
 module.exports.get_nodes = function (d) {
-    var nodes = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+    var nodes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
 
     nodes.push(d);

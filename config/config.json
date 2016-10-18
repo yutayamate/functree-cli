@@ -1,29 +1,29 @@
 {
-    "functree": {
-        "attribute": {
-            "width": 1200,
-            "height": 800,
-            "diameter": 1000
-        },
-        "style": "heatmap",
-        "normalize_circle": true,
-        "normalize_bar": true,
-        "show_all_nodes": false
+  "functree": {
+    "attribute": {
+      "width": 1200,
+      "height": 800,
+      "diameter": 1000
     },
-    "color_scheme": {
-        "category": [
-            "rgb(0,104,183)",
-            "rgb(218,4,66)",
-            "rgb(0,156,210)",
-            "rgb(32,162,136)",
-            "rgb(241,140,67)",
-            "rgb(238,134,167)",
-            "rgb(174,3,120)",
-            "rgb(252,199,13)"
-        ],
-        "linear": [
-            "rgb(223,236,244)",
-            "rgb(45,69,91)"
-        ]
-    }
+    "style": "heatmap",
+    "normalize_circle": true,
+    "normalize_bar": true,
+    "show_all_nodes": false
+  },
+  "color_scheme": {
+    "category": [
+      "rgb(0,104,183)",
+      "rgb(218,4,66)",
+      "rgb(0,156,210)",
+      "rgb(32,162,136)",
+      "rgb(241,140,67)",
+      "rgb(238,134,167)",
+      "rgb(174,3,120)",
+      "rgb(252,199,13)"
+    ],
+    "linear": [
+      "rgb(223,236,244)",
+      "rgb(45,69,91)"
+    ]
+  }
 }
