@@ -373,7 +373,6 @@ let update_rounds = (window, config, nodes) => {
 let update_labels = (window, config, nodes) => {
 
     let range_check = (d, config, nodes) => {
-        let threshold = config.threshold;
         let filtered = _.chain(nodes)
             .filter((b) => {
                 return d.depth === b.depth && b.value > 0.0;
@@ -381,7 +380,7 @@ let update_labels = (window, config, nodes) => {
             .sortBy('value')
             .value();
         let index = _.sortedIndex(filtered, d, 'value');
-        // console.log(d.value, filtered.length, index);
+        let threshold = config.threshold;
         return index > Math.floor(filtered.length * (1 - threshold));
     };
 
@@ -404,11 +403,11 @@ let update_labels = (window, config, nodes) => {
         .enter()
         .append('text')
         .attr({
-            'y': -10,
-            'font-family': 'sans-serif',
+            'y': -10 / 2,
+            'font-family': 'Helvetica',
             'font-size': 10,
             'text-anchor': 'middle',
-            'fill': '#333',
+            'fill': '#555',
             'transform': (d) => {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
             }

@@ -7,16 +7,11 @@ import child_process from 'child_process';
 import io from './io.js';
 
 
-module.exports.command = 'stats [options...]';
-module.exports.describe = 'Statistical analysis';
+module.exports.command = 'get [options...]';
+module.exports.describe = 'Get reference dataset from KEGG / EnteroPathway';
 
 
 module.exports.builder = {
-    'i': {
-        'alias': 'input',
-        'type': 'string',
-        'describe': 'Specify input file'
-    },
     'o': {
         'alias': 'output',
         'type': 'string',
@@ -26,16 +21,9 @@ module.exports.builder = {
     'd': {
         'alias': 'database',
         'type': 'string',
-        'choices': ['kegg', 'enteropathway'],
+        'choices': ['kegg'],
         'demand': true,
         'describe': 'Specify reference database'
-    },
-    'm': {
-        'alias': 'method',
-        'type': 'string',
-        'choices': ['sum', 'average', 'variance'],
-        'demand': true,
-        'describe': 'Specify analysis method'
     },
     'c': {
         'alias': 'config',
@@ -50,8 +38,8 @@ module.exports.handler = (args) => {
     let config = io.load_config(args.config || path.join(__dirname, '../config/config.json'));
     let str = '';
 
-    let cmd = path.join(__dirname, '../tool/stats.py');
-    let arg = args.input ? ['-d', args.database, '-m', args.method, '-i', args.input] : ['-d', args.database, '-m', args.method];
+    let cmd = path.join(__dirname, '../tool/get.py');
+    let arg = ['-d', args.database];
 
     try {
         let result = child_process.spawnSync(cmd, arg, {

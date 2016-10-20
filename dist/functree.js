@@ -309,12 +309,11 @@ var update_rounds = function update_rounds(window, config, nodes) {
 var update_labels = function update_labels(window, config, nodes) {
 
     var range_check = function range_check(d, config, nodes) {
-        var threshold = config.threshold;
         var filtered = _underscore2.default.chain(nodes).filter(function (b) {
             return d.depth === b.depth && b.value > 0.0;
         }).sortBy('value').value();
         var index = _underscore2.default.sortedIndex(filtered, d, 'value');
-        // console.log(d.value, filtered.length, index);
+        var threshold = config.threshold;
         return index > Math.floor(filtered.length * (1 - threshold));
     };
 
@@ -330,11 +329,11 @@ var update_labels = function update_labels(window, config, nodes) {
     });
 
     var enter = label.enter().append('text').attr({
-        'y': -10,
-        'font-family': 'sans-serif',
+        'y': -10 / 2,
+        'font-family': 'Helvetica',
         'font-size': 10,
         'text-anchor': 'middle',
-        'fill': '#333',
+        'fill': '#555',
         'transform': function transform(d) {
             return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
         }

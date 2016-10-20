@@ -9,26 +9,28 @@ import io from './io.js';
 
     let splash = [
 String.raw`
- _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___ 
+ _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
 |  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
-| |_  | | | |  \| | |     | | | |_) |  _| |  _| _____| |   | |    | | 
-|  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | | 
+| |_  | | | |  \| | |     | | | |_) |  _| |  _| _____| |   | |    | |
+|  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |
 |_|    \___/|_| \_|\____| |_| |_| \_\_____|_____|     \____|_____|___|
-                                                                      
+
 [ A command-line based visualization tool for massive-scale omics data ]
 
 Copyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology.
 `,
 
 String.raw`
-For more information, please see below:
+For more information, see below:
   http://www.bioviz.tokyo/functree`
     ];
 
 
-    let args = yargs.detectLocale(false)
-        .command(require('./create.js'))
+    let args = yargs
+        .detectLocale(false)
+        .command(require('./get.js'))
         .command(require('./stats.js'))
+        .command(require('./create.js'))
         .option({
             'show-config': {
                 'type': 'boolean',
@@ -44,7 +46,7 @@ For more information, please see below:
 
     if (args.showConfig) {
 
-        let str = io.read(path.join(__dirname, '../config/config.json')) + '\n';
+        let str = io.read(path.join(__dirname, '../config/config.json'));
         process.stdout.write(str);
         process.exit(0);
 

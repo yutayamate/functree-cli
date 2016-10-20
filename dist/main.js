@@ -1,7 +1,7 @@
 'use strict';
 
-var _templateObject = _taggedTemplateLiteral(['\n _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___ \n|  ___| | | |  | |/ ___|_   _|  _ | ____| ____|     / ___| |   |_ _|\n| |_  | | | |  | | |     | | | |_) |  _| |  _| _____| |   | |    | | \n|  _| | |_| | |  | |___  | | |  _ <| |___| |__|_____| |___| |___ | | \n|_|    ___/|_| _|____| |_| |_| ______|_____|     ____|_____|___|\n                                                                      \n[ A command-line based visualization tool for massive-scale omics data ]\n\nCopyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology.\n'], ['\n _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___ \n|  ___| | | | \\ | |/ ___|_   _|  _ \\| ____| ____|     / ___| |   |_ _|\n| |_  | | | |  \\| | |     | | | |_) |  _| |  _| _____| |   | |    | | \n|  _| | |_| | |\\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | | \n|_|    \\___/|_| \\_|\\____| |_| |_| \\_\\_____|_____|     \\____|_____|___|\n                                                                      \n[ A command-line based visualization tool for massive-scale omics data ]\n\nCopyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology.\n']),
-    _templateObject2 = _taggedTemplateLiteral(['\nFor more information, please see below:\n  http://www.bioviz.tokyo/functree'], ['\nFor more information, please see below:\n  http://www.bioviz.tokyo/functree']);
+var _templateObject = _taggedTemplateLiteral(['\n _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___\n|  ___| | | |  | |/ ___|_   _|  _ | ____| ____|     / ___| |   |_ _|\n| |_  | | | |  | | |     | | | |_) |  _| |  _| _____| |   | |    | |\n|  _| | |_| | |  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |\n|_|    ___/|_| _|____| |_| |_| ______|_____|     ____|_____|___|\n\n[ A command-line based visualization tool for massive-scale omics data ]\n\nCopyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology.\n'], ['\n _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___\n|  ___| | | | \\ | |/ ___|_   _|  _ \\| ____| ____|     / ___| |   |_ _|\n| |_  | | | |  \\| | |     | | | |_) |  _| |  _| _____| |   | |    | |\n|  _| | |_| | |\\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |\n|_|    \\___/|_| \\_|\\____| |_| |_| \\_\\_____|_____|     \\____|_____|___|\n\n[ A command-line based visualization tool for massive-scale omics data ]\n\nCopyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology.\n']),
+    _templateObject2 = _taggedTemplateLiteral(['\nFor more information, see below:\n  http://www.bioviz.tokyo/functree'], ['\nFor more information, see below:\n  http://www.bioviz.tokyo/functree']);
 
 var _path = require('path');
 
@@ -23,7 +23,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
     var splash = [String.raw(_templateObject), String.raw(_templateObject2)];
 
-    var args = _yargs2.default.detectLocale(false).command(require('./create.js')).command(require('./stats.js')).option({
+    var args = _yargs2.default.detectLocale(false).command(require('./get.js')).command(require('./stats.js')).command(require('./create.js')).option({
         'show-config': {
             'type': 'boolean',
             'describe': 'Show default configuration'
@@ -32,7 +32,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
     if (args.showConfig) {
 
-        var str = _io2.default.read(_path2.default.join(__dirname, '../config/config.json')) + '\n';
+        var str = _io2.default.read(_path2.default.join(__dirname, '../config/config.json'));
         process.stdout.write(str);
         process.exit(0);
     } else {
