@@ -6,7 +6,7 @@ import child_process from 'child_process';
 
 import jsdom from 'jsdom';
 
-import io from './io.js';
+import file_io from './file-io.js';
 import util from './util.js';
 import functree from './functree.js';
 
@@ -59,14 +59,14 @@ module.exports.builder = {
 
 module.exports.handler = (args) => {
 
-    let config = io.load_config(args.config || path.join(__dirname, '../config/config.json'));
+    let config = file_io.load_config(args.config || path.join(__dirname, '../config/config.json'));
 
-    let template = io.read(path.join(__dirname, '../data/html/template.html'));
+    let template = file_io.read(path.join(__dirname, '../data/html/template.html'));
     let document = jsdom.jsdom(template);
     let window = document.defaultView;
 
-    let data = io.read_input(args.input);
-    let ref = io.load_ref(path.join(__dirname, '../data/ref/', args.database + '.json'));
+    let data = file_io.read_input(args.input);
+    let ref = file_io.load_ref(path.join(__dirname, '../data/ref/', args.database + '.json'));
     let nodes = util.get_nodes(ref);
 
 
@@ -85,12 +85,12 @@ module.exports.handler = (args) => {
     if (args.format === 'svg') {
 
         let str = document.getElementById('main') + '\n';
-        io.write(args.output, str);
+        file_io.write(args.output, str);
 
     } else if (args.format === 'html') {
 
         let str = jsdom.serializeDocument(document) + '\n';
-        io.write(args.output, str);
+        file_io.write(args.output, str);
 
     } else if (args.format === 'png') {
 

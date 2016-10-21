@@ -16,9 +16,9 @@ var _jsdom = require('jsdom');
 
 var _jsdom2 = _interopRequireDefault(_jsdom);
 
-var _io = require('./io.js');
+var _fileIo = require('./file-io.js');
 
-var _io2 = _interopRequireDefault(_io);
+var _fileIo2 = _interopRequireDefault(_fileIo);
 
 var _util = require('./util.js');
 
@@ -76,14 +76,14 @@ module.exports.builder = {
 
 module.exports.handler = function (args) {
 
-    var config = _io2.default.load_config(args.config || _path2.default.join(__dirname, '../config/config.json'));
+    var config = _fileIo2.default.load_config(args.config || _path2.default.join(__dirname, '../config/config.json'));
 
-    var template = _io2.default.read(_path2.default.join(__dirname, '../data/html/template.html'));
+    var template = _fileIo2.default.read(_path2.default.join(__dirname, '../data/html/template.html'));
     var document = _jsdom2.default.jsdom(template);
     var window = document.defaultView;
 
-    var data = _io2.default.read_input(args.input);
-    var ref = _io2.default.load_ref(_path2.default.join(__dirname, '../data/ref/', args.database + '.json'));
+    var data = _fileIo2.default.read_input(args.input);
+    var ref = _fileIo2.default.load_ref(_path2.default.join(__dirname, '../data/ref/', args.database + '.json'));
     var nodes = _util2.default.get_nodes(ref);
 
     if (args.theme === 'functree') {
@@ -99,11 +99,11 @@ module.exports.handler = function (args) {
     if (args.format === 'svg') {
 
         var str = document.getElementById('main') + '\n';
-        _io2.default.write(args.output, str);
+        _fileIo2.default.write(args.output, str);
     } else if (args.format === 'html') {
 
         var _str = _jsdom2.default.serializeDocument(document) + '\n';
-        _io2.default.write(args.output, _str);
+        _fileIo2.default.write(args.output, _str);
     } else if (args.format === 'png') {
 
         // in progress

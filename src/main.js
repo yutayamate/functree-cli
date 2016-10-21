@@ -2,7 +2,7 @@
 
 import path from 'path';
 import yargs from 'yargs';
-import io from './io.js';
+import file_io from './file-io.js';
 
 
 (() => {
@@ -46,7 +46,7 @@ For more information, see below:
 
     if (args.showConfig) {
 
-        let str = io.read(path.join(__dirname, '../config/config.json'));
+        let str = file_io.read(path.join(__dirname, '../config/config.json'));
         process.stdout.write(str);
         process.exit(0);
 

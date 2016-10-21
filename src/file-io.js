@@ -37,7 +37,7 @@ module.exports.write = (fpath, str) => {
 };
 
 
-module.exports.load_ref = 
+module.exports.load_ref =
 module.exports.load_config = (fpath) => {
 
     try {

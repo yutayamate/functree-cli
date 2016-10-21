@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
 
-import io from './io.js';
+import file_io from './file-io.js';
 
 
 module.exports.command = 'get [options...]';
@@ -35,10 +35,10 @@ module.exports.builder = {
 
 module.exports.handler = (args) => {
 
-    let config = io.load_config(args.config || path.join(__dirname, '../config/config.json'));
+    let config = file_io.load_config(args.config || path.join(__dirname, '../config/config.json'));
     let str = '';
 
-    let cmd = path.join(__dirname, '../tool/get.py');
+    let cmd = path.join(__dirname, '../tools/get.py');
     let arg = ['-d', args.database];
 
     try {
@@ -54,7 +54,7 @@ module.exports.handler = (args) => {
     }
 
 
-    io.write(args.output, str);
+    file_io.write(args.output, str);
     process.exit(0);
 
 };

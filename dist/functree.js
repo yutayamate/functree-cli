@@ -254,6 +254,8 @@ var update_charts = function update_charts(window, config, nodes) {
                     return color.linear(d, depth);
             }
         },
+        // 'stroke-width': 0.2,
+        // 'stroke': '#333',
         'data-toggle': 'tooltip',
         'data-original-title': function dataOriginalTitle(d, i) {
             var name = this.parentNode.__data__.name;
@@ -295,7 +297,7 @@ var update_rounds = function update_rounds(window, config, nodes) {
         'stroke-width': function strokeWidth(d) {
             return 0.5;
         },
-        'opacity': 0.6,
+        'opacity': 0.4,
         'data-toggle': 'tooltip',
         'data-original-title': function dataOriginalTitle(d) {
             return d.name + ': ' + d.label;

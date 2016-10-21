@@ -12,9 +12,9 @@ var _child_process = require('child_process');
 
 var _child_process2 = _interopRequireDefault(_child_process);
 
-var _io = require('./io.js');
+var _fileIo = require('./file-io.js');
 
-var _io2 = _interopRequireDefault(_io);
+var _fileIo2 = _interopRequireDefault(_fileIo);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56,10 +56,10 @@ module.exports.builder = {
 
 module.exports.handler = function (args) {
 
-    var config = _io2.default.load_config(args.config || _path2.default.join(__dirname, '../config/config.json'));
+    var config = _fileIo2.default.load_config(args.config || _path2.default.join(__dirname, '../config/config.json'));
     var str = '';
 
-    var cmd = _path2.default.join(__dirname, '../tool/stats.py');
+    var cmd = _path2.default.join(__dirname, '../tools/stats.py');
     var arg = args.input ? ['-d', args.database, '-m', args.method, '-i', args.input] : ['-d', args.database, '-m', args.method];
 
     try {
@@ -72,6 +72,6 @@ module.exports.handler = function (args) {
         process.exit(1);
     }
 
-    _io2.default.write(args.output, str);
+    _fileIo2.default.write(args.output, str);
     process.exit(0);
 };

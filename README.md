@@ -16,7 +16,7 @@ Clone this repository:
 ```
 $ git clone http://tsubaki.bio.titech.ac.jp/yyamate/functree-cli.git
 ```
-Enter the cloned directory:
+Enter `functree-cli` directory:
 ```
 $ cd functree-cli
 ```
@@ -28,14 +28,21 @@ $ npm install -g
 ## Usage
 ```
 Commands:
- create [options...]  Create a visualization
- stats [options...]   Statistical analysis
+  get [options...]     Get reference dataset from KEGG / EnteroPathway
+  stats [options...]   Statistical analysis
+  create [options...]  Create a visualization
 
 Options:
- --show-config  Show default configuration                            [boolean]
- --help         Show help                                             [boolean]
- --version      Show version number                                   [boolean]
+  --show-config  Show default configuration                            [boolean]
+  --help         Show help                                             [boolean]
+  --version      Show version number                                   [boolean]
 ```
+
+## Building
+- Clone this repository.
+- Run `npm install` to install the dependencies.
+- Run `npm run build` to compile the ES6 codes (`src/*.js`).
+
 
 ## Reference
 - Uchiyama T, Irie M, Mori H, Kurokawa K, Yamada T. FuncTree: Functional Analysis and Visualization for Large-Scale Omics Data. PLoS One. 2015 May 14;10(5):e0126967. doi: 10.1371/journal.pone.0126967. eCollection 2015. PubMed PMID: 25974630; PubMed Central PMCID: PMC4431737.

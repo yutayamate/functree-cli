@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
 
-import io from './io.js';
+import file_io from './file-io.js';
 
 
 module.exports.command = 'stats [options...]';
@@ -47,10 +47,10 @@ module.exports.builder = {
 
 module.exports.handler = (args) => {
 
-    let config = io.load_config(args.config || path.join(__dirname, '../config/config.json'));
+    let config = file_io.load_config(args.config || path.join(__dirname, '../config/config.json'));
     let str = '';
 
-    let cmd = path.join(__dirname, '../tool/stats.py');
+    let cmd = path.join(__dirname, '../tools/stats.py');
     let arg = args.input ? ['-d', args.database, '-m', args.method, '-i', args.input] : ['-d', args.database, '-m', args.method];
 
     try {
@@ -66,7 +66,7 @@ module.exports.handler = (args) => {
     }
 
 
-    io.write(args.output, str);
+    file_io.write(args.output, str);
     process.exit(0);
 
 };

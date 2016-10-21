@@ -11,9 +11,9 @@ var _yargs = require('yargs');
 
 var _yargs2 = _interopRequireDefault(_yargs);
 
-var _io = require('./io.js');
+var _fileIo = require('./file-io.js');
 
-var _io2 = _interopRequireDefault(_io);
+var _fileIo2 = _interopRequireDefault(_fileIo);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32,7 +32,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
     if (args.showConfig) {
 
-        var str = _io2.default.read(_path2.default.join(__dirname, '../config/config.json'));
+        var str = _fileIo2.default.read(_path2.default.join(__dirname, '../config/config.json'));
         process.stdout.write(str);
         process.exit(0);
     } else {
