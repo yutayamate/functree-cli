@@ -2,13 +2,9 @@
 ![logo](docs/logo.png)
 
 ## Description
-**functree-cli** is a command-line tool, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data.
+**functree-cli** is a command-line tool, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. functree-cli allows user to map their omics data on to a pre-defined treemap, which is based on the [KEGG BRITE](http://www.genome.jp/kegg/brite.html) or [EnteroPathway](http://www.enteropathway.org/) database. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
 
 ![cli](docs/cli.png)
-
-functree-cli allows user to map their omics data on to a pre-defined treemap, which is based on the [KEGG BRITE](http://www.genome.jp/kegg/brite.html) or [EnteroPathway](http://www.enteropathway.org/) database.
-
-This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
 
 ## Requirements
 - [node](https://github.com/nodejs/node) >= 4.6.0
@@ -28,16 +24,15 @@ $ npm install -g
 ```
 
 ## Usage
-### CLI
 Basic usage on CLI is below:
 ```
 $ functree [command] [options...]
 ```
-| Command | Description |
+| Command / Option | Description |
 |:--|:--|
-| get [options...] | Get reference dataset from KEGG / EnteroPathway |
-| stats [options...] | Statistical analysis |
-| create [options...] | Create a visualization |
+| get | Get reference dataset from KEGG / EnteroPathway |
+| stats | Statistical analysis |
+| create | Create a visualization |
 | --show-config | Show default configuration |
 | --help | Show help |
 | --version | Show version number |
