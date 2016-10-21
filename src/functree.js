@@ -28,7 +28,7 @@ let init_image = (window, config) => {
     let height = config.functree.attribute.height;
 
     let svg = d3.select(window.document.body)
-        .select('#main')
+        .select('#' + config.target_id)
         .append('svg')
         .attr({
             'xmlns': 'http://www.w3.org/2000/svg',
@@ -258,7 +258,7 @@ let update_charts = (window, config, nodes) => {
 
                 switch (config.functree.style) {
                     case 'stacked':
-                        return config.functree.normalize_bar ? (subsum / max * height || 0) : subsum;
+                        return config.functree.enable_normalize_charts ? (subsum / max * height || 0) : subsum;
                     case 'stacked-100':
                         return height / sum * subsum;
                     case 'heatmap':
@@ -281,7 +281,7 @@ let update_charts = (window, config, nodes) => {
 
                 switch (config.functree.style) {
                     case 'stacked':
-                        return config.functree.normalize_bar ? (d / max * height || 0) : d;
+                        return config.functree.enable_normalize_charts ? (d / max * height || 0) : d;
                     case 'stacked-100':
                         return height / sum * d;
                     case 'heatmap':
@@ -306,13 +306,11 @@ let update_charts = (window, config, nodes) => {
                         return color.linear(d, depth);
                 }
             },
-            // 'stroke-width': 0.2,
-            // 'stroke': '#333',
             'data-toggle': 'tooltip',
             'data-original-title': function(d, i) {
                 let name = this.parentNode.__data__.name;
                 let label = this.parentNode.__data__.label;
-                return name + ': ' + label;;
+                return name + ': ' + label;
             }
         });
 };
@@ -350,7 +348,7 @@ let update_rounds = (window, config, nodes) => {
         .attr({
             'r': (d) => {
                 let max = get_max(d.depth, 'value');
-                return config.functree.normalize_circle ? (d.value / max * 30 || 0) : d.value;
+                return config.functree.enable_normalize_rounds ? (d.value / max * 20 || 0) : d.value;
             },
             'fill': (d) => {
                 return d.color;

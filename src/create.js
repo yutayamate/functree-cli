@@ -84,7 +84,7 @@ module.exports.handler = (args) => {
 
     if (args.format === 'svg') {
 
-        let str = document.getElementById('main') + '\n';
+        let str = document.getElementById(config.target_id) + '\n';
         file_io.write(args.output, str);
 
     } else if (args.format === 'html') {

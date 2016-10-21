@@ -32,7 +32,7 @@ var init_image = function init_image(window, config) {
     var width = config.functree.attribute.width;
     var height = config.functree.attribute.height;
 
-    var svg = _d3.default.select(window.document.body).select('#main').append('svg').attr({
+    var svg = _d3.default.select(window.document.body).select('#' + config.target_id).append('svg').attr({
         'xmlns': 'http://www.w3.org/2000/svg',
         'version': '1.1',
         'width': width,
@@ -208,7 +208,7 @@ var update_charts = function update_charts(window, config, nodes) {
 
             switch (config.functree.style) {
                 case 'stacked':
-                    return config.functree.normalize_bar ? subsum / max * height || 0 : subsum;
+                    return config.functree.enable_normalize_charts ? subsum / max * height || 0 : subsum;
                 case 'stacked-100':
                     return height / sum * subsum;
                 case 'heatmap':
@@ -230,7 +230,7 @@ var update_charts = function update_charts(window, config, nodes) {
 
             switch (config.functree.style) {
                 case 'stacked':
-                    return config.functree.normalize_bar ? d / max * height || 0 : d;
+                    return config.functree.enable_normalize_charts ? d / max * height || 0 : d;
                 case 'stacked-100':
                     return height / sum * d;
                 case 'heatmap':
@@ -254,13 +254,11 @@ var update_charts = function update_charts(window, config, nodes) {
                     return color.linear(d, depth);
             }
         },
-        // 'stroke-width': 0.2,
-        // 'stroke': '#333',
         'data-toggle': 'tooltip',
         'data-original-title': function dataOriginalTitle(d, i) {
             var name = this.parentNode.__data__.name;
             var label = this.parentNode.__data__.label;
-            return name + ': ' + label;;
+            return name + ': ' + label;
         }
     });
 };
@@ -286,7 +284,7 @@ var update_rounds = function update_rounds(window, config, nodes) {
     var enter = circle.enter().append('circle').attr({
         'r': function r(d) {
             var max = get_max(d.depth, 'value');
-            return config.functree.normalize_circle ? d.value / max * 30 || 0 : d.value;
+            return config.functree.enable_normalize_rounds ? d.value / max * 20 || 0 : d.value;
         },
         'fill': function fill(d) {
             return d.color;
