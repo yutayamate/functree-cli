@@ -11,7 +11,7 @@
     "enable_normalize_charts": true,
     "disable_display_rounds": false,
     "disable_display_charts": false,
-    "show_all_nodes": false
+    "show_all_nodes": true
   },
   "threshold": 0.05,
   "color_scheme": {

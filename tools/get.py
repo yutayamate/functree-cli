@@ -77,7 +77,7 @@ def main():
             if re.match('C', line):
                 line = line.lstrip('C').lstrip()
                 number, label = line.split(maxsplit=1)
-                name = 'map' + number
+                name = 'path:map' + number
                 depth = 3
                 node = copy.deepcopy(template)
                 node['name'] = name
@@ -101,6 +101,7 @@ def main():
             if re.match('D', line):
                 line = line.lstrip('D').lstrip()
                 name, label = line.split(maxsplit=1)
+                name = 'md:' + name
                 depth = 4
                 node = copy.deepcopy(template)
                 node['name'] = name
@@ -118,8 +119,9 @@ def main():
                 # 20160719追加 labelの記述が無いものへ対応 (暫定)
                 try:
                     name, label = line.split(maxsplit=1)
+                    name = 'ko:' + name
                 except:
-                    name = line.rstrip()
+                    name = 'ko:' + line.rstrip()
                     label = 'N/A'
                 # ここまで
                 depth = 5
@@ -134,10 +136,11 @@ def main():
     for node in modules:
         try:
             names = re.compile(r'\[.+?\]').search(node['label']).group()[1:-1].lstrip('PATH:').split()
+            names = list(map(lambda x:'path:' + x, names))
         except:
             continue
 
-        for name in [ x for x in names if re.match('map', x) ]:
+        for name in [ x for x in names if re.match('path:map', x) ]:
                 for target in [ x for x in getnodes(tree) if x['name'] == name ]:
                     target['children'].append(copy.deepcopy(node))
 
@@ -155,7 +158,7 @@ def main():
             # ツリーからターゲットのPATHWAYを探す
             if re.match('C', line):
                 line = line.lstrip('C').lstrip()
-                name = 'map' + line.split(maxsplit=1)[0]
+                name = 'path:map' + line.split(maxsplit=1)[0]
                 targets = [ x for x in getnodes(tree) if x['name'] == name ]
 
                 # ターゲットPATHWAYにUndefined MODULEを追加
@@ -174,6 +177,7 @@ def main():
             if re.match('D', line):
                 line = line.lstrip('D').lstrip()
                 name, label = line.split(maxsplit=1)
+                name = 'ko:' + name
                 depth = 5
                 node = copy.deepcopy(template)
                 node['name'] = name
@@ -230,7 +234,6 @@ def main():
                 continue
 
             name, label = line.split('\t')
-            name = name.lstrip('ko:')
             depth = 5
             node = copy.deepcopy(template)
             node['name'] = name
@@ -242,11 +245,10 @@ def main():
                 parent['children'].append(node)
 
 
-    # IDを割り振る
     for n, node in enumerate(getnodes(tree)):
         node['id'] = 'FT{0:05d}'.format(n + 1)
 
-    # 出力
+
     j = json.dumps(tree, indent=args.indent)
     args.output.write(j + '\n')
     sys.exit()

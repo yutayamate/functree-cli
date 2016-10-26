@@ -18,4 +18,4 @@ gulp.task('watch', () => {
 
 gulp.task('build', ['babel']);
 
-gulp.task('default', ['watch']);
+gulp.task('default', ['build']);

@@ -20,9 +20,9 @@ $ git clone http://tsubaki.bio.titech.ac.jp/yyamate/functree-cli.git
 ```
 Enter `functree-cli` directory:
 ```
-$ cd ./functree-cli
+$ cd functree-cli
 ```
-Install functree-cli to your system using [npm](https://www.npmjs.com):
+Install functree-cli to your system using [npm](https://github.com/npm/npm):
 ```
 $ npm install -g
 ```
@@ -45,11 +45,11 @@ $ functree [command] [options...]
 ### Getting reference data from KEGG
 Before creating a visualization, you need to prepare reference data for data mapping.
 
-functree-cli provides the simple way to get reference data from [KEGG BRITE](http://www.genome.jp/kegg/brite.html) in following command.
+functree-cli provides the simple way to get reference data from [KEGG BRITE](http://www.genome.jp/kegg/brite.html) in the following command.
 ```
 $ functree get -d kegg -o kegg.json
 ```
-Alternatively, you can use original reference data. It must be JSON format and have the structure corresponded to following example. You can also refer to [flare.json](https://gist.github.com/mbostock/1093025).
+Alternatively, you can use your own reference data. It must be JSON format and have the structure corresponded to the following example. You can also refer to [flare.json](https://gist.github.com/mbostock/1093025).
 ```
 {
   "name": "WWW",

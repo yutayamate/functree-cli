@@ -37,7 +37,7 @@ module.exports.init_nodes = (nodes, config) => {
             return false;
         }
 
-        if (i.name.match(/M\d{5}|EPM\d{4}|Undefined MODULE/)) {
+        if (i.name.match(/md:M\d{5}|md:EPM\d{4}|Undefined MODULE/)) {
             i._children = i.children;
             i.children = null;
         }

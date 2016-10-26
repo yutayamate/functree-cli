@@ -98,7 +98,7 @@ module.exports.handler = function (args) {
 
     if (args.format === 'svg') {
 
-        var str = document.getElementById(config.target_id) + '\n';
+        var str = document.getElementById(config.target_id).innerHTML + '\n';
         _fileIo2.default.write(args.output, str);
     } else if (args.format === 'html') {
 

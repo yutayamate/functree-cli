@@ -71,7 +71,12 @@ def main():
 
 
     # Caluculate abundance
-    df = pd.read_csv(args.input, delimiter='\t', index_col='#ID')
+    # df = pd.read_csv(args.input, delimiter='\t', index_col='#ID')
+    df = pd.read_csv(args.input, delimiter='\t', comment='#', header=0, index_col=0)
+
+    # Get comment rows
+    args.input.seek(0)
+    comment = ''.join(filter(lambda x: re.match('#', x), args.input.readlines()))
 
     for i in nodes:
         if 'children' not in i:
@@ -91,6 +96,8 @@ def main():
 
 
     # Output results to TSV file
+    args.output.write(comment)
+    args.output.write('#' + ' '.join(sys.argv) + '\n')
     df.fillna(0.0).sort_index().to_csv(args.output, sep='\t')
     sys.exit(0)
 
