@@ -38,7 +38,6 @@ module.exports.builder = {
     'd': {
         'alias': 'database',
         'type': 'string',
-        'choices': ['kegg', 'enteropathway'],
         'demand': true,
         'describe': 'Specify reference database'
     },
@@ -66,7 +65,7 @@ module.exports.handler = (args) => {
     let window = document.defaultView;
 
     let data = file_io.read_input(args.input);
-    let ref = file_io.load_ref(path.join(__dirname, '../data/ref/', args.database + '.json'));
+    let ref = file_io.load_ref(args.database);
     let nodes = util.get_nodes(ref);
 
 

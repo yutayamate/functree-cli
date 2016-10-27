@@ -113,7 +113,6 @@ $ functree create -d kegg.json -i functree_abundance.tsv -o functree_visualizati
 1. Run `npm install` to install the dependencies.
 1. Run `npm run build` to compile the ES6 codes (`src/*.js`).
 
-
 ## Reference
 - Uchiyama T, Irie M, Mori H, Kurokawa K, Yamada T. FuncTree: Functional Analysis and Visualization for Large-Scale Omics Data. PLoS One. 2015 May 14;10(5):e0126967. doi: 10.1371/journal.pone.0126967. eCollection 2015. PubMed PMID: 25974630; PubMed Central PMCID: PMC4431737.
 

@@ -56,7 +56,6 @@ module.exports.builder = {
     'd': {
         'alias': 'database',
         'type': 'string',
-        'choices': ['kegg', 'enteropathway'],
         'demand': true,
         'describe': 'Specify reference database'
     },
@@ -83,7 +82,7 @@ module.exports.handler = function (args) {
     var window = document.defaultView;
 
     var data = _fileIo2.default.read_input(args.input);
-    var ref = _fileIo2.default.load_ref(_path2.default.join(__dirname, '../data/ref/', args.database + '.json'));
+    var ref = _fileIo2.default.load_ref(args.database);
     var nodes = _util2.default.get_nodes(ref);
 
     if (args.theme === 'functree') {

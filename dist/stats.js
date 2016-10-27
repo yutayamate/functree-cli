@@ -36,7 +36,6 @@ module.exports.builder = {
     'd': {
         'alias': 'database',
         'type': 'string',
-        'choices': ['kegg', 'enteropathway'],
         'demand': true,
         'describe': 'Specify reference database'
     },
