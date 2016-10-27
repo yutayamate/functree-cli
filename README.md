@@ -86,11 +86,11 @@ $ functree stats -d kegg.json -m average -i ko_abundance.tsv -o functree_abundan
 
 | Identifier | GNU-style | Description |
 |:--|:--|:--|
-| -i | --input | Specify input file |
+| -i | --input | Specify input file(s) |
 | -o | --output | Specify output file |
 | -d | --database | Specify reference database |
 | -m | --method | Specify analysis method |
-| -c | --config| Specify configuration file |
+| -c | --config | Specify configuration file |
 
 ### Creating a visualization
 :warning: This section is currently under construction.

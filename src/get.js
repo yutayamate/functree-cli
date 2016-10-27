@@ -8,7 +8,7 @@ import file_io from './file-io.js';
 
 
 module.exports.command = 'get [options...]';
-module.exports.describe = 'Get reference dataset from KEGG / EnteroPathway';
+module.exports.describe = 'Get reference data from KEGG';
 
 
 module.exports.builder = {
@@ -35,12 +35,10 @@ module.exports.builder = {
 
 module.exports.handler = (args) => {
 
-    let config = file_io.load_config(args.config || path.join(__dirname, '../config/config.json'));
-    let str = '';
-
     let cmd = path.join(__dirname, '../tools/get.py');
     let arg = ['-d', args.database];
 
+    let str = '';
     try {
         let result = child_process.spawnSync(cmd, arg, {
             'stdio': [0, 'pipe', 2]

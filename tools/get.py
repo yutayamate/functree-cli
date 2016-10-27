@@ -13,7 +13,7 @@ import urllib.request
 def main():
     parser = argparse.ArgumentParser(prog='treegen', description='FuncTree reference JSON generator')
     parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.0.1')
-    parser.add_argument('-d', '--database', metavar='database', choices=['kegg'], help='specify reference database')
+    parser.add_argument('-d', '--database', metavar='database', required=True, choices=['kegg'], help='specify reference database')
     parser.add_argument('-o', '--output', metavar='file', type=argparse.FileType('w'), default=sys.stdout, help='write output to file')
     parser.add_argument('-i', '--indent', metavar='level', type=int, default=None, help='specify JSON indent level')
     args = parser.parse_args()

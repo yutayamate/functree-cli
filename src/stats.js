@@ -14,8 +14,8 @@ module.exports.describe = 'Statistical analysis';
 module.exports.builder = {
     'i': {
         'alias': 'input',
-        'type': 'string',
-        'describe': 'Specify input file'
+        'type': 'array',
+        'describe': 'Specify input file(s)'
     },
     'o': {
         'alias': 'output',
@@ -32,7 +32,7 @@ module.exports.builder = {
     'm': {
         'alias': 'method',
         'type': 'string',
-        'choices': ['sum', 'average', 'variance'],
+        'choices': ['sum', 'mean', 'var', 'mannwhitneyu'],
         'demand': true,
         'describe': 'Specify analysis method'
     },
@@ -46,12 +46,26 @@ module.exports.builder = {
 
 module.exports.handler = (args) => {
 
-    let config = file_io.load_config(args.config || path.join(__dirname, '../config/config.json'));
-    let str = '';
-
     let cmd = path.join(__dirname, '../tools/stats.py');
-    let arg = args.input ? ['-d', args.database, '-m', args.method, '-i', args.input] : ['-d', args.database, '-m', args.method];
+    let arg = '';
 
+    // Input from "/dev/stdin"
+    if (!args.input) {
+        arg = args.config ?
+            ['-d', args.database, '-m', args.method, '-c', args.config] :
+            ['-d', args.database, '-m', args.method];
+    // Input from file
+    } else if (args.input.length === 1) {
+        arg = args.config ?
+            ['-d', args.database, '-m', args.method, '-i', args.input[0], '-c', args.config] :
+            ['-d', args.database, '-m', args.method, '-i', args.input[0]];
+    } else if (args.input.length === 2) {
+        arg = args.config ?
+            ['-d', args.database, '-m', args.method, '-i', args.input[0], args.input[1], '-c', args.config] :
+            ['-d', args.database, '-m', args.method, '-i', args.input[0], args.input[1]]
+    }
+
+    let str = '';
     try {
         let result = child_process.spawnSync(cmd, arg, {
             'stdio': [0, 'pipe', 2]

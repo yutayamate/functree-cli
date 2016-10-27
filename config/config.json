@@ -1,5 +1,11 @@
 {
   "target_id": "main",
+  "stats": {
+      "mannwhitneyu": {
+          "use_continuity": true,
+          "alternative": null
+      }
+  },
   "functree": {
     "attribute": {
       "width": 1200,
