@@ -9,16 +9,58 @@ import time
 import argparse
 import pandas as pd
 import scipy.stats
+import io
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='stats.py', description='FuncTree statistical analysis tool')
-    parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.0.1')
-    parser.add_argument('-i', '--input', nargs='*', type=argparse.FileType('r'), default=[sys.stdin], help='specify input file(s)')
-    parser.add_argument('-o', '--output', nargs='?', type=argparse.FileType('w'), default=sys.stdout, help='specify output file')
-    parser.add_argument('-d', '--database', nargs='?', type=argparse.FileType('r'), required=True, help='specify reference database')
-    parser.add_argument('-c', '--config', nargs='?', type=argparse.FileType('r'), help='specify configuration file')
-    parser.add_argument('-m', '--method', required=True, choices=['sum', 'mean', 'var', 'mannwhitneyu'], help='specify analysis method')
+    parser = argparse.ArgumentParser(
+        prog='stats.py',
+        description='FuncTree statistical analysis tool'
+    )
+    parser.add_argument(
+        '-v',
+        '--version',
+        action='version',
+        version='%(prog)s 0.0.1'
+    )
+    parser.add_argument(
+        '-i',
+        '--input',
+        type=argparse.FileType('r'),
+        nargs='*',
+        default=[sys.stdin],
+        help='specify input file(s)'
+    )
+    parser.add_argument('-o',
+        '--output',
+        type=argparse.FileType('w'),
+        nargs='?',
+        default=sys.stdout,
+        help='specify output file'
+    )
+    parser.add_argument(
+        '-d',
+        '--database',
+        type=argparse.FileType('r'),
+        nargs='?',
+        required=True,
+        help='specify reference database'
+    )
+    parser.add_argument(
+        '-c',
+        '--config',
+        type=argparse.FileType('r'),
+        nargs='?',
+        help='specify configuration file'
+    )
+    parser.add_argument(
+        '-m',
+        '--method',
+        type=str,
+        choices=['sum', 'mean', 'var', 'mannwhitneyu'],
+        required=True,
+        help='specify analysis method'
+    )
     args = parser.parse_args()
 
 
@@ -32,13 +74,20 @@ def main():
     nodes = get_nodes(root)
 
 
-    if len(args.input) == 1 and args.method in ['sum', 'average', 'var']:
-        input_df = pd.read_csv(args.input[0], delimiter='\t', comment='#', header=0, index_col=0)
+    if len(args.input) == 1 and args.method in ['sum', 'mean', 'var']:
+        input_str = io.StringIO(args.input[0].read())
+        input_df = pd.read_csv(
+            input_str,
+            delimiter='\t',
+            comment='#',
+            header=0,
+            index_col=0
+        )
         output_df = pd.DataFrame(columns=input_df.columns)
 
-        # Get comments
-        args.input[0].seek(0)
-        comment = ''.join(filter(lambda x: re.match('#', x), args.input[0].readlines()))
+        # Get original header information
+        input_str.seek(0)
+        header_original = ''.join(filter(lambda x: re.match('#', x), input_str.readlines()))
 
         for i in nodes:
             if 'children' not in i:
@@ -49,7 +98,7 @@ def main():
 
             if args.method == 'sum':
                 d = ix.sum()
-            elif args.method == 'average':
+            elif args.method == 'mean':
                 d = ix.mean()
             elif args.method == 'var':
                 d = ix.var()
@@ -58,19 +107,31 @@ def main():
 
 
     elif len(args.input) == 2 and args.method in ['mannwhitneyu']:
-        input_df_0 = pd.read_csv(args.input[0], delimiter='\t', comment='#', header=0, index_col=0)
-        input_df_1 = pd.read_csv(args.input[1], delimiter='\t', comment='#', header=0, index_col=0)
+        input_df_0 = pd.read_csv(
+            args.input[0],
+            delimiter='\t',
+            comment='#',
+            header=0,
+            index_col=0
+        )
+        input_df_1 = pd.read_csv(
+            args.input[1],
+            delimiter='\t',
+            comment='#',
+            header=0,
+            index_col=0
+        )
         output_df = pd.DataFrame(columns=['pvalue'])
 
         for i in nodes:
             try:
                 x = input_df_0.ix[i['name']]
                 y = input_df_1.ix[i['name']]
-                d = scipy.stats.mannwhitneyu(\
-                    x, \
-                    y, \
-                    use_continuity=config['stats']['mannwhitneyu']['use_continuity'], \
-                    alternative=config['stats']['mannwhitneyu']['alternative'] \
+                d = scipy.stats.mannwhitneyu(
+                    x,
+                    y,
+                    use_continuity=config['stats']['mannwhitneyu']['use_continuity'],
+                    alternative=config['stats']['mannwhitneyu']['alternative']
                 )
                 output_df.ix[i['name'], 'pvalue'] = d.pvalue
             except:
@@ -83,11 +144,12 @@ def main():
 
 
     try:
-        args.output.write(comment)
+        args.output.write(header_original)
     except:
         pass
 
-    args.output.write('#date=' + time.ctime(time.time()) + ';cmd=' + ' '.join(sys.argv) + '\n')
+    header = '#date=' + time.ctime(time.time()) + ';cmd=' + ' '.join(sys.argv) + '\n'
+    args.output.write(header)
     output_df.fillna(0.0).sort_index().to_csv(args.output, sep='\t')
     sys.exit(0)
 
