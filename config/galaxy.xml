@@ -1,47 +1,95 @@
-<?xml version="1.0"?>
-<tool id="functree-cli" name="functree" version="0.0.1">
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="functree-cli" name="FuncTree" version="0.0.1">
     <description>A command-line based visualization tool for massive-scale omics data</description>
-    <command interpreter="node">
-#if $args.command == "create"
-    node $__tool_directory__/../bin/functree $args.command -i $input -d $database -o $output -f $args.format
-#else
-    node $__tool_directory__/../bin/functree $args.command -i $input -d $database -o $output -m $args.method
-#end if
-    </command>
+    <command><![CDATA[
+    node $__tool_directory__/../bin/functree
+    #if $args.sub_command == "get":
+        get
+        -d $args.source_database
+        -o $output
+    #elif $args.sub_command == "stats":
+        stats
+        -d $args.reference
+        -o $output
+        #if $args.stats.method == "mannwhitneyu":
+            -m mannwhitneyu
+            -i $args.stats.input_1 $args.stats.input_2
+        #else:
+            -m $args.stats.method
+            -i $args.stats.input
+        #end if
+    #else:
+        create
+        -d $args.reference
+        -i $args.input
+        -f $args.format
+        -o $output
+    #end if
+    #if $config.enable_config == "true":
+        -c $config.config_data
+    #end if
+    ]]></command>
     <inputs>
-        <param format="tabular" name="input" type="data" label="Input file"/>
-        <param name="database" type="select" label="Reference database">
-            <option value="kegg">KEGG BRITE</option>
-            <option value="enteropathway">EnteroPathway</option>
-        </param>
         <conditional name="args">
-            <param name="command" type="select" label="Command">
-                <option value="create">Create a visualization</option>
+            <param name="sub_command" type="select" label="Job command">
+                <option value="get">Get reference data</option>
                 <option value="stats">Statistical analysis</option>
+                <option value="create">Create a visualization</option>
             </param>
-            <when value="create">
-                <param name="format" type="select" label="Output image format">
-                    <option value="svg">SVG</option>
-                    <option value="html">HTML (Interactive)</option>
+            <when value="get">
+                <param name="source_database" type="select" label="Source database">
+                    <option value="kegg">KEGG</option>
                 </param>
             </when>
             <when value="stats">
-                <param name="method" type="select" label="Analysis method">
-                    <option value="sum">Summation</option>
-                    <option value="average">Average</option>
-                    <option value="variance">Variance</option>
+                <conditional name="stats">
+                    <param name="method" type="select" label="Analysis method">
+                         <option value="sum">Summation</option>
+                         <option value="mean">Mean</option>
+                         <option value="var">Variance</option>
+                         <option value="mannwhitneyu">Mann-Whitney U test</option>
+                    </param>
+                    <when value="sum">
+                        <param name="input" type="data" format="tabular" label="Input tabular file" />
+                    </when>
+                    <when value="mean">
+                        <param name="input" type="data" format="tabular" label="Input tabular file" />
+                    </when>
+                    <when value="var">
+                        <param name="input" type="data" format="tabular" label="Input tabular file" />
+                    </when>
+                    <when value="mannwhitneyu">
+                        <param name="input_1" type="data" format="tabular" label="Input tabular file #1" />
+                        <param name="input_2" type="data" format="tabular" label="Input tabular file #2" />
+                    </when>
+                </conditional>
+                <param name="reference" type="data" format="json" label="Reference file" />
+            </when>
+            <when value="create">
+                <param name="input" type="data" format="tabular" label="Input tabular file" />
+                <param name="reference" type="data" format="json" label="Reference file" />
+                <param name="format" type="select" label="Output image format">
+                    <option value="svg">SVG</option>
+                    <option value="html">HTML (interactive)</option>
                 </param>
+            </when>
+        </conditional>
+        <conditional name="config">
+            <param name="enable_config" type="boolean" label="Specify a configuration file" />
+            <when value="true">
+                <param name="config_data" type="data" format="json" label="Configuration file" help="You can download example configuration from here: http://tsubaki.bio.titech.ac.jp/yyamate/functree-cli/raw/master/config/config.json"/>
             </when>
         </conditional>
     </inputs>
     <outputs>
-        <data format="html" name="output">
+        <data name="output" format="txt">
             <change_format>
-                <when input="args.command" value="stats" format="tabular"/>
+                <when input="args.sub_command" value="get" format="json" />
+                <when input="args.sub_command" value="stats" format="tabular" />
+                <when input="args.sub_command" value="create" format="html" />
             </change_format>
         </data>
     </outputs>
-    <options sanitize="False" refresh="True"/>
     <help>
 .. class:: infomark
 
