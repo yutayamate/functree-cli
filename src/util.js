@@ -53,9 +53,23 @@ module.exports.set_values = (nodes, data, config) => {
             return false;
         }
 
-        let match = _.find(nodes, (j) => {
+        // let match = _.find(nodes, (j) => {
+        //     return i.name === j.name;
+        // });
+        // _.extend(match, i);
+
+        let matches = _.filter(nodes, (j) => {
             return i.name === j.name;
         });
-        _.extend(match, i);
+
+        _.each(matches, (j) => {
+            if (j.depth < config.functree.disable_display_lower_than) {
+                return false;
+            }
+            if (j.label.match('Undefined')) {
+                return false;
+            }
+            _.extend(j, i);
+        });
     });
 };

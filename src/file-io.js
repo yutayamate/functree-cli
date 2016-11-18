@@ -55,7 +55,7 @@ module.exports.load_config = (fpath) => {
 };
 
 
-module.exports.read_input = (fpath) => {
+module.exports.read_input = (fpath, config) => {
 
     let str = module.exports.read(fpath);
     let data = [];
@@ -71,7 +71,8 @@ module.exports.read_input = (fpath) => {
             let d = {
                 'name': item[0],
                 'value': parseFloat(item[1]),
-                'values': _.map(item.slice(1), (i) => {
+                // 'values': _.map(item.slice(1), (i) => {
+                'values': _.map(item.slice(config.functree.disable_display_rounds ? 1 : 2), (i) => {
                     return parseFloat(i);
                 })
             };

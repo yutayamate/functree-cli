@@ -57,9 +57,23 @@ module.exports.set_values = function (nodes, data, config) {
             return false;
         }
 
-        var match = _underscore2.default.find(nodes, function (j) {
+        // let match = _.find(nodes, (j) => {
+        //     return i.name === j.name;
+        // });
+        // _.extend(match, i);
+
+        var matches = _underscore2.default.filter(nodes, function (j) {
             return i.name === j.name;
         });
-        _underscore2.default.extend(match, i);
+
+        _underscore2.default.each(matches, function (j) {
+            if (j.depth < config.functree.disable_display_lower_than) {
+                return false;
+            }
+            if (j.label.match('Undefined')) {
+                return false;
+            }
+            _underscore2.default.extend(j, i);
+        });
     });
 };

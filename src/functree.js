@@ -353,9 +353,10 @@ let update_rounds = (window, config, nodes) => {
             'fill': (d) => {
                 return d.color;
             },
-            'stroke': (d) => {
-                return d3.rgb(d.color).darker();
-            },
+            // 'stroke': (d) => {
+            //     return d3.rgb(d.color).darker();
+            // },
+            'stroke': '#fff',
             'stroke-width': (d) => {
                 return 0.5;
             },
@@ -413,6 +414,9 @@ let update_labels = (window, config, nodes) => {
             }
         })
         .text((d) => {
-            return d.name;
+            let attr_name = config.functree.label_data;
+            let label = eval('d.' + attr_name);
+            let substr = label.replace(/ \[.*\]/, '').split(', ')[0];
+            return substr;
         });
 };

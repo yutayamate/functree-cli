@@ -3,28 +3,27 @@
     <description>A command-line based visualization tool for massive-scale omics data</description>
     <command><![CDATA[
     node $__tool_directory__/../bin/functree
+    $args.sub_command
+    -o $output
+
     #if $args.sub_command == "get":
-        get
         -d $args.source_database
-        -o $output
+
     #elif $args.sub_command == "stats":
-        stats
         -d $args.reference
-        -o $output
+        -m $args.stats.method
         #if $args.stats.method == "mannwhitneyu":
-            -m mannwhitneyu
             -i $args.stats.input_1 $args.stats.input_2
         #else:
-            -m $args.stats.method
             -i $args.stats.input
         #end if
-    #else:
-        create
+
+    #elif $args.sub_command == "create":
         -d $args.reference
         -i $args.input
         -f $args.format
-        -o $output
     #end if
+
     #if $config.enable_config == "true":
         -c $config.config_data
     #end if

@@ -12,14 +12,16 @@
       "height": 1000,
       "diameter": 1000
     },
-    "style": "heatmap",
+    "style": "stacked",
     "enable_normalize_rounds": true,
     "enable_normalize_charts": true,
     "disable_display_rounds": false,
     "disable_display_charts": false,
-    "show_all_nodes": false
+    "disable_display_lower_than": 3,
+    "show_all_nodes": false,
+    "label_data": "label"
   },
-  "threshold": 0.05,
+  "threshold": 0.03,
   "color_scheme": {
     "category": [
       "rgb(0,104,183)",

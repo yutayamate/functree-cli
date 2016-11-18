@@ -51,7 +51,7 @@ module.exports.load_ref = module.exports.load_config = function (fpath) {
     }
 };
 
-module.exports.read_input = function (fpath) {
+module.exports.read_input = function (fpath, config) {
 
     var str = module.exports.read(fpath);
     var data = [];
@@ -74,7 +74,8 @@ module.exports.read_input = function (fpath) {
                 var d = {
                     'name': item[0],
                     'value': parseFloat(item[1]),
-                    'values': _underscore2.default.map(item.slice(1), function (i) {
+                    // 'values': _.map(item.slice(1), (i) => {
+                    'values': _underscore2.default.map(item.slice(config.functree.disable_display_rounds ? 1 : 2), function (i) {
                         return parseFloat(i);
                     })
                 };

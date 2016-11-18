@@ -81,7 +81,7 @@ module.exports.handler = function (args) {
     var document = _jsdom2.default.jsdom(template);
     var window = document.defaultView;
 
-    var data = _fileIo2.default.read_input(args.input);
+    var data = _fileIo2.default.read_input(args.input, config);
     var ref = _fileIo2.default.load_ref(args.database);
     var nodes = _util2.default.get_nodes(ref);
 

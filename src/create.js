@@ -64,7 +64,7 @@ module.exports.handler = (args) => {
     let document = jsdom.jsdom(template);
     let window = document.defaultView;
 
-    let data = file_io.read_input(args.input);
+    let data = file_io.read_input(args.input, config);
     let ref = file_io.load_ref(args.database);
     let nodes = util.get_nodes(ref);
 

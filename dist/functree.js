@@ -289,9 +289,10 @@ var update_rounds = function update_rounds(window, config, nodes) {
         'fill': function fill(d) {
             return d.color;
         },
-        'stroke': function stroke(d) {
-            return _d3.default.rgb(d.color).darker();
-        },
+        // 'stroke': (d) => {
+        //     return d3.rgb(d.color).darker();
+        // },
+        'stroke': '#fff',
         'stroke-width': function strokeWidth(d) {
             return 0.5;
         },
@@ -338,6 +339,9 @@ var update_labels = function update_labels(window, config, nodes) {
             return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
         }
     }).text(function (d) {
-        return d.name;
+        var attr_name = config.functree.label_data;
+        var label = eval('d.' + attr_name);
+        var substr = label.replace(/ \[.*\]/, '').split(', ')[0];
+        return substr;
     });
 };
