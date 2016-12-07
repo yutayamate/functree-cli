@@ -95,6 +95,8 @@ let update_rings = (window, config, nodes) => {
                 return (diameter / 2 - 120) / max * (d + 0.5) || 0
             },
             'stroke': '#f8f8f8',
+            // 'stroke': '#ccc',
+            // 'opacity': 0.2,
             'stroke-width': (diameter / 2 - 120) / max || 0
         });
 
@@ -167,7 +169,7 @@ let update_nodes = (window, config, nodes) => {
             'cursor': 'pointer',
             'data-toggle': 'tooltip',
             'data-original-title': (d) => {
-                return d.name + ': ' + d.label;
+                return d.name + '; ' + d.label;
             }
         });
 
@@ -310,7 +312,7 @@ let update_charts = (window, config, nodes) => {
             'data-original-title': function(d, i) {
                 let name = this.parentNode.__data__.name;
                 let label = this.parentNode.__data__.label;
-                return name + ': ' + label;
+                return name + '; ' + label;
             }
         });
 };
@@ -363,7 +365,7 @@ let update_rounds = (window, config, nodes) => {
             'opacity': 0.4,
             'data-toggle': 'tooltip',
             'data-original-title': (d) => {
-                return d.name + ': ' + d.label;
+                return d.name + '; ' + d.label;
             },
             'transform': (d) => {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';

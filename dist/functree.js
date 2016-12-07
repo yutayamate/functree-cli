@@ -82,6 +82,8 @@ var update_rings = function update_rings(window, config, nodes) {
             return (diameter / 2 - 120) / max * (d + 0.5) || 0;
         },
         'stroke': '#f8f8f8',
+        // 'stroke': '#ccc',
+        // 'opacity': 0.2,
         'stroke-width': (diameter / 2 - 120) / max || 0
     });
 };
@@ -142,7 +144,7 @@ var update_nodes = function update_nodes(window, config, nodes) {
         'cursor': 'pointer',
         'data-toggle': 'tooltip',
         'data-original-title': function dataOriginalTitle(d) {
-            return d.name + ': ' + d.label;
+            return d.name + '; ' + d.label;
         }
     });
 };
@@ -258,7 +260,7 @@ var update_charts = function update_charts(window, config, nodes) {
         'data-original-title': function dataOriginalTitle(d, i) {
             var name = this.parentNode.__data__.name;
             var label = this.parentNode.__data__.label;
-            return name + ': ' + label;
+            return name + '; ' + label;
         }
     });
 };
@@ -299,7 +301,7 @@ var update_rounds = function update_rounds(window, config, nodes) {
         'opacity': 0.4,
         'data-toggle': 'tooltip',
         'data-original-title': function dataOriginalTitle(d) {
-            return d.name + ': ' + d.label;
+            return d.name + '; ' + d.label;
         },
         'transform': function transform(d) {
             return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';

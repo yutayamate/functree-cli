@@ -95,7 +95,7 @@ def main():
 
             targets = [ x['name'] for x in get_nodes(i) if 'children' not in x ]
             ix = input_df.ix[targets]
-
+        
             if args.method == 'sum':
                 d = ix.sum()
             elif args.method == 'mean':
@@ -104,6 +104,23 @@ def main():
                 d = ix.var()
 
             output_df.ix[i['name']] = d
+
+        # for i in nodes:
+        #     if 'children' not in i:
+        #         pass # in progree
+        #
+        #     else:
+        #         targets = [ x['name'] for x in get_nodes(i) if 'children' not in x ]
+        #         ix = input_df.ix[targets]
+        #
+        #         if args.method == 'sum':
+        #             d = ix.sum()
+        #         elif args.method == 'mean':
+        #             d = ix.mean()
+        #         elif args.method == 'var':
+        #             d = ix.var()
+        #
+        #     output_df.ix[i['name']] = d
 
 
     elif len(args.input) == 2 and args.method in ['mannwhitneyu']:
