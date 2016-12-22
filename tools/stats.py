@@ -91,36 +91,22 @@ def main():
 
         for i in nodes:
             if 'children' not in i:
-                continue
+                try:
+                    d = input_df.ix[i['name']]
+                except:
+                    continue
+            else:
+                targets = [ x['name'] for x in get_nodes(i) if 'children' not in x ]
+                ix = input_df.ix[targets]
 
-            targets = [ x['name'] for x in get_nodes(i) if 'children' not in x ]
-            ix = input_df.ix[targets]
-        
-            if args.method == 'sum':
-                d = ix.sum()
-            elif args.method == 'mean':
-                d = ix.mean()
-            elif args.method == 'var':
-                d = ix.var()
+                if args.method == 'sum':
+                    d = ix.sum()
+                elif args.method == 'mean':
+                    d = ix.mean()
+                elif args.method == 'var':
+                    d = ix.var()
 
             output_df.ix[i['name']] = d
-
-        # for i in nodes:
-        #     if 'children' not in i:
-        #         pass # in progree
-        #
-        #     else:
-        #         targets = [ x['name'] for x in get_nodes(i) if 'children' not in x ]
-        #         ix = input_df.ix[targets]
-        #
-        #         if args.method == 'sum':
-        #             d = ix.sum()
-        #         elif args.method == 'mean':
-        #             d = ix.mean()
-        #         elif args.method == 'var':
-        #             d = ix.var()
-        #
-        #     output_df.ix[i['name']] = d
 
 
     elif len(args.input) == 2 and args.method in ['mannwhitneyu']:
@@ -165,7 +151,9 @@ def main():
     except:
         pass
 
-    header = '#date=' + time.ctime(time.time()) + ';cmd=' + ' '.join(sys.argv) + '\n'
+
+    header = '#date=' + time.ctime(time.time()) + '\n'
+    #header = '#date=' + time.ctime(time.time()) + ';cmd=' + ' '.join(sys.argv) + '\n'
     args.output.write(header)
     output_df.fillna(0.0).sort_index().to_csv(args.output, sep='\t')
     sys.exit(0)
