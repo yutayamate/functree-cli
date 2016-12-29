@@ -70,8 +70,8 @@ module.exports.read_input = (fpath, config) => {
             let item = line.split('\t');
             let d = {
                 'name': item[0],
-                'value': config.functree.set_1stcol_as_radius ? parseFloat(item[1]) : 0.0,
-                'values': _.map(item.slice(config.functree.set_1stcol_as_radius ? 2 : 1), (i) => {
+                'value': config.functree.use_1stcol_as_radius ? parseFloat(item[1]) : 0.0,
+                'values': _.map(item.slice(config.functree.use_1stcol_as_radius ? 2 : 1), (i) => {
                     return parseFloat(i);
                 })
             };
