@@ -73,9 +73,10 @@ module.exports.read_input = function (fpath, config) {
                 var item = line.split('\t');
                 var d = {
                     'name': item[0],
-                    'value': parseFloat(item[1]),
+                    'value': config.functree.set_1stcol_as_radius ? parseFloat(item[1]) : 0.0,
                     // 'values': _.map(item.slice(1), (i) => {
-                    'values': _underscore2.default.map(item.slice(config.functree.disable_display_rounds ? 1 : 2), function (i) {
+                    // 'values': _.map(item.slice(config.functree.disable_display_rounds ? 1 : 2), (i) => {
+                    'values': _underscore2.default.map(item.slice(config.functree.set_1stcol_as_radius ? 2 : 1), function (i) {
                         return parseFloat(i);
                     })
                 };

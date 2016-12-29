@@ -18,6 +18,7 @@
     "disable_display_rounds": false,
     "disable_display_charts": false,
     "disable_display_lower_than": 0,
+    "use_1stcol_as_radius": true,
     "show_all_nodes": false,
     "label_data": "label"
   },
