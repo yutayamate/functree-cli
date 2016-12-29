@@ -1,0 +1,55 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="functree_get" name="Get tree strcuture data from database" version="0.0.1">
+    <description></description>
+    <command><![CDATA[
+    node $__tool_directory__/../../bin/functree get
+    --output $output
+    --database $database
+
+    #if $config.enable_config == "true":
+        --config $config.config_data
+    #end if
+    ]]></command>
+    <inputs>
+        <param name="database" type="select" label="Source database">
+            <option value="kegg">KEGG</option>
+        </param>
+        <conditional name="config">
+            <param name="enable_config" type="boolean" label="Customize other detail parameters" />
+            <when value="true">
+                <param name="config_data" type="data" format="json" label="Configuration file" />
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data name="output" format="json" />
+    </outputs>
+    <help>
+
+.. class:: infomark
+
+**What's FuncTree?**
+
+**FuncTree** is a web based application, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. FuncTree allows user to map their omics data on to a pre-defined treemap, which is based on the KEGG (http://www.genome.jp/kegg/) or other hierarchical functional databases. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
+
+----
+
+.. class:: infomark
+
+**Usage**
+
+This section provides an interface for getting tree structure data from KEGG or other databases. Output JSON file is required for other operations.
+
+- **Source database:** Name of database that is used as the source of this operation.
+
+- **Configuration file:** JSON file that includes values of detail parameters. Example file can be downloaded from here (https://raw.githubusercontent.com/yyuuta88/functree-cli/master/config/config.json).
+
+- **Output:** JSON file that includes information of hierachical relationship between functional categories of source database.
+
+</help>
+    <citations>
+        <citation type="doi">10.1371/journal.pone.0126967</citation>
+    </citations>
+
+</tool>

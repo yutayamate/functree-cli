@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="functree_create" name="Create visualization" version="0.0.1">
+    <description></description>
+    <command><![CDATA[
+    node $__tool_directory__/../../bin/functree create
+    --output $output
+    --database $database
+    --input $input
+    --format $format
+
+    #if $config.enable_config == "true":
+        --config $config.config_data
+    #end if
+    ]]></command>
+    <inputs>
+        <param name="input" type="data" format="tabular" label="Abundance table" />
+        <param name="database" type="data" format="json" label="Tree structure data" />
+        <param name="format" type="select" label="Output image format">
+            <option value="svg">SVG</option>
+            <option value="html">HTML (interactive)</option>
+        </param>
+        <conditional name="config">
+            <param name="enable_config" type="boolean" label="Customize other detail parameters" />
+            <when value="true">
+                <param name="config_data" type="data" format="json" label="Configuration file" />
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data name="output" format="html" />
+    </outputs>
+    <help>
+
+.. class:: infomark
+
+**What's FuncTree?**
+
+**FuncTree** is a web based application, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. FuncTree allows user to map their omics data on to a pre-defined treemap, which is based on the KEGG (http://www.genome.jp/kegg/) or other hierarchical functional databases. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
+
+----
+
+.. class:: infomark
+
+**Usage**
+
+This section provides an interface for creating visualization.
+
+- **Abundance table:** Table of abundances of functional categories defined by tree structure data. It must be separated by tabs. If the table is only annotated by KEGG Orthology, you need to *"Perform statistical analysis"*.::
+
+    # This is comment
+        sample1 sample2 sample3
+    ko:K00001   0.000218080750998678    0.000292011269409172    0.000183811396397214
+    ko:K00002   1.66822340270918e-05    2.9109921924858197e-05  2.9970461739666497e-05
+    ko:K00003   0.00010209658248844201  0.000267883926930514    0.00034744353401109
+    md:M00001   2.55973088845531e-06    1.1145349476428498e-06  7.774328858319991e-06
+    path:map00010   0.000104872989966464    7.822164009693009e-05   5.73637517684323e-05
+
+- **Tree structure data:** JSON file that includes information of hierachical relationship between functional categories.
+
+- **Output image format:** Choose SVG or HTML as a format of the output.
+
+- **Configuration file:** JSON file that includes values of detail parameters. Example file can be downloaded from here (https://raw.githubusercontent.com/yyuuta88/functree-cli/master/config/config.json).
+
+- **Output:** Static SVG image or interactive HTML file.
+
+    </help>
+    <citations>
+        <citation type="doi">10.1371/journal.pone.0126967</citation>
+    </citations>
+
+</tool>

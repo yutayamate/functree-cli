@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="functree_stats" name="Perform statistical analysis" version="0.0.1">
+    <description></description>
+    <command><![CDATA[
+    node $__tool_directory__/../../bin/functree stats
+    --output $output
+    --database $database
+    --method $operation.method
+
+    #if $operation.type == "calc":
+        --input $operation.input
+    #else:
+        --input $operation.input_1 $operation.input_2
+    #end if
+
+    #if $config.enable_config == "true":
+        --config $config.config_data
+    #end if
+    ]]></command>
+    <inputs>
+        <conditional name="operation">
+            <param name="type" type="select" label="Type of operation">
+                <option value="calc">Calculate abundances for all functional categories</option>
+                <option value="stats">Perform comparison between two groups</option>
+            </param>
+            <when value="calc">
+                <param name="method" type="select" label="Descriptive statistics value">
+                     <option value="sum">Summation</option>
+                     <option value="mean">Mean</option>
+                     <option value="var">Variance</option>
+                </param>
+                <param name="input" type="data" format="tabular" help="This requires a table annotated by KEGG Orthology" label="Abundance table" />
+            </when>
+            <when value="stats">
+                <param name="method" type="select" label="Hypothesis test">
+                     <option value="mannwhitneyu">Mann-Whitney U test</option>
+                </param>
+                <param name="input_1" type="data" format="tabular" help="This requires a table calculated by 'Calculate abundances for all functional categories' function" label="Abundance table #1" />
+                <param name="input_2" type="data" format="tabular" help="This requires a table calculated by 'Calculate abundances for all functional categories' function" label="Abundance table #2" />
+            </when>
+        </conditional>
+        <param name="database" type="data" format="json" label="Tree strcture data" />
+        <conditional name="config">
+            <param name="enable_config" type="boolean" label="Customize other detail parameters" />
+            <when value="true">
+                <param name="config_data" type="data" format="json" label="Configuration file" />
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data name="output" format="tabular" />
+    </outputs>
+    <help>
+
+.. class:: infomark
+
+**What's FuncTree?**
+
+**FuncTree** is a web based application, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. FuncTree allows user to map their omics data on to a pre-defined treemap, which is based on the KEGG (http://www.genome.jp/kegg/) or other hierarchical functional databases. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
+
+----
+
+.. class:: infomark
+
+**Usage**
+
+This section provides an interface for performing statistical analysis.
+
+- **Abundance table:** Table of abundances of functional categories defined by tree strcture data. It must be separated by tabs.::
+
+    # Calculate abundances for all functional categories
+        sample1 sample2 sample3
+    ko:K00001   0.000218080750998678    0.000292011269409172    0.000183811396397214
+    ko:K00002   1.66822340270918e-05    2.9109921924858197e-05  2.9970461739666497e-05
+    ko:K00003   0.00010209658248844201  0.000267883926930514    0.00034744353401109
+    ko:K00004   2.55973088845531e-06    1.1145349476428498e-06  7.774328858319991e-06
+    ko:K00005   0.000104872989966464    7.822164009693009e-05   5.73637517684323e-05
+
+- **Tree strcture data:** JSON file that includes information of hierachical relationship between functional categories.
+
+- **Configuration file:** JSON file that includes values of detail parameters. Example file can be downloaded from here (https://raw.githubusercontent.com/yyuuta88/functree-cli/master/config/config.json).
+
+- **Output:** Tab-separated abundance table.
+
+    </help>
+    <citations>
+        <citation type="doi">10.1371/journal.pone.0126967</citation>
+    </citations>
+
+</tool>
