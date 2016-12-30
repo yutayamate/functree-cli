@@ -26,7 +26,7 @@ FuncTree-CLI creates a hierarchical visualization. In the treemap nodes represen
 ## Installation
 Clone this repository:
 ```bash
-$ git clone http://tsubaki.bio.titech.ac.jp/yyamate/functree-cli.git
+$ git clone https://github.com/yyuuta88/functree-cli.git
 ```
 Enter `functree-cli` directory:
 ```bash
