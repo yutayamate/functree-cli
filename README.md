@@ -6,7 +6,7 @@
       |  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |
       |_|    \___/|_| \_|\____| |_| |_| \_\_____|_____|     \____|_____|___|
 
-[ Visualization and analysis tool for omics data based on Biological Functional Tree ]
+[ Visualization and analysis tool for omics data based on biological functional tree ]
 ```
 
 ## Description
@@ -52,7 +52,7 @@ $ functree [command] [options...]
 | --help | Show help |
 | --version | Show version number |
 
-### Get tree structure data
+### Get tree structure data from database
 Before creating a visualization, you need to prepare tree structure data for data mapping.
 FuncTree-CLI provides the simple way to get tree structure data from [KEGG](http://www.genome.jp/kegg/) in the following command.
 ```bash
@@ -110,14 +110,14 @@ This feature consists of following two steps:
 Example usage and available options and  are listed below:
 
 ```bash
-# Evaluate functionality
+# Evaluate functionality - Mean
 $ functree stats -d kegg.json -m mean -i ko_abundance.tsv -o all_abundance.tsv
 
-# Compute statistical test
+# Perform comparison between two groups - Mann-Whitney U test
 $ functree stats -d kegg.json -m mannwhitneyu -i all_abundance_1.tsv all_abundance_2.tsv -o functree_pvalue.tsv
 ```
 
-| Identifier | GNU-style | Description |
+| Option | Long option | Description |
 |:--|:--|:--|
 | -i | --input | Path to input abundance table(s) |
 | -o | --output | Output result to file |
@@ -134,7 +134,7 @@ Example usage and available options and  are listed below:
 $ functree create -d kegg.json -i all_abundance.tsv -o visualization.html -f html
 ```
 
-| Identifier | GNU-style | Description |
+| Option | Long option | Description |
 |:--|:--|:--|
 | -t | --theme | Specify theme of visualization |
 | -i | --input | Path to input abundance table |
