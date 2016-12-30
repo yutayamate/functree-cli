@@ -22,7 +22,8 @@ Copyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Techno
 
 String.raw`
 For more information, see below:
-  http://www.bioviz.tokyo/functree`
+  https://github.com/yyuuta88/functree-cli/
+  http://www.bioviz.tokyo/functree2/`
     ];
 
 
