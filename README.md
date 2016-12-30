@@ -10,7 +10,7 @@ _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
 ```
 
 ## Description
-**FuncTree-CLI** is a command-line tool, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. functree-cli allows user to map their omics data on to a pre-defined treemap, which is based on the [KEGG BRITE](http://www.genome.jp/kegg/brite.html) or [EnteroPathway](http://www.enteropathway.org/) database. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
+**FuncTree-CLI** is a command-line application, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. FuncTree allows user to map their omics data on to a pre-defined treemap, which is based on the KEGG (http://www.genome.jp/kegg/) or other hierarchical functional databases. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
 
 ## Requirements
 - [Node.js](https://github.com/nodejs/node) >= v6.9.1
@@ -48,11 +48,11 @@ $ functree [command] [options...]
 
 ### Get tree structure data
 Before creating a visualization, you need to prepare tree structure data for data mapping.
-FuncTree-CLI provides the simple way to get tree structure data from [KEGG BRITE](http://www.genome.jp/kegg/brite.html) in the following command.
+FuncTree-CLI provides the simple way to get tree structure data from [KEGG](http://www.genome.jp/kegg/) in the following command.
 ```bash
 $ functree get -d kegg -o kegg.json
 ```
-Alternatively, you can use your own tree structure data. It must be JSON format and have the structure corresponded to the following example. You can also refer to [flare.json](https://gist.github.com/mbostock/1093025).
+Alternatively, you can use your own tree structure data. It must be JSON format and have the structure corresponded to the following example.
 ```json
 {
   "id": "00001",
