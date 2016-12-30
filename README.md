@@ -1,4 +1,6 @@
 # FuncTree-CLI
+[![GitHub version](https://badge.fury.io/gh/yyuuta88%2Ffunctree-cli.svg)](https://badge.fury.io/gh/yyuuta88%2Ffunctree-cli)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 ```
        _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
       |  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
@@ -114,7 +116,7 @@ Example usage and available options and  are listed below:
 $ functree stats -d kegg.json -m mean -i ko_abundance.tsv -o all_abundance.tsv
 
 # Perform comparison between two groups - Mann-Whitney U test
-$ functree stats -d kegg.json -m mannwhitneyu -i all_abundance_1.tsv all_abundance_2.tsv -o functree_pvalue.tsv
+$ functree stats -d kegg.json -m mannwhitneyu -i all_abundance_1.tsv all_abundance_2.tsv -o all_pvalue.tsv
 ```
 
 | Option | Long option | Description |
