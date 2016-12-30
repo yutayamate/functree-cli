@@ -8,6 +8,7 @@ import json
 import time
 import argparse
 import pandas as pd
+import numpy as np
 import scipy.stats
 import io
 
@@ -124,7 +125,7 @@ def main():
             header=0,
             index_col=0
         )
-        output_df = pd.DataFrame(columns=['pvalue'])
+        output_df = pd.DataFrame()
 
         for i in nodes:
             try:
@@ -136,6 +137,14 @@ def main():
                     use_continuity=config['stats']['mannwhitneyu']['use_continuity'],
                     alternative=config['stats']['mannwhitneyu']['alternative']
                 )
+                try:
+                    if d.pvalue < 0.05:
+                        score = np.log10(1 / d.pvalue)
+                    else:
+                        score = 0.0
+                except:
+                    score = 0.0
+                output_df.ix[i['name'], 'log10(1_pvalue*)'] = score
                 output_df.ix[i['name'], 'pvalue'] = d.pvalue
             except:
                 # sys.stderr.write('Missing entry: \'' + i['name'] + '\'\n')

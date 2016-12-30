@@ -9,13 +9,13 @@ import file_io from './file-io.js';
 
     let splash = [
 String.raw`
- _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
-|  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
-| |_  | | | |  \| | |     | | | |_) |  _| |  _| _____| |   | |    | |
-|  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |
-|_|    \___/|_| \_|\____| |_| |_| \_\_____|_____|     \____|_____|___|
+     _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
+    |  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
+    | |_  | | | |  \| | |     | | | |_) |  _| |  _| _____| |   | |    | |
+    |  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |
+    |_|    \___/|_| \_|\____| |_| |_| \_\_____|_____|     \____|_____|___|
 
-[ A command-line based visualization tool for massive-scale omics data ]
+[ Visualization and analysis tool for omics data based on Biological Functional Tree ]
 
 Copyright (c) 2014-2016 Kurokawa Nakashima Yamada Lab, Tokyo Institute of Technology.
 `,

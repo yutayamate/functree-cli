@@ -1,16 +1,16 @@
 # FuncTree-CLI
 ```
-_____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
-|  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
-| |_  | | | |  \| | |     | | | |_) |  _| |  _| _____| |   | |    | |
-|  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |
-|_|    \___/|_| \_|\____| |_| |_| \_\_____|_____|     \____|_____|___|
+     _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
+    |  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
+    | |_  | | | |  \| | |     | | | |_) |  _| |  _| _____| |   | |    | |
+    |  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |
+    |_|    \___/|_| \_|\____| |_| |_| \_\_____|_____|     \____|_____|___|
 
-[ A command-line based visualization tool for massive-scale omics data ]
+[ Visualization and analysis tool for omics data based on Biological Functional Tree ]
 ```
 
 ## Description
-**FuncTree-CLI** is a command-line application, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. FuncTree allows user to map their omics data on to a pre-defined treemap, which is based on the KEGG (http://www.genome.jp/kegg/) or other hierarchical functional databases. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
+**FuncTree-CLI** is a command-line application, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. FuncTree allows user to map their omics data on to a pre-defined treemap, which is based on the [KEGG](http://www.genome.jp/kegg/) or other hierarchical functional databases. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
 
 ## Requirements
 - [Node.js](https://github.com/nodejs/node) >= v6.9.1
