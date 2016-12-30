@@ -1,10 +1,10 @@
 # FuncTree-CLI
 ```
-     _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
-    |  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
-    | |_  | | | |  \| | |     | | | |_) |  _| |  _| _____| |   | |    | |
-    |  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |
-    |_|    \___/|_| \_|\____| |_| |_| \_\_____|_____|     \____|_____|___|
+       _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
+      |  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
+      | |_  | | | |  \| | |     | | | |_) |  _| |  _| _____| |   | |    | |
+      |  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |
+      |_|    \___/|_| \_|\____| |_| |_| \_\_____|_____|     \____|_____|___|
 
 [ Visualization and analysis tool for omics data based on Biological Functional Tree ]
 ```
@@ -134,8 +134,8 @@ Example usage and available options and  are listed below:
 $ functree create -d kegg.json -i all_abundance.tsv -o visualization.html -f html
 ```
 
-| Identifier | GNU-style | Description | Type|
-|:--|:--|:--|:--|
+| Identifier | GNU-style | Description |
+|:--|:--|:--|
 | -t | --theme | Specify theme of visualization |
 | -i | --input | Path to input abundance table |
 | -o | --output | Output visualization image to file |
