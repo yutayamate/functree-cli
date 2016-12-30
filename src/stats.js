@@ -8,38 +8,38 @@ import file_io from './file-io.js';
 
 
 module.exports.command = 'stats [options...]';
-module.exports.describe = 'Statistical analysis';
+module.exports.describe = 'Perform statistical analysis';
 
 
 module.exports.builder = {
     'i': {
         'alias': 'input',
         'type': 'array',
-        'describe': 'Specify input file(s)'
+        'describe': 'Path to input abundance table(s)'
     },
     'o': {
         'alias': 'output',
         'type': 'string',
         'default': '/dev/stdout',
-        'describe': 'Specify output file'
+        'describe': 'Output result to file'
     },
     'd': {
         'alias': 'database',
         'type': 'string',
         'demand': true,
-        'describe': 'Specify reference database'
+        'describe': 'Path to tree structure data JSON file'
     },
     'm': {
         'alias': 'method',
         'type': 'string',
         'choices': ['sum', 'mean', 'var', 'mannwhitneyu'],
         'demand': true,
-        'describe': 'Specify analysis method'
+        'describe': 'Specify statistical analysis method'
     },
     'c': {
         'alias': 'config',
         'type': 'string',
-        'describe': 'Specify configuration file'
+        'describe': 'Path to configuration JSON file'
     }
 };
 

@@ -12,7 +12,7 @@ import functree from './functree.js';
 
 
 module.exports.command = 'create [options...]';
-module.exports.describe = 'Create a visualization';
+module.exports.describe = 'Create visualization';
 
 
 module.exports.builder = {
@@ -21,37 +21,37 @@ module.exports.builder = {
         'type': 'string',
         'choices': ['functree'],
         'default': 'functree',
-        'describe': 'Specify visualization theme'
+        'describe': 'Specify theme of visualization'
     },
     'i': {
         'alias': 'input',
         'type': 'string',
         'default': '/dev/stdin',
-        'describe': 'Specify input file'
+        'describe': 'Path to input abundance table'
     },
     'o': {
         'alias': 'output',
         'type': 'string',
         'default': '/dev/stdout',
-        'describe': 'Specify output file'
+        'describe': 'Output visualization image to file'
     },
     'd': {
         'alias': 'database',
         'type': 'string',
         'demand': true,
-        'describe': 'Specify reference database'
+        'describe': 'Path to tree structure data JSON file'
     },
     'f': {
         'alias': 'format',
         'type': 'string',
         'choices': ['svg', 'html', 'png'],
         'default': 'svg',
-        'describe': 'Specify output format'
+        'describe': 'Specify output format type'
     },
     'c': {
         'alias': 'config',
         'type': 'string',
-        'describe': 'Specify configuration file'
+        'describe': 'Path to configuration JSON file'
     }
 };
 

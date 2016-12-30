@@ -8,7 +8,7 @@ import file_io from './file-io.js';
 
 
 module.exports.command = 'get [options...]';
-module.exports.describe = 'Get reference data from KEGG';
+module.exports.describe = 'Get tree structure data from database';
 
 
 module.exports.builder = {
@@ -16,19 +16,19 @@ module.exports.builder = {
         'alias': 'output',
         'type': 'string',
         'default': '/dev/stdout',
-        'describe': 'Specify output file'
+        'describe': 'Output tree structure data to file in JSON format'
     },
     'd': {
         'alias': 'database',
         'type': 'string',
         'choices': ['kegg'],
         'demand': true,
-        'describe': 'Specify reference database'
+        'describe': 'Name of source database'
     },
     'c': {
         'alias': 'config',
         'type': 'string',
-        'describe': 'Specify configuration file'
+        'describe': 'Path to configuration JSON file'
     }
 };
 
