@@ -21,8 +21,8 @@ FuncTree-CLI creates a hierarchical visualization. In the treemap nodes represen
 
 
 ## Requirements
-- [Node.js](https://github.com/nodejs/node) >= v6.9.1
-- [Python](https://www.python.org/) >= v3.5.1
+- [Node.js](https://github.com/nodejs/node)
+- [Python](https://www.python.org/)
 
 
 ## Installation
@@ -34,7 +34,7 @@ Enter `functree-cli` directory:
 ```bash
 $ cd functree-cli
 ```
-Install FuncTree-CLI to your system using [npm](https://github.com/npm/npm):
+Install FuncTree-CLI on your system by using [npm](https://github.com/npm/npm):
 ```bash
 $ npm install -g
 ```

@@ -36,5 +36,5 @@
   "bin": {
     "functree": "./bin/functree"
   },
-  "private": true
+  "private": false
 }

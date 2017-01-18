@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:6.9
 
 MAINTAINER Yuta Yamate <yyamate@bio.titech.ac.jp>
 
