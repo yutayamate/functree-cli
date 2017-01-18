@@ -2,7 +2,7 @@
 <tool id="functree_create" name="Create visualization" version="0.0.1">
     <description></description>
     <command><![CDATA[
-    node $__tool_directory__/../../bin/functree create
+    functree create
     --output $output
     --database $database
     --input $input

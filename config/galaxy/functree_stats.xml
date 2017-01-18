@@ -2,7 +2,7 @@
 <tool id="functree_stats" name="Perform statistical analysis" version="0.0.1">
     <description></description>
     <command><![CDATA[
-    node $__tool_directory__/../../bin/functree stats
+    functree stats
     --output $output
     --database $database
     --method $operation.method

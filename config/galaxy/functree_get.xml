@@ -2,7 +2,7 @@
 <tool id="functree_get" name="Get tree strcuture data from database" version="0.0.1">
     <description></description>
     <command><![CDATA[
-    node $__tool_directory__/../../bin/functree get
+    functree get
     --output $output
     --database $database
 
