@@ -12,10 +12,6 @@ var _child_process = require('child_process');
 
 var _child_process2 = _interopRequireDefault(_child_process);
 
-var _fileIo = require('./file-io.js');
-
-var _fileIo2 = _interopRequireDefault(_fileIo);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports.command = 'get [options...]';
@@ -25,7 +21,6 @@ module.exports.builder = {
     'o': {
         'alias': 'output',
         'type': 'string',
-        'default': '/dev/stdout',
         'describe': 'Output tree structure data to file in JSON format'
     },
     'd': {
@@ -43,21 +38,49 @@ module.exports.builder = {
 };
 
 module.exports.handler = function (args) {
+    var childCommand = _path2.default.resolve(_path2.default.join(__dirname, '../tools/get.py'));
+    var childArgs = ['--database', args.database];
+    var option = {
+        'stdio': [process.stdin, // Redirect: stdin (parent) => stdin (child)
+        'pipe', // Redirect: stdout (child) => args.output (parent)
+        process.stderr // Redirect: stderr (child) => stderr (parent)
+        ]
+    };
+    var returnData = _child_process2.default.spawnSync(childCommand, childArgs, option);
 
-    var cmd = _path2.default.join(__dirname, '../tools/get.py');
-    var arg = ['-d', args.database];
+    // In case of success to create child process
+    if (returnData.status != null) {
+        if (returnData.status === 0) {
+            // const content = returnData.stdout.toString();
+            var data = returnData.stdout;
+            try {
+                var stream = args.output ?
+                // Output to file
+                _fs2.default.createWriteStream(null, {
+                    'fd': _fs2.default.openSync(args.output, 'w')
+                }) :
+                // Output to stdout
+                process.stdout;
+                stream.write(data);
+                process.exit(0);
+            } catch (e) {
+                process.stderr.write('Error: Filed to write to file "' + args.output + '"\n');
+                process.exit(1);
+            }
+        } else if (returnData.status > 0) {
+            process.stderr.write('Error: Aborted with error status (' + returnData.status + ') "' + childCommand + '"\n');
+            process.stderr.write("Check if \"python3\" and all required packages are installed in $PATH\n");
+            process.exit(1);
+        }
 
-    var str = '';
-    try {
-        var result = _child_process2.default.spawnSync(cmd, arg, {
-            'stdio': [0, 'pipe', 2]
-        });
-        str = result.stdout.toString();
-    } catch (e) {
-        process.stderr.write('Unexpected Error\n');
-        process.exit(1);
+        // In case of failure to create child process (ENOENT)
+    } else {
+        if (returnData.error.code === 'ENOENT') {
+            process.stderr.write('Error: Failed to create child process "' + childCommand + '"\n');
+            process.exit(1);
+        } else {
+            process.stderr.write('Error: Unexpected error occurred"\n');
+            process.exit(1);
+        }
     }
-
-    _fileIo2.default.write(args.output, str);
-    process.exit(0);
 };

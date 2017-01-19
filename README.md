@@ -123,12 +123,12 @@ $ functree stats -d kegg.json -m mannwhitneyu -i all_abundance_1.tsv all_abundan
 |:--|:--|:--|
 | -i | --input | Path to input abundance table(s) |
 | -o | --output | Output result to file |
-| -d | --database | Path to tree structure data JSON file |
+| -t | --tree | Path to tree structure data JSON file |
 | -m | --method | Specify statistical analysis method |
 | -c | --config | Path to configuration JSON file |
 
 ### Create visualization
-This feature is the main part of FuncTree-CLI. This helps you create a insightful visualization with your own data. If necessary, you can specify output image format type (static SVG (default) or interactive HTML) with `-f, --format` option.
+This feature is the main part of FuncTree-CLI. This helps you create a insightful visualization with your own data. If necessary, you can specify output image format type (SVG (default), PNG or interactive HTML) with `-f, --format` option.
 
 Example usage and available options and  are listed below:
 
@@ -141,7 +141,7 @@ $ functree create -d kegg.json -i all_abundance.tsv -o visualization.html -f htm
 | -t | --theme | Specify theme of visualization |
 | -i | --input | Path to input abundance table |
 | -o | --output | Output visualization image to file |
-| -d | --database | Path to tree structure data JSON file |
+| -t | --tree | Path to tree structure data JSON file |
 | -f | --format | Specify output format type |
 | -c | --config | Path to configuration JSON file |
 

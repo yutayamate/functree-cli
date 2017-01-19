@@ -4,7 +4,7 @@
     <command><![CDATA[
     functree stats
     --output $output
-    --database $database
+    --tree $tree
     --method $operation.method
 
     #if $operation.type == "calc":
@@ -39,7 +39,7 @@
                 <param name="input_2" type="data" format="tabular" help="This requires a table calculated by 'Calculate abundances for all functional categories' function" label="Abundance table #2" />
             </when>
         </conditional>
-        <param name="database" type="data" format="json" label="Tree strcture data" />
+        <param name="tree" type="data" format="json" label="Tree strcture data" />
         <conditional name="config">
             <param name="enable_config" type="boolean" label="Customize other detail parameters" />
             <when value="true">

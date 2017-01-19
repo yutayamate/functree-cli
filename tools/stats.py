@@ -40,8 +40,8 @@ def main():
         help='specify output file'
     )
     parser.add_argument(
-        '-d',
-        '--database',
+        '-t',
+        '--tree',
         type=argparse.FileType('r'),
         nargs='?',
         required=True,
@@ -71,7 +71,7 @@ def main():
         config_f = open(os.path.join(os.path.dirname(__file__), '../config/config.json'), 'r')
         config = json.load(config_f)
 
-    root = json.load(args.database)
+    root = json.load(args.tree)
     nodes = get_nodes(root)
 
 

@@ -4,7 +4,7 @@
     <command><![CDATA[
     functree create
     --output $output
-    --database $database
+    --tree $tree
     --input $input
     --format $format
 
@@ -14,7 +14,7 @@
     ]]></command>
     <inputs>
         <param name="input" type="data" format="tabular" label="Abundance table" />
-        <param name="database" type="data" format="json" label="Tree structure data" />
+        <param name="tree" type="data" format="json" label="Tree structure data" />
         <param name="format" type="select" label="Output image format">
             <option value="svg">SVG</option>
             <option value="html">HTML (interactive)</option>
