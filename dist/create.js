@@ -1,5 +1,10 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.handler = exports.builder = exports.describe = exports.command = undefined;
+
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -16,20 +21,16 @@ var _svg2png = require('svg2png');
 
 var _svg2png2 = _interopRequireDefault(_svg2png);
 
-var _util = require('./util.js');
-
-var _util2 = _interopRequireDefault(_util);
-
 var _functree = require('./functree.js');
 
 var _functree2 = _interopRequireDefault(_functree);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports.command = 'create [options...]';
-module.exports.describe = 'Create visualization';
+var command = exports.command = 'create [options...]';
+var describe = exports.describe = 'Create visualization';
 
-module.exports.builder = {
+var builder = exports.builder = {
     'i': {
         'alias': 'input',
         'type': 'string',
@@ -49,7 +50,7 @@ module.exports.builder = {
     'f': {
         'alias': 'format',
         'type': 'string',
-        'choices': ['svg', 'html', 'png'],
+        'choices': ['png', 'svg', 'html'],
         'default': 'svg',
         'describe': 'Specify output format type'
     },
@@ -60,7 +61,7 @@ module.exports.builder = {
     }
 };
 
-module.exports.handler = function (args) {
+var handler = exports.handler = function handler(args) {
     // Load configuration
     var config = {};
     var configPath = _path2.default.resolve(args.config || _path2.default.join(__dirname, '../config/config.json'));
@@ -69,11 +70,11 @@ module.exports.handler = function (args) {
         try {
             config = JSON.parse(configString);
         } catch (e) {
-            process.stderr.write('Error: Failed to parse JSON string "' + configPath + '"\n');
+            process.stderr.write(('Error: Failed to parse JSON string "' + configPath + '"\n').error);
             process.exit(1);
         }
     } catch (e) {
-        process.stderr.write('Error: Failed to open file "' + configPath + '"\n');
+        process.stderr.write(('Error: Failed to open file "' + configPath + '"\n').error);
         process.exit(1);
     }
 
@@ -85,11 +86,11 @@ module.exports.handler = function (args) {
         try {
             tree = JSON.parse(treeString);
         } catch (e) {
-            process.stderr.write('Error: Failed to parse JSON string "' + treePath + '"\n');
+            process.stderr.write(('Error: Failed to parse JSON string "' + treePath + '"\n').error);
             process.exit(1);
         }
     } catch (e) {
-        process.stderr.write('Error: Failed to open configuration file "' + treePath + '"\n');
+        process.stderr.write(('Error: Failed to open file "' + treePath + '"\n').error);
         process.exit(1);
     }
 
@@ -103,44 +104,50 @@ module.exports.handler = function (args) {
             document = _jsdom2.default.jsdom(templateHTMLString);
             window = document.defaultView;
         } catch (e) {
-            process.stderr.write('Error: Failed to parse HTML string "' + treePath + '"\n');
+            process.stderr.write(('Error: Failed to parse HTML string "' + treePath + '"\n').error);
             process.exit(1);
         }
     } catch (e) {
-        process.stderr.write('Error: Failed to open template HTML file "' + treePath + '"\n');
+        process.stderr.write(('Error: Failed to open file "' + treePath + '"\n').error);
         process.exit(1);
     }
 
     // Load user's input
-    var data = [];
+    // ToDo: Use stream API or readline API
+    var data = {};
     var inputPath = _path2.default.resolve(args.input || '/dev/stdin');
     try {
-        var fd = _fs2.default.readFileSync(inputPath);
-        var inputString = fd.toString();
+        var buffer = _fs2.default.readFileSync(inputPath);
+        var lines = buffer.toString().split('\n');
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
 
         try {
-            for (var _iterator = inputString.split('\n')[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            for (var _iterator = lines[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                 var line = _step.value;
 
+                // Skip header and empty line
                 if (line.match('#') || line === '') {
                     continue;
                 }
                 try {
                     var item = line.split('\t');
+                    var name = item[0];
+                    if (!(item.length > 1)) {
+                        throw name;
+                    }
+                    var floatItem = item.slice(1).map(function (i) {
+                        return parseFloat(i);
+                    });
                     var d = {
-                        'name': item[0],
-                        'value': config.functree.use_1stcol_as_radius ? parseFloat(item[1]) : 0.0,
-                        'values': item.slice(config.functree.use_1stcol_as_radius ? 2 : 1).map(function (i) {
-                            return parseFloat(i);
-                        })
+                        'name': name,
+                        'value': config.functree.use_1stcol_as_radius ? floatItem[0] : 0.0,
+                        'values': config.functree.use_1stcol_as_radius ? floatItem.slice(1) : floatItem
                     };
-                    data.push(d);
+                    data[name] = d;
                 } catch (e) {
-                    // Not work well...
-                    process.stderr.write('Warrning: Unexpeceted input type, skipped');
+                    process.stderr.write(('Warning: Unexpeceted input line, skipped "' + e + '"\n').warn);
                 }
             }
         } catch (err) {
@@ -158,23 +165,19 @@ module.exports.handler = function (args) {
             }
         }
     } catch (e) {
-        process.stderr.write('Error: Filed to open file "' + inputPath + '"\n');
+        process.stderr.write(('Error: Filed to open file "' + inputPath + '"\n').error);
         process.exit(1);
     }
 
-    var nodes = _util2.default.get_nodes(tree);
-    tree.x0 = tree.y0 = 0;
-    _util2.default.init_nodes(nodes, config);
-    _util2.default.set_values(nodes, data, config);
-    _functree2.default.main(window, tree, config);
+    var funcTree = new _functree2.default(tree, config).init().mapping(data).visualize(document);
 
     // Output visualization to args.output
     var content = void 0;
-    if (args.format === 'svg') {
+    if (args.format === 'png') {
+        var _buffer = document.getElementById(config.target_id).innerHTML + '\n';
+        content = _svg2png2.default.sync(_buffer);
+    } else if (args.format === 'svg') {
         content = document.getElementById(config.target_id).innerHTML + '\n';
-    } else if (args.format === 'png') {
-        var buffer = document.getElementById(config.target_id).innerHTML + '\n';
-        content = _svg2png2.default.sync(buffer);
     } else if (args.format === 'html') {
         content = _jsdom2.default.serializeDocument(document) + '\n';
     }
@@ -183,14 +186,14 @@ module.exports.handler = function (args) {
         var stream = args.output ?
         // Output to file
         _fs2.default.createWriteStream(null, {
-            'fd': _fs2.default.openSync(args.output, 'w')
+            'fd': _fs2.default.openSync(_path2.default.resolve(args.output), 'w')
         }) :
         // Output to stdout
         process.stdout;
         stream.write(content);
         process.exit(0);
     } catch (e) {
-        process.stderr.write('Error: Filed to write to file "' + args.output + '"\n');
+        process.stderr.write(('Error: Filed to write to file "' + _path2.default.resolve(args.output) + '"\n').error);
         process.exit(1);
     }
 };

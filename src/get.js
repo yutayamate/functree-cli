@@ -4,10 +4,10 @@ import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
 
-module.exports.command = 'get [options...]';
-module.exports.describe = 'Get tree structure data from database';
+export const command = 'get [options...]';
+export const describe = 'Get tree structure data from database';
 
-module.exports.builder = {
+export const builder = {
     'o': {
         'alias': 'output',
         'type': 'string',
@@ -27,7 +27,7 @@ module.exports.builder = {
     }
 };
 
-module.exports.handler = (args) => {
+export const handler = (args) => {
     const childCommand = path.resolve(path.join(__dirname, '../tools/get.py'));
     const childArgs = ['--database', args.database];
     const option = {
@@ -55,22 +55,22 @@ module.exports.handler = (args) => {
                 stream.write(data);
                 process.exit(0);
             } catch (e) {
-                process.stderr.write(`Error: Filed to write to file "${args.output}"\n`);
+                process.stderr.write(`Error: Filed to write to file "${args.output}"\n`.error);
                 process.exit(1);
             }
         } else if (returnData.status > 0) {
-            process.stderr.write(`Error: Aborted with error status (${returnData.status}) "${childCommand}"\n`);
-            process.stderr.write("Check if \"python3\" and all required packages are installed in $PATH\n");
+            process.stderr.write(`Error: Aborted with error status (${returnData.status}) "${childCommand}"\n`.error);
+            process.stderr.write("Check if \"python3\" and all required packages are installed in $PATH\n".error);
             process.exit(1);
         }
 
     // In case of failure to create child process (ENOENT)
     } else {
         if (returnData.error.code === 'ENOENT') {
-            process.stderr.write(`Error: Failed to create child process "${childCommand}"\n`);
+            process.stderr.write(`Error: Failed to create child process "${childCommand}"\n`.error);
             process.exit(1);
         } else {
-            process.stderr.write(`Error: Unexpected error occurred"\n`);
+            process.stderr.write(`Error: Unexpected error occurred"\n`.error);
             process.exit(1);
         }
     }

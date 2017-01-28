@@ -1,5 +1,10 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.handler = exports.builder = exports.describe = exports.command = undefined;
+
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -14,10 +19,10 @@ var _child_process2 = _interopRequireDefault(_child_process);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports.command = 'get [options...]';
-module.exports.describe = 'Get tree structure data from database';
+var command = exports.command = 'get [options...]';
+var describe = exports.describe = 'Get tree structure data from database';
 
-module.exports.builder = {
+var builder = exports.builder = {
     'o': {
         'alias': 'output',
         'type': 'string',
@@ -37,7 +42,7 @@ module.exports.builder = {
     }
 };
 
-module.exports.handler = function (args) {
+var handler = exports.handler = function handler(args) {
     var childCommand = _path2.default.resolve(_path2.default.join(__dirname, '../tools/get.py'));
     var childArgs = ['--database', args.database];
     var option = {
@@ -64,22 +69,22 @@ module.exports.handler = function (args) {
                 stream.write(data);
                 process.exit(0);
             } catch (e) {
-                process.stderr.write('Error: Filed to write to file "' + args.output + '"\n');
+                process.stderr.write(('Error: Filed to write to file "' + args.output + '"\n').error);
                 process.exit(1);
             }
         } else if (returnData.status > 0) {
-            process.stderr.write('Error: Aborted with error status (' + returnData.status + ') "' + childCommand + '"\n');
-            process.stderr.write("Check if \"python3\" and all required packages are installed in $PATH\n");
+            process.stderr.write(('Error: Aborted with error status (' + returnData.status + ') "' + childCommand + '"\n').error);
+            process.stderr.write("Check if \"python3\" and all required packages are installed in $PATH\n".error);
             process.exit(1);
         }
 
         // In case of failure to create child process (ENOENT)
     } else {
         if (returnData.error.code === 'ENOENT') {
-            process.stderr.write('Error: Failed to create child process "' + childCommand + '"\n');
+            process.stderr.write(('Error: Failed to create child process "' + childCommand + '"\n').error);
             process.exit(1);
         } else {
-            process.stderr.write('Error: Unexpected error occurred"\n');
+            process.stderr.write('Error: Unexpected error occurred"\n'.error);
             process.exit(1);
         }
     }

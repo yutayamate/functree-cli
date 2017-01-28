@@ -8,15 +8,16 @@
   },
   "functree": {
     "attribute": {
-      "width": 1600,
-      "height": 1600,
-      "diameter": 1400
+      "width": 1200,
+      "height": 1200,
+      "diameter": 1200
     },
     "style": "stacked",
     "enable_normalize_rounds": true,
     "enable_normalize_charts": true,
     "disable_display_rounds": false,
     "disable_display_charts": false,
+    "disable_display_labels": false,
     "disable_display_lower_than": 0,
     "use_1stcol_as_radius": true,
     "show_all_nodes": false,
