@@ -1,6 +1,7 @@
 # FuncTree-CLI
-[![GitHub version](https://badge.fury.io/gh/yyuuta88%2Ffunctree-cli.svg)](https://badge.fury.io/gh/yyuuta88%2Ffunctree-cli)
-[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+[![npm version](https://img.shields.io/npm/v/functree-cli.svg)](https://www.npmjs.com/package/functree-cli)
+[![Dependency status](https://david-dm.org/yyuuta88/functree-cli.svg)](https://david-dm.org/yyuuta88/functree-cli)
+[![MIT License](https://img.shields.io/npm/l/functree-cli.svg)](LICENSE)
 ```
        _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
       |  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
@@ -12,47 +13,42 @@
 ```
 
 ## Description
-**FuncTree-CLI** is a command-line application, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. FuncTree allows user to map their omics data on to a pre-defined treemap, which is based on the [KEGG](http://www.genome.jp/kegg/) or other hierarchical functional databases. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
+**FuncTree-CLI** is a command-line application, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. FuncTree-CLI allows user to map their omics data on to a pre-defined treemap, which is based on the [KEGG](http://www.genome.jp/kegg/) or other hierarchical functional databases. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
 
 ## Example
-FuncTree-CLI creates a hierarchical visualization. In the treemap nodes represent particular biological functions and edges represent hierarchical relationships between functional categories.
+FuncTree-CLI creates hierarchical visualization. In the treemap nodes represent particular biological functions and edges represent hierarchical relationships between functional categories.
 
 ![example](docs/example.png)
 
 
 ## Requirements
-- [Node.js](https://github.com/nodejs/node)
+- [Node.js](https://nodejs.org/)
 - [Python](https://www.python.org/)
 
 
 ## Installation
-Clone this repository:
+You can quickly install FuncTree-CLI on your system by using `npm`:
 ```bash
-$ git clone https://github.com/yyuuta88/functree-cli.git
-```
-Enter `functree-cli` directory:
-```bash
-$ cd functree-cli
-```
-Install FuncTree-CLI on your system by using [npm](https://github.com/npm/npm):
-```bash
-$ npm install -g
+$ npm install --global functree-cli
 ```
 
 ## Usage
 ### Overview
-Basic usage and available commands are listed below:
-```bash
-$ functree [command] [options...]
+Basic usage and available commands and options are listed below:
 ```
-| Command / Option | Description |
-|:--|:--|
-| get [options...] | Get tree structure data from database |
-| stats [options...] | Perform statistical analysis |
-| create [options...] | Create visualization |
-| --show-config | Show default configuration value |
-| --help | Show help |
-| --version | Show version number |
+Usage: functree [command] [options...]
+
+Commands:
+  get [options...]     Get tree structure data from database
+  stats [options...]   Perform statistical analysis
+  create [options...]  Create visualization
+
+Options:
+  --no-color     Disable colored output                                                    [boolean]
+  --show-config  Show default configuration value                                          [boolean]
+  --help         Show help                                                                 [boolean]
+  --version      Show version number                                                       [boolean]
+```
 
 ### Get tree structure data from database
 Before creating a visualization, you need to prepare tree structure data for data mapping.
@@ -60,7 +56,8 @@ FuncTree-CLI provides the simple way to get tree structure data from [KEGG](http
 ```bash
 $ functree get -d kegg -o kegg.json
 ```
-However, you can use your own tree structure data for drawing treemap. It must be in the JSON format and have the structure corresponded to the following example.
+
+Or, you can use your own tree structure data for drawing treemap. It must be in the JSON format and have the structure corresponded to the following example.
 ```json
 {
   "id": "00001",
@@ -96,7 +93,6 @@ However, you can use your own tree structure data for drawing treemap. It must b
 This feature consists of following two steps:
 
 1. **Evaluate functionality:** If your omics data is only annotated by KEGG Orthology, you can evaluate functionality for all functional categories defined by input tree structure data (i.e. module, pathway etc.). This feature requires KO-annotated abundance table which is separated by tabs.
-
     ```
     # This is comment
     	sample1	sample2	sample3
@@ -110,13 +106,12 @@ This feature consists of following two steps:
 1. **Perform comparison between two groups:** If necessary, you can compute hypothesis test for all functional categories defined by input tree structure file (i.e. module, pathway etc.). This feature requires **two** tab-separated tables calculated by the above feature.
 
 Example usage and available options and  are listed below:
-
 ```bash
 # Evaluate functionality - Mean
-$ functree stats -d kegg.json -m mean -i ko_abundance.tsv -o all_abundance.tsv
+$ functree stats -t kegg.json -m mean -i ko_abundance.tsv -o all_abundance.tsv
 
 # Perform comparison between two groups - Mann-Whitney U test
-$ functree stats -d kegg.json -m mannwhitneyu -i all_abundance_1.tsv all_abundance_2.tsv -o all_pvalue.tsv
+$ functree stats -t kegg.json -m mannwhitneyu -i all_abundance_1.tsv all_abundance_2.tsv -o all_pvalue.tsv
 ```
 
 | Option | Long option | Description |
@@ -131,7 +126,6 @@ $ functree stats -d kegg.json -m mannwhitneyu -i all_abundance_1.tsv all_abundan
 This feature is the main part of FuncTree-CLI. This helps you create a insightful visualization with your own data. If necessary, you can specify output image format type (SVG (default), PNG or interactive HTML) with `-f, --format` option.
 
 Example usage and available options and  are listed below:
-
 ```bash
 $ functree create -d kegg.json -i all_abundance.tsv -o visualization.html -f html
 ```
