@@ -28,7 +28,7 @@ export const builder = {
 };
 
 export const handler = (args) => {
-    const childCommand = path.resolve(path.join(__dirname, '../tools/get.py'));
+    const childCommand = path.resolve(path.join(__dirname, '../scripts/get.py'));
     const childArgs = ['--database', args.database];
     const option = {
         'stdio': [

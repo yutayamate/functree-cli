@@ -39,7 +39,7 @@ export const builder = {
 };
 
 export const handler = (args) => {
-    const childCommand = path.resolve(path.join(__dirname, '../tools/stats.py'));
+    const childCommand = path.resolve(path.join(__dirname, '../scripts/stats.py'));
 
     let childArgs = ['--tree', args.tree, '--method', args.method];
     if (['mean', 'sum', 'var'].includes(args.method)) {

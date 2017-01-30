@@ -68,7 +68,7 @@ def main():
     try:
         config = json.load(args.config)
     except:
-        config_f = open(os.path.join(os.path.dirname(__file__), '../config/config.json'), 'r')
+        config_f = open(os.path.join(os.path.dirname(__file__), '../etc/config.json'), 'r')
         config = json.load(config_f)
 
     root = json.load(args.tree)

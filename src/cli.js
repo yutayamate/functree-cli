@@ -50,7 +50,7 @@ Usage: functree [command] [options...]`;
 
     // If '--show-config' option is supplied, show default configuration values
     if (args.showConfig) {
-        const configPath = path.resolve(path.join(__dirname, '../config/config.json'));
+        const configPath = path.resolve(path.join(__dirname, '../etc/config.json'));
         try {
             const configString = fs.readFileSync(configPath);
             process.stdout.write(configString);

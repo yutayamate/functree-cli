@@ -54,7 +54,7 @@ var builder = exports.builder = {
 };
 
 var handler = exports.handler = function handler(args) {
-    var childCommand = _path2.default.resolve(_path2.default.join(__dirname, '../tools/stats.py'));
+    var childCommand = _path2.default.resolve(_path2.default.join(__dirname, '../scripts/stats.py'));
 
     var childArgs = ['--tree', args.tree, '--method', args.method];
     if (['mean', 'sum', 'var'].includes(args.method)) {

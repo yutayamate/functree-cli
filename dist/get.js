@@ -43,7 +43,7 @@ var builder = exports.builder = {
 };
 
 var handler = exports.handler = function handler(args) {
-    var childCommand = _path2.default.resolve(_path2.default.join(__dirname, '../tools/get.py'));
+    var childCommand = _path2.default.resolve(_path2.default.join(__dirname, '../scripts/get.py'));
     var childArgs = ['--database', args.database];
     var option = {
         'stdio': [process.stdin, // Redirect: stdin (parent) => stdin (child)

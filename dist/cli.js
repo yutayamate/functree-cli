@@ -43,7 +43,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
     // If '--show-config' option is supplied, show default configuration values
     if (args.showConfig) {
-        var configPath = _path2.default.resolve(_path2.default.join(__dirname, '../config/config.json'));
+        var configPath = _path2.default.resolve(_path2.default.join(__dirname, '../etc/config.json'));
         try {
             var configString = _fs2.default.readFileSync(configPath);
             process.stdout.write(configString);

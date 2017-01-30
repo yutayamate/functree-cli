@@ -64,7 +64,7 @@ var builder = exports.builder = {
 var handler = exports.handler = function handler(args) {
     // Load configuration
     var config = {};
-    var configPath = _path2.default.resolve(args.config || _path2.default.join(__dirname, '../config/config.json'));
+    var configPath = _path2.default.resolve(args.config || _path2.default.join(__dirname, '../etc/config.json'));
     try {
         var configString = _fs2.default.readFileSync(configPath);
         try {
@@ -97,7 +97,7 @@ var handler = exports.handler = function handler(args) {
     // Load template HTML and create window.document
     var document = null,
         window = null;
-    var templateHTMLPath = _path2.default.resolve(_path2.default.join(__dirname, '../data/html/template.html'));
+    var templateHTMLPath = _path2.default.resolve(_path2.default.join(__dirname, '../templates/html/viewer.html'));
     try {
         var templateHTMLString = _fs2.default.readFileSync(templateHTMLPath);
         try {

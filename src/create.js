@@ -43,7 +43,7 @@ export const builder = {
 export const handler = (args) => {
     // Load configuration
     let config = {};
-    const configPath = path.resolve(args.config || path.join(__dirname, '../config/config.json'));
+    const configPath = path.resolve(args.config || path.join(__dirname, '../etc/config.json'));
     try {
         const configString = fs.readFileSync(configPath);
         try {
@@ -76,7 +76,7 @@ export const handler = (args) => {
     // Load template HTML and create window.document
     let document = null,
         window = null;
-    const templateHTMLPath = path.resolve(path.join(__dirname, '../data/html/template.html'));
+    const templateHTMLPath = path.resolve(path.join(__dirname, '../templates/html/viewer.html'));
     try {
         const templateHTMLString = fs.readFileSync(templateHTMLPath);
         try {
