@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="functree_create" name="Create visualization" version="0.0.1">
+<tool id="functree_create" name="Create visualization" version="0.1.0">
     <description></description>
     <command><![CDATA[
     functree create
@@ -16,6 +16,7 @@
         <param name="input" type="data" format="tabular" label="Abundance table" />
         <param name="tree" type="data" format="json" label="Tree structure data" />
         <param name="format" type="select" label="Output image format">
+            <option value="png">PNG</option>
             <option value="svg">SVG</option>
             <option value="html">HTML (interactive)</option>
         </param>
@@ -27,7 +28,11 @@
         </conditional>
     </inputs>
     <outputs>
-        <data name="output" format="html" />
+        <data name="output" format="html">
+            <change_format>
+                <when input="format" value="png" format="png" />
+            </change_format>
+        </data>
     </outputs>
     <help>
 
@@ -57,11 +62,11 @@ This section provides an interface for creating visualization.
 
 - **Tree structure data:** JSON file that includes information of hierachical relationship between functional categories.
 
-- **Output image format:** Choose SVG or HTML as a format of the output.
+- **Output image format:** Choose PNG, SVG or HTML as a format of the output.
 
 - **Configuration file:** JSON file that includes values of detail parameters. Example file can be downloaded from here (https://raw.githubusercontent.com/yyuuta88/functree-cli/master/config/config.json).
 
-- **Output:** Static SVG image or interactive HTML file.
+- **Output:** PNG image, SVG image or interactive HTML file.
 
     </help>
     <citations>

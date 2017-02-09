@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="functree_get" name="Get tree strcuture data from database" version="0.0.1">
+<tool id="functree_get" name="Get tree strcuture data from database" version="0.1.0">
     <description></description>
     <command><![CDATA[
     functree get
