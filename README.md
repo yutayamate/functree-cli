@@ -127,7 +127,7 @@ This feature is the main part of FuncTree-CLI. This helps you create a insightfu
 
 Example usage and available options and  are listed below:
 ```bash
-$ functree create -d kegg.json -i all_abundance.tsv -o visualization.html -f html
+$ functree create -t kegg.json -i all_abundance.tsv -o image.png -f png
 ```
 
 | Option | Long option | Description |
