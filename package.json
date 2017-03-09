@@ -34,7 +34,7 @@
     "d3": "^3.5.17",
     "jsdom": "^9.0.0",
     "svg2png": "^4.1.1",
-    "yargs": "^6.0.0"
+    "yargs": "^7.0.1"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.16.0",
