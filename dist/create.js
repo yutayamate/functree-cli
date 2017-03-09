@@ -63,7 +63,7 @@ var builder = exports.builder = {
 
 var handler = exports.handler = function handler(args) {
     // Load configuration
-    var config = {};
+    var config = null;
     var configPath = _path2.default.resolve(args.config || _path2.default.join(__dirname, '../etc/config.json'));
     try {
         var configString = _fs2.default.readFileSync(configPath);
@@ -79,7 +79,7 @@ var handler = exports.handler = function handler(args) {
     }
 
     // Load tree structure data
-    var tree = {};
+    var tree = null;
     var treePath = _path2.default.resolve(args.tree);
     try {
         var treeString = _fs2.default.readFileSync(treePath);

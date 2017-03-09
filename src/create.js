@@ -42,7 +42,7 @@ export const builder = {
 
 export const handler = (args) => {
     // Load configuration
-    let config = {};
+    let config = null;
     const configPath = path.resolve(args.config || path.join(__dirname, '../etc/config.json'));
     try {
         const configString = fs.readFileSync(configPath);
@@ -58,7 +58,7 @@ export const handler = (args) => {
     }
 
     // Load tree structure data
-    let tree = {};
+    let tree = null;
     const treePath = path.resolve(args.tree);
     try {
         const treeString = fs.readFileSync(treePath);
@@ -93,7 +93,7 @@ export const handler = (args) => {
 
     // Load user's input
     // ToDo: Use stream API or readline API
-    let data = {};
+    const data = {};
     const inputPath = path.resolve(args.input || '/dev/stdin');
     try {
         const buffer = fs.readFileSync(inputPath);
@@ -131,7 +131,7 @@ export const handler = (args) => {
         process.exit(1);
     }
 
-    let funcTree = (new FuncTree(tree, config))
+    const funcTree = (new FuncTree(tree, config))
         .init()
         .mapping(data)
         .visualize(document);
@@ -139,7 +139,7 @@ export const handler = (args) => {
     // Output visualization to args.output
     let content;
     if (args.format === 'png') {
-       let buffer = document.getElementById(config.target_id).innerHTML + '\n';
+       const buffer = document.getElementById(config.target_id).innerHTML + '\n';
        content = svg2png.sync(buffer);
     } else if (args.format === 'svg') {
         content = document.getElementById(config.target_id).innerHTML + '\n';

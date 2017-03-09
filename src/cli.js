@@ -17,7 +17,7 @@ import yargs from 'yargs';
 
 [ Visualization and analysis tool for omics data based on biological functional tree ]
 
-Version: ${version}  Copyright (c) 2014-2016 Yamada Lab, Tokyo Institute of Technology.
+Version: ${version}  Copyright (c) 2014-2017 Yamada Lab, Tokyo Institute of Technology.
 
 Usage: functree [command] [options...]`;
 
@@ -26,7 +26,7 @@ Usage: functree [command] [options...]`;
   https://github.com/yyuuta88/functree-cli/
   http://www.bioviz.tokyo/functree2/`;
 
-    let args = yargs
+    const args = yargs
         .wrap(100)
         .command(require('./get'))
         .command(require('./stats'))
