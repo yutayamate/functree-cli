@@ -142,8 +142,8 @@ var handler = exports.handler = function handler(args) {
                     });
                     var d = {
                         'name': name,
-                        'value': config.functree.use_1stcol_as_radius ? floatItem[0] : 0.0,
-                        'values': config.functree.use_1stcol_as_radius ? floatItem.slice(1) : floatItem
+                        'value': config.useFirstColumnAsCircleRadius ? floatItem[0] : 0.0,
+                        'values': config.useFirstColumnAsCircleRadius ? floatItem.slice(1) : floatItem
                     };
                     data[name] = d;
                 } catch (e) {
@@ -174,10 +174,10 @@ var handler = exports.handler = function handler(args) {
     // Output visualization to args.output
     var content = void 0;
     if (args.format === 'png') {
-        var _buffer = document.getElementById(config.target_id).innerHTML + '\n';
+        var _buffer = document.getElementById(config.targetElementId).innerHTML + '\n';
         content = _svg2png2.default.sync(_buffer);
     } else if (args.format === 'svg') {
-        content = document.getElementById(config.target_id).innerHTML + '\n';
+        content = document.getElementById(config.targetElementId).innerHTML + '\n';
     } else if (args.format === 'html') {
         content = _jsdom2.default.serializeDocument(document) + '\n';
     }

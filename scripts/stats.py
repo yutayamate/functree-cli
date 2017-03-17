@@ -134,8 +134,8 @@ def main():
                 d = scipy.stats.mannwhitneyu(
                     x,
                     y,
-                    use_continuity=config['stats']['mannwhitneyu']['use_continuity'],
-                    alternative=config['stats']['mannwhitneyu']['alternative']
+                    use_continuity=config['mannwhitneyu']['use_continuity'],
+                    alternative=config['mannwhitneyu']['alternative']
                 )
                 try:
                     if d.pvalue < 0.05:

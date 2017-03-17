@@ -28,12 +28,12 @@ export default class {
             i.values = [];
             i.keys = [];
             i.color = ((n) => {
-                const scheme = this.config.color_scheme.category;
+                const scheme = this.config.colorSchemeCategorical;
                 const rgbCode = scheme[n % scheme.length];
                 return d3.rgb(rgbCode);
             })(i.depth);
             if (i.name.match(/md:M\d{5}|md:EPM\d{4}|Undefined MODULE/)) {
-                if (this.config.functree.show_all_nodes) {
+                if (this.config.openAllNodes) {
                     continue;
                 }
                 i._children = i.children;
@@ -47,7 +47,7 @@ export default class {
     mapping(data) {
         const nodes = this.nodes;
         for (const i of nodes) {
-            if (i.depth < this.config.functree.disable_display_lower_than ||
+            if (i.depth < this.config.mapObjectsHigherThan ||
                 i.label.match('Undefined')) {
                 continue;
             }
@@ -58,12 +58,15 @@ export default class {
 
     // Draw SVG on document.body
     visualize(document) {
-        const diameter = this.config.functree.attribute.diameter;
         const tree = d3.layout.tree()
-            .size([360, diameter / 2 - 120]);
+            .size([360, this.config.diameter / 2 - 120]);
         const nodes = tree.nodes(this.root);
         const links = tree.links(nodes);
-        const maxDepth = d3.max(nodes.map((x) => { return x.depth; }));
+        const maxDepth = d3.max(
+            nodes.map((x) => {
+                return x.depth;
+            })
+        );
         const maxValue = Array.from(new Array(maxDepth + 1))
             .map((v, i) => {
                 const layerValue = nodes
@@ -99,14 +102,10 @@ export default class {
             });
 
         this._initSVG(
-            document,
-            this.config.functree.attribute.width,
-            this.config.functree.attribute.height,
-            this.config.target_id
+            document
         );
         this._updateRings(
             document,
-            diameter,
             maxDepth
         );
         this._updateLinks(
@@ -118,47 +117,41 @@ export default class {
             document,
             nodes
         );
-        if (!this.config.functree.disable_display_charts) {
+        if (this.config.displayBars) {
             this._updateCharts(
                 document,
                 nodes,
-                diameter,
                 maxDepth,
                 maxSumOfValues,
-                maxMaxOfValues,
-                this.config.functree.style,
-                this.config.color_scheme.linear,
-                this.config.functree.enable_normalize_charts
+                maxMaxOfValues
             );
         }
-        if (!this.config.functree.disable_display_rounds) {
+        if (this.config.displayCircles) {
             this._updateRounds(
                 document,
                 nodes,
-                maxValue,
-                this.config.functree.enable_normalize_rounds
+                maxValue
             );
         }
-        if (!this.config.functree.disable_display_labels) {
+        if (this.config.displayLabels) {
             this._updateLabels(
                 document,
-                nodes,
-                this.config.threshold,
-                this.config.functree.label_data
+                nodes
             );
         }
     }
 
-    _initSVG(document, height, width, targetID) {
-        const buffer = d3.select(document.body).select('#' + targetID)
+    _initSVG(document) {
+        const buffer = d3.select(document.body)
+            .select('#' + this.config.targetElementId)
             .append('svg')
                 .attr('xmlns', 'http://www.w3.org/2000/svg')
                 .attr('version', '1.1')
-                .attr('width', width)
-                .attr('height', height)
+                .attr('width', this.config.width)
+                .attr('height', this.config.height)
             .append('g')
                 .attr('id', 'buffer')
-                .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + '),scale(1)');
+                .attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
 
         const groupIDs = [
             'rings',
@@ -173,7 +166,7 @@ export default class {
         }
     }
 
-    _updateRings(document, diameter, maxDepth) {
+    _updateRings(document, maxDepth) {
         const ring = d3.select(document.body)
             .select('#rings')
             .selectAll('circle')
@@ -183,10 +176,10 @@ export default class {
             .append('circle')
                 .attr('fill', 'none')
                 .attr('r', (d) => {
-                    return (diameter / 2 - 120) / maxDepth * (d + 0.5) || 0;
+                    return (this.config.diameter / 2 - 120) / maxDepth * (d + 0.5) || 0;
                 })
                 .attr('stroke', '#f8f8f8')
-                .attr('stroke-width', (diameter / 2 - 120) / maxDepth || 0);
+                .attr('stroke-width', (this.config.diameter / 2 - 120) / maxDepth || 0);
     }
 
     _updateLinks(document, links, source) {
@@ -195,8 +188,12 @@ export default class {
                 return [d.y, d.x / 180 * Math.PI];
             });
         const straight = (d) => {
-            const x = (d) => { return d.y * Math.cos((d.x - 90) / 180 * Math.PI); };
-            const y = (d) => { return d.y * Math.sin((d.x - 90) / 180 * Math.PI); };
+            const x = (d) => {
+                return d.y * Math.cos((d.x - 90) / 180 * Math.PI);
+            };
+            const y = (d) => {
+                return d.y * Math.sin((d.x - 90) / 180 * Math.PI);
+            };
             return 'M' + x(d.source) + ',' + y(d.source) + 'L' + x(d.target) + ',' + y(d.target);
         };
         const link = d3.select(document.body)
@@ -251,15 +248,18 @@ export default class {
                 });
     }
 
-    _updateCharts(document, nodes, diameter, maxDepth, maxSumOfValues, maxMaxOfValues, style, scheme, enableNormalization) {
+    _updateCharts(document, nodes, maxDepth, maxSumOfValues, maxMaxOfValues) {
+        const config = this.config;
+        const colorScheme = this.config.colorSchemeCategorical
+            .map((x) => {
+                return d3.rgb(x);
+            });
         const chartColor = {
             'category': d3.scale.category20(),
             'linear': (value, depth) => {
                 return d3.scale.linear()
                     .domain([0, maxMaxOfValues[depth]])
-                    .range(scheme.map((x) => {
-                        return d3.rgb(x);
-                    }))(value);
+                    .range(colorScheme)(value);
             }
         };
 
@@ -286,11 +286,11 @@ export default class {
                 // Specify vertical postion
                 .attr('x', function(d, i) {
                     const p = this.parentNode.__data__;
-                    const height = (diameter / 2 - 120) / maxDepth * 0.80;
+                    const height = (config.diameter / 2 - 120) / maxDepth * 0.80;
                     const subSum = d3.sum(p.values.slice(0, i));
-                    switch (style) {
+                    switch (config.mappingStyle) {
                         case 'stacked':
-                            if (enableNormalization) {
+                            if (config.normalizeBarHight) {
                                 const max = maxSumOfValues[p.depth];
                                 return subSum / max * height || 0;
                             } else {
@@ -310,10 +310,10 @@ export default class {
                 })
                 .attr('width', function(d) {
                     const p = this.parentNode.__data__;
-                    const height = (diameter / 2 - 120) / maxDepth * 0.80;
-                    switch (style) {
+                    const height = (config.diameter / 2 - 120) / maxDepth * 0.80;
+                    switch (config.mappingStyle) {
                         case 'stacked':
-                            if (enableNormalization) {
+                            if (config.normalizeBarHight) {
                                 const max = maxSumOfValues[p.depth];
                                 return d / max * height || 0;
                             } else {
@@ -332,7 +332,7 @@ export default class {
                 })
                 .attr('fill', function(d, i) {
                     const p = this.parentNode.__data__;
-                    switch (style) {
+                    switch (config.mappingStyle) {
                         case 'stacked':
                         case 'stacked-100':
                             return chartColor.category(i);
@@ -347,7 +347,7 @@ export default class {
                 });
     }
 
-    _updateRounds (document, nodes, maxValue, enableNormalization) {
+    _updateRounds (document, nodes, maxValue) {
         const circle = d3.select(document.body)
             .select('#rounds')
             .selectAll('circle')
@@ -358,7 +358,7 @@ export default class {
             .enter()
             .append('circle')
                 .attr('r', (d) => {
-                    if (enableNormalization) {
+                    if (this.config.normalizeCircleRadius) {
                         return d.value / maxValue[d.depth] * 20 || 0.0;
                     } else {
                         return d.value;
@@ -381,7 +381,7 @@ export default class {
                 });
     }
 
-    _updateLabels(document, nodes, threshold, labelKey) {
+    _updateLabels(document, nodes) {
         const data = nodes
             .filter((d) => {
                 const isValidNodeName = !d.label.match('Undefined');
@@ -398,7 +398,7 @@ export default class {
                             return x.value;
                         });
                     const rank = layerValueList.indexOf(d.value);
-                    return rank > Math.floor(layerValueList.length * (1 - threshold));
+                    return rank > Math.floor(layerValueList.length * (1 - this.config.displayLabelsThreshold));
                 })();
                 return isValidNodeName && (isValidLayer || isValidRange)
             });
@@ -412,18 +412,18 @@ export default class {
         const enter = label
             .enter()
             .append('text')
-            .attr('y', -10 / 2)
-            .attr('font-family', 'Helvetica')
-            .attr('font-size', 10)
-            .attr('text-anchor', 'middle')
-            .attr('fill', '#555')
-            .attr('transform', (d) => {
-                return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
-            })
-            .text((d) => {
-                const label = eval('d.' + labelKey);
-                const labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
-                return labelSubStr;
+                .attr('y', -10 / 2)
+                .attr('font-family', 'Helvetica')
+                .attr('font-size', 10)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#555')
+                .attr('transform', (d) => {
+                    return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
+                })
+                .text((d) => {
+                    const label = eval('d.' + this.config.labelDataKey);
+                    const labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
+                    return labelSubStr;
             });
     }
 };

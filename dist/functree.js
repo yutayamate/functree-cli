@@ -84,12 +84,12 @@ var _class = function () {
                     i.values = [];
                     i.keys = [];
                     i.color = function (n) {
-                        var scheme = _this.config.color_scheme.category;
+                        var scheme = _this.config.colorSchemeCategorical;
                         var rgbCode = scheme[n % scheme.length];
                         return _d2.default.rgb(rgbCode);
                     }(i.depth);
                     if (i.name.match(/md:M\d{5}|md:EPM\d{4}|Undefined MODULE/)) {
-                        if (this.config.functree.show_all_nodes) {
+                        if (this.config.openAllNodes) {
                             continue;
                         }
                         i._children = i.children;
@@ -128,7 +128,7 @@ var _class = function () {
                 for (var _iterator3 = nodes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                     var i = _step3.value;
 
-                    if (i.depth < this.config.functree.disable_display_lower_than || i.label.match('Undefined')) {
+                    if (i.depth < this.config.mapObjectsHigherThan || i.label.match('Undefined')) {
                         continue;
                     }
                     Object.assign(i, data[i.name]);
@@ -156,8 +156,7 @@ var _class = function () {
     }, {
         key: 'visualize',
         value: function visualize(document) {
-            var diameter = this.config.functree.attribute.diameter;
-            var tree = _d2.default.layout.tree().size([360, diameter / 2 - 120]);
+            var tree = _d2.default.layout.tree().size([360, this.config.diameter / 2 - 120]);
             var nodes = tree.nodes(this.root);
             var links = tree.links(nodes);
             var maxDepth = _d2.default.max(nodes.map(function (x) {
@@ -188,24 +187,24 @@ var _class = function () {
                 return _d2.default.max(layerMumOfValues);
             });
 
-            this._initSVG(document, this.config.functree.attribute.width, this.config.functree.attribute.height, this.config.target_id);
-            this._updateRings(document, diameter, maxDepth);
+            this._initSVG(document);
+            this._updateRings(document, maxDepth);
             this._updateLinks(document, links, this.root);
             this._updateNodes(document, nodes);
-            if (!this.config.functree.disable_display_charts) {
-                this._updateCharts(document, nodes, diameter, maxDepth, maxSumOfValues, maxMaxOfValues, this.config.functree.style, this.config.color_scheme.linear, this.config.functree.enable_normalize_charts);
+            if (this.config.displayBars) {
+                this._updateCharts(document, nodes, maxDepth, maxSumOfValues, maxMaxOfValues);
             }
-            if (!this.config.functree.disable_display_rounds) {
-                this._updateRounds(document, nodes, maxValue, this.config.functree.enable_normalize_rounds);
+            if (this.config.displayCircles) {
+                this._updateRounds(document, nodes, maxValue);
             }
-            if (!this.config.functree.disable_display_labels) {
-                this._updateLabels(document, nodes, this.config.threshold, this.config.functree.label_data);
+            if (this.config.displayLabels) {
+                this._updateLabels(document, nodes);
             }
         }
     }, {
         key: '_initSVG',
-        value: function _initSVG(document, height, width, targetID) {
-            var buffer = _d2.default.select(document.body).select('#' + targetID).append('svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('version', '1.1').attr('width', width).attr('height', height).append('g').attr('id', 'buffer').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + '),scale(1)');
+        value: function _initSVG(document) {
+            var buffer = _d2.default.select(document.body).select('#' + this.config.targetElementId).append('svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('version', '1.1').attr('width', this.config.width).attr('height', this.config.height).append('g').attr('id', 'buffer').attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
 
             var groupIDs = ['rings', 'links', 'nodes', 'charts', 'rounds', 'labels'];
             var _iteratorNormalCompletion4 = true;
@@ -235,11 +234,13 @@ var _class = function () {
         }
     }, {
         key: '_updateRings',
-        value: function _updateRings(document, diameter, maxDepth) {
+        value: function _updateRings(document, maxDepth) {
+            var _this2 = this;
+
             var ring = _d2.default.select(document.body).select('#rings').selectAll('circle').data(_d2.default.range(1, maxDepth, 2));
             var enter = ring.enter().append('circle').attr('fill', 'none').attr('r', function (d) {
-                return (diameter / 2 - 120) / maxDepth * (d + 0.5) || 0;
-            }).attr('stroke', '#f8f8f8').attr('stroke-width', (diameter / 2 - 120) / maxDepth || 0);
+                return (_this2.config.diameter / 2 - 120) / maxDepth * (d + 0.5) || 0;
+            }).attr('stroke', '#f8f8f8').attr('stroke-width', (this.config.diameter / 2 - 120) / maxDepth || 0);
         }
     }, {
         key: '_updateLinks',
@@ -287,13 +288,15 @@ var _class = function () {
         }
     }, {
         key: '_updateCharts',
-        value: function _updateCharts(document, nodes, diameter, maxDepth, maxSumOfValues, maxMaxOfValues, style, scheme, enableNormalization) {
+        value: function _updateCharts(document, nodes, maxDepth, maxSumOfValues, maxMaxOfValues) {
+            var config = this.config;
+            var colorScheme = this.config.colorSchemeCategorical.map(function (x) {
+                return _d2.default.rgb(x);
+            });
             var chartColor = {
                 'category': _d2.default.scale.category20(),
                 'linear': function linear(value, depth) {
-                    return _d2.default.scale.linear().domain([0, maxMaxOfValues[depth]]).range(scheme.map(function (x) {
-                        return _d2.default.rgb(x);
-                    }))(value);
+                    return _d2.default.scale.linear().domain([0, maxMaxOfValues[depth]]).range(colorScheme)(value);
                 }
             };
 
@@ -310,11 +313,11 @@ var _class = function () {
             // Specify vertical postion
             .attr('x', function (d, i) {
                 var p = this.parentNode.__data__;
-                var height = (diameter / 2 - 120) / maxDepth * 0.80;
+                var height = (config.diameter / 2 - 120) / maxDepth * 0.80;
                 var subSum = _d2.default.sum(p.values.slice(0, i));
-                switch (style) {
+                switch (config.mappingStyle) {
                     case 'stacked':
-                        if (enableNormalization) {
+                        if (config.normalizeBarHight) {
                             var max = maxSumOfValues[p.depth];
                             return subSum / max * height || 0;
                         } else {
@@ -333,10 +336,10 @@ var _class = function () {
                 return -(2 + (maxDepth - p.depth) / maxDepth * 3) / 2;
             }).attr('width', function (d) {
                 var p = this.parentNode.__data__;
-                var height = (diameter / 2 - 120) / maxDepth * 0.80;
-                switch (style) {
+                var height = (config.diameter / 2 - 120) / maxDepth * 0.80;
+                switch (config.mappingStyle) {
                     case 'stacked':
-                        if (enableNormalization) {
+                        if (config.normalizeBarHight) {
                             var max = maxSumOfValues[p.depth];
                             return d / max * height || 0;
                         } else {
@@ -353,7 +356,7 @@ var _class = function () {
                 return 2 + (maxDepth - p.depth) / maxDepth * 3;
             }).attr('fill', function (d, i) {
                 var p = this.parentNode.__data__;
-                switch (style) {
+                switch (config.mappingStyle) {
                     case 'stacked':
                     case 'stacked-100':
                         return chartColor.category(i);
@@ -367,12 +370,14 @@ var _class = function () {
         }
     }, {
         key: '_updateRounds',
-        value: function _updateRounds(document, nodes, maxValue, enableNormalization) {
+        value: function _updateRounds(document, nodes, maxValue) {
+            var _this3 = this;
+
             var circle = _d2.default.select(document.body).select('#rounds').selectAll('circle').data(nodes, function (d) {
                 return d.id;
             });
             var enter = circle.enter().append('circle').attr('r', function (d) {
-                if (enableNormalization) {
+                if (_this3.config.normalizeCircleRadius) {
                     return d.value / maxValue[d.depth] * 20 || 0.0;
                 } else {
                     return d.value;
@@ -389,7 +394,9 @@ var _class = function () {
         }
     }, {
         key: '_updateLabels',
-        value: function _updateLabels(document, nodes, threshold, labelKey) {
+        value: function _updateLabels(document, nodes) {
+            var _this4 = this;
+
             var data = nodes.filter(function (d) {
                 var isValidNodeName = !d.label.match('Undefined');
                 var isValidLayer = 1 <= d.depth && d.depth <= 2;
@@ -402,7 +409,7 @@ var _class = function () {
                         return x.value;
                     });
                     var rank = layerValueList.indexOf(d.value);
-                    return rank > Math.floor(layerValueList.length * (1 - threshold));
+                    return rank > Math.floor(layerValueList.length * (1 - _this4.config.displayLabelsThreshold));
                 }();
                 return isValidNodeName && (isValidLayer || isValidRange);
             });
@@ -413,7 +420,7 @@ var _class = function () {
             var enter = label.enter().append('text').attr('y', -10 / 2).attr('font-family', 'Helvetica').attr('font-size', 10).attr('text-anchor', 'middle').attr('fill', '#555').attr('transform', function (d) {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
             }).text(function (d) {
-                var label = eval('d.' + labelKey);
+                var label = eval('d.' + _this4.config.labelDataKey);
                 var labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
                 return labelSubStr;
             });

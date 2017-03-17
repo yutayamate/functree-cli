@@ -114,10 +114,10 @@ export const handler = (args) => {
                 });
                 const d = {
                     'name': name,
-                    'value': config.functree.use_1stcol_as_radius ?
+                    'value': config.useFirstColumnAsCircleRadius ?
                         floatItem[0] :
                         0.0,
-                    'values': config.functree.use_1stcol_as_radius ?
+                    'values': config.useFirstColumnAsCircleRadius ?
                         floatItem.slice(1) :
                         floatItem
                 };
@@ -139,10 +139,10 @@ export const handler = (args) => {
     // Output visualization to args.output
     let content;
     if (args.format === 'png') {
-       const buffer = document.getElementById(config.target_id).innerHTML + '\n';
+       const buffer = document.getElementById(config.targetElementId).innerHTML + '\n';
        content = svg2png.sync(buffer);
     } else if (args.format === 'svg') {
-        content = document.getElementById(config.target_id).innerHTML + '\n';
+        content = document.getElementById(config.targetElementId).innerHTML + '\n';
     } else if (args.format === 'html') {
         content = jsdom.serializeDocument(document) + '\n';
     }
