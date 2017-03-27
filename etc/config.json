@@ -8,6 +8,7 @@
   "displayBars": true,
   "displayLabels": true,
   "displayLabelsThreshold": 0.03,
+  "displayLegends": true,
   "mapObjectsHigherThan": 1,
   "normalizeCircleRadius": true,
   "normalizeBarHight": true,

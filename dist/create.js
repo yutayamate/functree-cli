@@ -128,7 +128,12 @@ var handler = exports.handler = function handler(args) {
                 var line = _step.value;
 
                 // Skip header and empty line
-                if (line.match('#') || line === '') {
+                if (line.match(/^#/) || line === '') {
+                    continue;
+                }
+                if (line.match(/^\t/)) {
+                    var keys = line.trim().split('\t');
+                    tree['keys'] = config.useFirstColumnAsCircleRadius ? keys.slice(1) : keys;
                     continue;
                 }
                 try {

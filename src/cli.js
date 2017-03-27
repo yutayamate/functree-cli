@@ -28,9 +28,9 @@ Usage: functree [command] [options...]`;
 
     const args = yargs
         .wrap(100)
-        .command(require('./get'))
-        .command(require('./stats'))
-        .command(require('./create'))
+        .command(require('./get.js'))
+        .command(require('./stats.js'))
+        .command(require('./create.js'))
         .option({
             'no-color': {
                 'global': true,

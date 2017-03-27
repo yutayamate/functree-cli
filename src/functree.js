@@ -20,18 +20,12 @@ export default class {
         return nodes;
     }
 
-    // Zero-initialize value(s), keyname and color
+    // Zero-initialize value and values
     init() {
         const nodes = this.nodes;
         for (const i of nodes) {
             i.value = 0;
-            i.values = [];
-            i.keys = [];
-            i.color = ((n) => {
-                const scheme = this.config.colorSchemeCategorical;
-                const rgbCode = scheme[n % scheme.length];
-                return d3.rgb(rgbCode);
-            })(i.depth);
+            i.values = new Array(this.root.keys.length);
             if (i.name.match(/md:M\d{5}|md:EPM\d{4}|Undefined MODULE/)) {
                 if (this.config.openAllNodes) {
                     continue;
@@ -139,19 +133,27 @@ export default class {
                 nodes
             );
         }
+        if (this.config.displayLegends && this.config.mappingStyle !== 'heatmap') {
+            this._updateLegends(
+                document,
+                this.root.keys
+            );
+        }
     }
 
     _initSVG(document) {
-        const buffer = d3.select(document.body)
+        const svg = d3.select(document.body)
             .select('#' + this.config.targetElementId)
             .append('svg')
                 .attr('xmlns', 'http://www.w3.org/2000/svg')
                 .attr('version', '1.1')
                 .attr('width', this.config.width)
-                .attr('height', this.config.height)
-            .append('g')
+                .attr('height', this.config.height);
+        const buffer = svg.append('g')
                 .attr('id', 'buffer')
                 .attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
+        const legend = svg.append('g')
+                .attr('id', 'legend');
 
         const groupIDs = [
             'rings',
@@ -250,19 +252,23 @@ export default class {
 
     _updateCharts(document, nodes, maxDepth, maxSumOfValues, maxMaxOfValues) {
         const config = this.config;
-        const colorScheme = this.config.colorSchemeCategorical
-            .map((x) => {
-                return d3.rgb(x);
-            });
-        const chartColor = {
-            'category': d3.scale.category20(),
-            'linear': (value, depth) => {
-                return d3.scale.linear()
-                    .domain([0, maxMaxOfValues[depth]])
-                    .range(colorScheme)(value);
-            }
-        };
-
+        let color = null;
+        switch (this.config.mappingStyle) {
+            case 'stacked':
+            case 'stacked-100':
+                color = d3.scale.category20();
+                break;
+            case 'heatmap':
+                const scheme = this.config.colorSchemeCategorical
+                    .map((x) => {
+                        return d3.rgb(x);
+                    });
+                color = (value, depth) => {
+                    return d3.scale.linear()
+                        .domain([0, maxMaxOfValues[depth]])
+                        .range(scheme)(value);
+                };
+        }
         const chart = d3.select(document.body)
             .select('#charts')
             .selectAll('g')
@@ -335,9 +341,9 @@ export default class {
                     switch (config.mappingStyle) {
                         case 'stacked':
                         case 'stacked-100':
-                            return chartColor.category(i);
+                            return color(i);
                         case 'heatmap':
-                            return chartColor.linear(d, p.depth);
+                            return color(d, p.depth);
                     }
                 })
                 .attr('data-toggle', 'tooltip')
@@ -347,7 +353,12 @@ export default class {
                 });
     }
 
-    _updateRounds (document, nodes, maxValue) {
+    _updateRounds(document, nodes, maxValue) {
+        const color = (n) => {
+            const scheme = this.config.colorSchemeCategorical;
+            const rgb = scheme[n % scheme.length];
+            return d3.rgb(rgb);
+        };
         const circle = d3.select(document.body)
             .select('#rounds')
             .selectAll('circle')
@@ -365,7 +376,7 @@ export default class {
                     }
                 })
                 .attr('fill', (d) => {
-                    return d.color;
+                    return color(d.depth);
                 })
                 .attr('stroke', '#fff')
                 .attr('stroke-width', (d) => {
@@ -425,5 +436,36 @@ export default class {
                     const labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
                     return labelSubStr;
             });
+    }
+
+    _updateLegends(document, keys) {
+        const color = d3.scale.category20();
+        const legend = d3.select(document.body)
+            .select('#legend')
+            .selectAll('g')
+            .data(keys);
+        const enter = legend
+            .enter()
+            .append('g');
+        const text = enter
+            .append('text')
+                .attr('font-family', 'Helvetica')
+                .attr('font-size', 14)
+                .attr('dominant-baseline', 'middle')
+                .attr('fill', '#555')
+                .attr('x', 20)
+                .attr('y', (d, i) => {
+                    return 30 + i * 20;
+                });
+        text.append('tspan')
+                .attr('font-size', 14)
+                .attr('fill', (d, i) => {
+                    return color(i);
+                })
+                .text('■ ');
+        text.append('tspan')
+                .text((d) => {
+                    return d;
+                });
     }
 };

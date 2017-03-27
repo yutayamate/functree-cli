@@ -29,7 +29,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
     var epilogueText = 'For more information, see below:\n  https://github.com/yyuuta88/functree-cli/\n  http://www.bioviz.tokyo/functree2/';
 
-    var args = _yargs2.default.wrap(100).command(require('./get')).command(require('./stats')).command(require('./create')).option({
+    var args = _yargs2.default.wrap(100).command(require('./get.js')).command(require('./stats.js')).command(require('./create.js')).option({
         'no-color': {
             'global': true,
             'type': 'boolean',

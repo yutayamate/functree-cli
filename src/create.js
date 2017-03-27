@@ -100,8 +100,15 @@ export const handler = (args) => {
         const lines = buffer.toString().split('\n');
         for (const line of lines) {
             // Skip header and empty line
-            if (line.match('#') || line === '') {
-                continue
+            if (line.match(/^#/) || line === '') {
+                continue;
+            }
+            if (line.match(/^\t/)) {
+                const keys = line.trim().split('\t');
+                tree['keys'] = config.useFirstColumnAsCircleRadius ?
+                    keys.slice(1) :
+                    keys;
+                continue;
             }
             try {
                 const item = line.split('\t');

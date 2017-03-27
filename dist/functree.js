@@ -64,13 +64,11 @@ var _class = function () {
             return nodes;
         }
 
-        // Zero-initialize value(s), keyname and color
+        // Zero-initialize value and values
 
     }, {
         key: 'init',
         value: function init() {
-            var _this = this;
-
             var nodes = this.nodes;
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
@@ -81,13 +79,7 @@ var _class = function () {
                     var i = _step2.value;
 
                     i.value = 0;
-                    i.values = [];
-                    i.keys = [];
-                    i.color = function (n) {
-                        var scheme = _this.config.colorSchemeCategorical;
-                        var rgbCode = scheme[n % scheme.length];
-                        return _d2.default.rgb(rgbCode);
-                    }(i.depth);
+                    i.values = new Array(this.root.keys.length);
                     if (i.name.match(/md:M\d{5}|md:EPM\d{4}|Undefined MODULE/)) {
                         if (this.config.openAllNodes) {
                             continue;
@@ -200,11 +192,16 @@ var _class = function () {
             if (this.config.displayLabels) {
                 this._updateLabels(document, nodes);
             }
+            if (this.config.displayLegends && this.config.mappingStyle !== 'heatmap') {
+                this._updateLegends(document, this.root.keys);
+            }
         }
     }, {
         key: '_initSVG',
         value: function _initSVG(document) {
-            var buffer = _d2.default.select(document.body).select('#' + this.config.targetElementId).append('svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('version', '1.1').attr('width', this.config.width).attr('height', this.config.height).append('g').attr('id', 'buffer').attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
+            var svg = _d2.default.select(document.body).select('#' + this.config.targetElementId).append('svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('version', '1.1').attr('width', this.config.width).attr('height', this.config.height);
+            var buffer = svg.append('g').attr('id', 'buffer').attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
+            var legend = svg.append('g').attr('id', 'legend');
 
             var groupIDs = ['rings', 'links', 'nodes', 'charts', 'rounds', 'labels'];
             var _iteratorNormalCompletion4 = true;
@@ -235,11 +232,11 @@ var _class = function () {
     }, {
         key: '_updateRings',
         value: function _updateRings(document, maxDepth) {
-            var _this2 = this;
+            var _this = this;
 
             var ring = _d2.default.select(document.body).select('#rings').selectAll('circle').data(_d2.default.range(1, maxDepth, 2));
             var enter = ring.enter().append('circle').attr('fill', 'none').attr('r', function (d) {
-                return (_this2.config.diameter / 2 - 120) / maxDepth * (d + 0.5) || 0;
+                return (_this.config.diameter / 2 - 120) / maxDepth * (d + 0.5) || 0;
             }).attr('stroke', '#f8f8f8').attr('stroke-width', (this.config.diameter / 2 - 120) / maxDepth || 0);
         }
     }, {
@@ -289,16 +286,26 @@ var _class = function () {
     }, {
         key: '_updateCharts',
         value: function _updateCharts(document, nodes, maxDepth, maxSumOfValues, maxMaxOfValues) {
+            var _this2 = this;
+
             var config = this.config;
-            var colorScheme = this.config.colorSchemeCategorical.map(function (x) {
-                return _d2.default.rgb(x);
-            });
-            var chartColor = {
-                'category': _d2.default.scale.category20(),
-                'linear': function linear(value, depth) {
-                    return _d2.default.scale.linear().domain([0, maxMaxOfValues[depth]]).range(colorScheme)(value);
+            var color = null;
+
+            (function () {
+                switch (_this2.config.mappingStyle) {
+                    case 'stacked':
+                    case 'stacked-100':
+                        color = _d2.default.scale.category20();
+                        break;
+                    case 'heatmap':
+                        var scheme = _this2.config.colorSchemeCategorical.map(function (x) {
+                            return _d2.default.rgb(x);
+                        });
+                        color = function color(value, depth) {
+                            return _d2.default.scale.linear().domain([0, maxMaxOfValues[depth]]).range(scheme)(value);
+                        };
                 }
-            };
+            })();
 
             var chart = _d2.default.select(document.body).select('#charts').selectAll('g').data(nodes, function (d) {
                 return d.id;
@@ -359,9 +366,9 @@ var _class = function () {
                 switch (config.mappingStyle) {
                     case 'stacked':
                     case 'stacked-100':
-                        return chartColor.category(i);
+                        return color(i);
                     case 'heatmap':
-                        return chartColor.linear(d, p.depth);
+                        return color(d, p.depth);
                 }
             }).attr('data-toggle', 'tooltip').attr('data-original-title', function (d, i) {
                 var p = this.parentNode.__data__;
@@ -373,6 +380,11 @@ var _class = function () {
         value: function _updateRounds(document, nodes, maxValue) {
             var _this3 = this;
 
+            var color = function color(n) {
+                var scheme = _this3.config.colorSchemeCategorical;
+                var rgb = scheme[n % scheme.length];
+                return _d2.default.rgb(rgb);
+            };
             var circle = _d2.default.select(document.body).select('#rounds').selectAll('circle').data(nodes, function (d) {
                 return d.id;
             });
@@ -383,7 +395,7 @@ var _class = function () {
                     return d.value;
                 }
             }).attr('fill', function (d) {
-                return d.color;
+                return color(d.depth);
             }).attr('stroke', '#fff').attr('stroke-width', function (d) {
                 return 0.5;
             }).attr('opacity', 0.4).attr('data-toggle', 'tooltip').attr('data-original-title', function (d) {
@@ -423,6 +435,22 @@ var _class = function () {
                 var label = eval('d.' + _this4.config.labelDataKey);
                 var labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
                 return labelSubStr;
+            });
+        }
+    }, {
+        key: '_updateLegends',
+        value: function _updateLegends(document, keys) {
+            var color = _d2.default.scale.category20();
+            var legend = _d2.default.select(document.body).select('#legend').selectAll('g').data(keys);
+            var enter = legend.enter().append('g');
+            var text = enter.append('text').attr('font-family', 'Helvetica').attr('font-size', 14).attr('dominant-baseline', 'middle').attr('fill', '#555').attr('x', 20).attr('y', function (d, i) {
+                return 30 + i * 20;
+            });
+            text.append('tspan').attr('font-size', 14).attr('fill', function (d, i) {
+                return color(i);
+            }).text('■ ');
+            text.append('tspan').text(function (d) {
+                return d;
             });
         }
     }]);
