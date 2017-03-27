@@ -2,10 +2,34 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>FuncTree 2</title>
+        <title>Visualization - FuncTree</title>
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <style>
+            .navbar {
+                margin: 0;
+            }
+        </style>
     </head>
     <body>
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">FuncTree</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="http://www.bioviz.tokyo/galaxy/" target="_blank">Galaxy</a></li>
+                        <li><a href="https://github.com/yyuuta88/functree-cli" target="_blank">View on GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
         <div id="main"></div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -16,15 +40,16 @@
                 var width = svg.attr('width');
                 var height = svg.attr('height');
                 var buffer = svg.select('g');
-                svg.call(d3.behavior.zoom()
+                var zoom = d3.behavior.zoom()
                     .translate([width / 2, height / 2])
                     .scaleExtent([0.5, 10])
                     .on('zoom', function() {
                         buffer.attr({
                             'transform': 'translate(' + d3.event.translate + '),scale(' + d3.event.scale + ')'
                         });
-                    })
-                );
+                    });
+
+                svg.call(zoom);
                 d3.select('#nodes')
                     .selectAll('circle')
                     .on('mouseover', function() {
@@ -59,6 +84,9 @@
                         d3.select(this)
                             .attr('style', null);
                     });
+                d3.select('#labels')
+                    .selectAll('text');
+                d3.select('#legends');
 
                 $('[data-toggle="tooltip"]').tooltip({
                     container: 'body',
