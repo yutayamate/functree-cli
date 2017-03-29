@@ -79,7 +79,7 @@ var _class = function () {
                     var i = _step2.value;
 
                     i.value = 0;
-                    i.values = new Array(this.root.keys.length);
+                    i.values = [];
                     if (i.name.match(/md:M\d{5}|md:EPM\d{4}|Undefined MODULE/)) {
                         if (this.config.openAllNodes) {
                             continue;
@@ -298,7 +298,7 @@ var _class = function () {
                         color = _d2.default.scale.category20();
                         break;
                     case 'heatmap':
-                        var scheme = _this2.config.colorSchemeCategorical.map(function (x) {
+                        var scheme = _this2.config.colorSchemeLinear.map(function (x) {
                             return _d2.default.rgb(x);
                         });
                         color = function color(value, depth) {

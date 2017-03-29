@@ -25,7 +25,7 @@ export default class {
         const nodes = this.nodes;
         for (const i of nodes) {
             i.value = 0;
-            i.values = new Array(this.root.keys.length);
+            i.values = [];
             if (i.name.match(/md:M\d{5}|md:EPM\d{4}|Undefined MODULE/)) {
                 if (this.config.openAllNodes) {
                     continue;
@@ -259,7 +259,7 @@ export default class {
                 color = d3.scale.category20();
                 break;
             case 'heatmap':
-                const scheme = this.config.colorSchemeCategorical
+                const scheme = this.config.colorSchemeLinear
                     .map((x) => {
                         return d3.rgb(x);
                     });
