@@ -264,7 +264,8 @@ def main():
 
     # Assign identifider (FT*****)
     for n, node in enumerate(get_nodes(tree)):
-        node['id'] = 'FT{0:05d}'.format(n + 1)
+        node['id'] = '{0:05d}'.format(n + 1)
+        del node['depth']
 
     j = json.dumps(tree, indent=args.indent)
     args.output.write(j + '\n')

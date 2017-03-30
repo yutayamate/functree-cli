@@ -4,32 +4,30 @@ import d3 from 'd3';
 
 export default class {
     constructor(root, config) {
-        root.x0 = 0;
-        root.y0 = 0;
-        this.root = root;
         this.config = config;
-        this.nodes = this._getNodes();
+        this.root = root;
+        this.root.x0 = 0;
+        this.root.y0 = 0;
+        this.nodes = this.getNodes();
     }
 
-    // Return list of all nodes
-    _getNodes(d=this.root, nodes=[]) {
+    // Return list of all nodes (assigning tree depth)
+    getNodes(d=this.root, nodes=[], depth=0) {
+        d.depth = depth;
         nodes.push(d);
         for (const i of (d.children || d._children || [])) {
-            this._getNodes(i, nodes);
+            this.getNodes(i, nodes, depth + 1);
         };
         return nodes;
     }
 
-    // Zero-initialize value and values
-    init() {
+    // Zero-initialize nodes
+    initialize() {
         const nodes = this.nodes;
         for (const i of nodes) {
             i.value = 0;
             i.values = [];
-            if (i.name.match(/md:M\d{5}|md:EPM\d{4}|Undefined MODULE/)) {
-                if (this.config.openAllNodes) {
-                    continue;
-                }
+            if (i.depth === this.config.displayNodesLowerThan - 1) {
                 i._children = i.children;
                 i.children = null;
             }
@@ -37,20 +35,18 @@ export default class {
         return this;
     }
 
-    // Assign input data to all nodes
+    // Assign input data to nodes
     mapping(data) {
         const nodes = this.nodes;
         for (const i of nodes) {
-            if (i.depth < this.config.mapObjectsHigherThan ||
-                i.label.match('Undefined')) {
-                continue;
+            if (!(i.depth < this.config.mapObjectsHigherThan || i.label.match(/^Undefined/))) {
+                Object.assign(i, data[i.name]);
             }
-            Object.assign(i, data[i.name]);
         }
         return this;
     }
 
-    // Draw SVG on document.body
+    // Create visualization
     visualize(document) {
         const tree = d3.layout.tree()
             .size([360, this.config.diameter / 2 - 120]);
@@ -95,7 +91,7 @@ export default class {
                 return d3.max(layerMumOfValues);
             });
 
-        this._initSVG(
+        this._createSVG(
             document
         );
         this._updateRings(
@@ -104,8 +100,7 @@ export default class {
         );
         this._updateLinks(
             document,
-            links,
-            this.root
+            links
         );
         this._updateNodes(
             document,
@@ -133,27 +128,26 @@ export default class {
                 nodes
             );
         }
-        if (this.config.displayLegends && this.config.mappingStyle !== 'heatmap') {
+        if (this.config.displayLegends) {
             this._updateLegends(
-                document,
-                this.root.keys
+                document
             );
         }
     }
 
-    _initSVG(document) {
+    _createSVG(document) {
         const svg = d3.select(document.body)
-            .select('#' + this.config.targetElementId)
+            .select('#' + this.config.viewerElementId)
             .append('svg')
-                .attr('xmlns', 'http://www.w3.org/2000/svg')
-                .attr('version', '1.1')
-                .attr('width', this.config.width)
-                .attr('height', this.config.height);
+            .attr('xmlns', 'http://www.w3.org/2000/svg')
+            .attr('version', '1.1')
+            .attr('width', this.config.width)
+            .attr('height', this.config.height);
         const buffer = svg.append('g')
-                .attr('id', 'buffer')
-                .attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
+            .attr('id', 'buffer')
+            .attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
         const legend = svg.append('g')
-                .attr('id', 'legend');
+            .attr('id', 'legend');
 
         const groupIDs = [
             'rings',
@@ -176,15 +170,15 @@ export default class {
         const enter = ring
             .enter()
             .append('circle')
-                .attr('fill', 'none')
-                .attr('r', (d) => {
-                    return (this.config.diameter / 2 - 120) / maxDepth * (d + 0.5) || 0;
-                })
-                .attr('stroke', '#f8f8f8')
-                .attr('stroke-width', (this.config.diameter / 2 - 120) / maxDepth || 0);
+            .attr('fill', 'none')
+            .attr('r', (d) => {
+                return (this.config.diameter / 2 - 120) / maxDepth * (d + 0.5) || 0;
+            })
+            .attr('stroke', '#f8f8f8')
+            .attr('stroke-width', (this.config.diameter / 2 - 120) / maxDepth || 0);
     }
 
-    _updateLinks(document, links, source) {
+    _updateLinks(document, links) {
         const diagonal = d3.svg.diagonal.radial()
             .projection((d) => {
                 return [d.y, d.x / 180 * Math.PI];
@@ -207,21 +201,21 @@ export default class {
         const enter = link
             .enter()
             .append('path')
-                .attr('fill', 'none')
-                .attr('stroke', '#999')
-                .attr('stroke-width', 0.3)
-                .attr('stroke-dasharray', (d) => {
-                    if (d.source.depth === 0) {
-                        return '3,3';
-                    }
-                })
-                .attr('d', (d) => {
-                    if (d.source.depth === 0) {
-                        return straight(d);
-                    } else {
-                        return diagonal(d);
-                    }
-                });
+            .attr('fill', 'none')
+            .attr('stroke', '#999')
+            .attr('stroke-width', 0.3)
+            .attr('stroke-dasharray', (d) => {
+                if (d.source.depth === 0) {
+                    return '3,3';
+                }
+            })
+            .attr('d', (d) => {
+                if (d.source.depth === 0) {
+                    return straight(d);
+                } else {
+                    return diagonal(d);
+                }
+            });
     }
 
     _updateNodes(document, nodes) {
@@ -234,20 +228,20 @@ export default class {
         const enter = node
             .enter()
             .append('circle')
-                .attr('transform', (d) => {
-                    return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
-                })
-                .attr('r', 0.5)
-                .attr('fill', (d) => {
-                    return d._children ? '#ddd' : '#fff';
-                })
-                .attr('stroke', '#999')
-                .attr('stroke-width', 0.3)
-                .attr('cursor', 'pointer')
-                .attr('data-toggle', 'tooltip')
-                .attr('data-original-title', (d) => {
-                    return d.name + '; ' + d.label;
-                });
+            .attr('transform', (d) => {
+                return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
+            })
+            .attr('r', 0.5)
+            .attr('fill', (d) => {
+                return d._children ? '#ddd' : '#fff';
+            })
+            .attr('stroke', '#999')
+            .attr('stroke-width', 0.3)
+            .attr('cursor', 'pointer')
+            .attr('data-toggle', 'tooltip')
+            .attr('data-original-title', (d) => {
+                return d.name + '; ' + d.label;
+            });
     }
 
     _updateCharts(document, nodes, maxDepth, maxSumOfValues, maxMaxOfValues) {
@@ -278,9 +272,9 @@ export default class {
         const chartEnter = chart
             .enter()
             .append('g')
-                .attr('transform', (d) => {
-                    return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
-                });
+            .attr('transform', (d) => {
+                return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
+            });
         const rect = chart
             .selectAll('rect')
             .data((d) => {
@@ -289,68 +283,68 @@ export default class {
         const rectEnter = rect
             .enter()
             .append('rect')
-                // Specify vertical postion
-                .attr('x', function(d, i) {
-                    const p = this.parentNode.__data__;
-                    const height = (config.diameter / 2 - 120) / maxDepth * 0.80;
-                    const subSum = d3.sum(p.values.slice(0, i));
-                    switch (config.mappingStyle) {
-                        case 'stacked':
-                            if (config.normalizeBarHight) {
-                                const max = maxSumOfValues[p.depth];
-                                return subSum / max * height || 0;
-                            } else {
-                                return subSum;
-                            }
-                        case 'stacked-100':
-                            const sum = d3.sum(p.values);
-                            return height / sum * subSum;
-                        case 'heatmap':
-                            return height / p.values.length * i;
-                    }
-                })
-                // Specify horizontal postion
-                .attr('y', function() {
-                    const p = this.parentNode.__data__;
-                    return - (2 + (maxDepth - p.depth) / maxDepth * 3) / 2;
-                })
-                .attr('width', function(d) {
-                    const p = this.parentNode.__data__;
-                    const height = (config.diameter / 2 - 120) / maxDepth * 0.80;
-                    switch (config.mappingStyle) {
-                        case 'stacked':
-                            if (config.normalizeBarHight) {
-                                const max = maxSumOfValues[p.depth];
-                                return d / max * height || 0;
-                            } else {
-                                return d;
-                            }
-                        case 'stacked-100':
-                            const sum = d3.sum(p.values);
-                            return height / sum * d;
-                        case 'heatmap':
-                            return height / p.values.length;
-                    }
-                })
-                .attr('height', function() {
-                    const p = this.parentNode.__data__;
-                    return 2 + (maxDepth - p.depth) / maxDepth * 3;
-                })
-                .attr('fill', function(d, i) {
-                    const p = this.parentNode.__data__;
-                    switch (config.mappingStyle) {
-                        case 'stacked':
-                        case 'stacked-100':
-                            return color(i);
-                        case 'heatmap':
-                            return color(d, p.depth);
-                    }
-                })
-                .attr('data-toggle', 'tooltip')
-                .attr('data-original-title', function(d, i) {
-                    const p = this.parentNode.__data__;
-                    return p.name + '; ' + p.label;
-                });
+            // Specify vertical postion
+            .attr('x', function(d, i) {
+                const p = this.parentNode.__data__;
+                const height = (config.diameter / 2 - 120) / maxDepth * 0.80;
+                const subSum = d3.sum(p.values.slice(0, i));
+                switch (config.mappingStyle) {
+                    case 'stacked':
+                        if (config.normalizeBarHight) {
+                            const max = maxSumOfValues[p.depth];
+                            return subSum / max * height || 0;
+                        } else {
+                            return subSum;
+                        }
+                    case 'stacked-100':
+                        const sum = d3.sum(p.values);
+                        return height / sum * subSum;
+                    case 'heatmap':
+                        return height / p.values.length * i;
+                }
+            })
+            // Specify horizontal postion
+            .attr('y', function() {
+                const p = this.parentNode.__data__;
+                return - (2 + (maxDepth - p.depth) / maxDepth * 3) / 2;
+            })
+            .attr('width', function(d) {
+                const p = this.parentNode.__data__;
+                const height = (config.diameter / 2 - 120) / maxDepth * 0.80;
+                switch (config.mappingStyle) {
+                    case 'stacked':
+                        if (config.normalizeBarHight) {
+                            const max = maxSumOfValues[p.depth];
+                            return d / max * height || 0;
+                        } else {
+                            return d;
+                        }
+                    case 'stacked-100':
+                        const sum = d3.sum(p.values);
+                        return height / sum * d;
+                    case 'heatmap':
+                        return height / p.values.length;
+                }
+            })
+            .attr('height', function() {
+                const p = this.parentNode.__data__;
+                return 2 + (maxDepth - p.depth) / maxDepth * 3;
+            })
+            .attr('fill', function(d, i) {
+                const p = this.parentNode.__data__;
+                switch (config.mappingStyle) {
+                    case 'stacked':
+                    case 'stacked-100':
+                        return color(i);
+                    case 'heatmap':
+                        return color(d, p.depth);
+                }
+            })
+            .attr('data-toggle', 'tooltip')
+            .attr('data-original-title', function(d, i) {
+                const p = this.parentNode.__data__;
+                return p.name + '; ' + p.label;
+            });
     }
 
     _updateRounds(document, nodes, maxValue) {
@@ -368,28 +362,28 @@ export default class {
         const enter = circle
             .enter()
             .append('circle')
-                .attr('r', (d) => {
-                    if (this.config.normalizeCircleRadius) {
-                        return d.value / maxValue[d.depth] * 20 || 0.0;
-                    } else {
-                        return d.value;
-                    }
-                })
-                .attr('fill', (d) => {
-                    return color(d.depth);
-                })
-                .attr('stroke', '#fff')
-                .attr('stroke-width', (d) => {
-                    return 0.5;
-                })
-                .attr('opacity', 0.4)
-                .attr('data-toggle', 'tooltip')
-                .attr('data-original-title', (d) => {
-                    return d.name + '; ' + d.label;
-                })
-                .attr('transform', (d) => {
-                    return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
-                });
+            .attr('r', (d) => {
+                if (this.config.normalizeCircleRadius) {
+                    return d.value / maxValue[d.depth] * 20 || 0.0;
+                } else {
+                    return d.value;
+                }
+            })
+            .attr('fill', (d) => {
+                return color(d.depth);
+            })
+            .attr('stroke', '#fff')
+            .attr('stroke-width', (d) => {
+                return 0.5;
+            })
+            .attr('opacity', 0.4)
+            .attr('data-toggle', 'tooltip')
+            .attr('data-original-title', (d) => {
+                return d.name + '; ' + d.label;
+            })
+            .attr('transform', (d) => {
+                return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
+            });
     }
 
     _updateLabels(document, nodes) {
@@ -423,49 +417,48 @@ export default class {
         const enter = label
             .enter()
             .append('text')
-                .attr('y', -10 / 2)
-                .attr('font-family', 'Helvetica')
-                .attr('font-size', 10)
-                .attr('text-anchor', 'middle')
-                .attr('fill', '#555')
-                .attr('transform', (d) => {
-                    return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
-                })
-                .text((d) => {
-                    const label = eval('d.' + this.config.labelDataKey);
-                    const labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
-                    return labelSubStr;
-            });
+            .attr('y', -10 / 2)
+            .attr('font-family', 'Helvetica')
+            .attr('font-size', 10)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#555')
+            .attr('transform', (d) => {
+                return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
+            })
+            .text((d) => {
+                const label = eval('d.' + this.config.labelDataKey);
+                const labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
+                return labelSubStr;
+        });
     }
 
-    _updateLegends(document, keys) {
-        const color = d3.scale.category20();
-        const legend = d3.select(document.body)
-            .select('#legend')
-            .selectAll('g')
-            .data(keys);
-        const enter = legend
-            .enter()
-            .append('g');
-        const text = enter
-            .append('text')
-                .attr('font-family', 'Helvetica')
-                .attr('font-size', 14)
-                .attr('dominant-baseline', 'middle')
-                .attr('fill', '#555')
-                .attr('x', 20)
-                .attr('y', (d, i) => {
-                    return 30 + i * 20;
-                });
-        text.append('tspan')
-                .attr('font-size', 14)
-                .attr('fill', (d, i) => {
-                    return color(i);
-                })
-                .text('■ ');
-        text.append('tspan')
-                .text((d) => {
-                    return d;
-                });
+    _updateLegends(document) {
+        switch (this.config.mappingStyle) {
+            case 'stacked':
+            case 'stacked-100':
+                const color = d3.scale.category20();
+                const legend = d3.select(document.body)
+                    .select('#legend')
+                    .selectAll('text')
+                    .data(this.root.keys);
+                const enter = legend
+                    .enter()
+                    .append('text')
+                    .attr('font-family', 'Helvetica')
+                    .attr('font-size', 14)
+                    .attr('dominant-baseline', 'middle')
+                    .attr('fill', '#555')
+                    .attr('x', 20)
+                    .attr('y', (d, i) => {
+                        return 30 + i * 20;
+                    })
+                    .html((d, i) => {
+                        return '<tspan fill="' + color(i) + '">■</tspan> ' + d;
+                    });
+                break;
+            case 'heatmap':
+                // in progress..
+                break;
+        }
     }
 };

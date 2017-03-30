@@ -113,7 +113,6 @@ var handler = exports.handler = function handler(args) {
     }
 
     // Load user's input
-    // ToDo: Use stream API or readline API
     var data = {};
     var inputPath = _path2.default.resolve(args.input || '/dev/stdin');
     try {
@@ -174,7 +173,43 @@ var handler = exports.handler = function handler(args) {
         process.exit(1);
     }
 
-    var funcTree = new _functree2.default(tree, config).init().mapping(data).visualize(document);
+    var funcTree = new _functree2.default(tree, config);
+
+    // Re-define root node
+    if (config.rootNodeName) {
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+            for (var _iterator2 = funcTree.getNodes()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var i = _step2.value;
+
+                if (i.name === config.rootNodeName) {
+                    i.keys = tree.keys;
+                    tree = i;
+                }
+            }
+        } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
+                }
+            } finally {
+                if (_didIteratorError2) {
+                    throw _iteratorError2;
+                }
+            }
+        }
+
+        funcTree = new _functree2.default(tree, config);
+    }
+
+    // Create visualization
+    funcTree.initialize().mapping(data).visualize(document);
 
     // Output visualization to args.output
     var content = void 0;

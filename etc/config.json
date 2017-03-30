@@ -1,5 +1,4 @@
 {
-  "targetElementId": "main",
   "width": 1200,
   "height": 1200,
   "diameter": 1200,
@@ -9,12 +8,14 @@
   "displayLabels": true,
   "displayLabelsThreshold": 0.03,
   "displayLegends": true,
+  "displayNodesLowerThan": 5,
   "mapObjectsHigherThan": 1,
   "normalizeCircleRadius": true,
   "normalizeBarHight": true,
   "useFirstColumnAsCircleRadius": true,
-  "openAllNodes": false,
+  "rootNodeName": null,
   "labelDataKey": "label",
+  "viewerElementId": "main",
   "colorSchemeCategorical": [
     "rgb(0,104,183)",
     "rgb(218,4,66)",

@@ -27,9 +27,9 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
     var version = require('../package.json').version;
     var usageText = String.raw(_templateObject, version);
 
-    var epilogueText = 'For more information, see below:\n  https://github.com/yyuuta88/functree-cli/\n  http://www.bioviz.tokyo/functree2/';
+    var epilogueText = 'For more information, see below:\n  https://github.com/yyuuta88/functree-cli';
 
-    var args = _yargs2.default.wrap(100).command(require('./get.js')).command(require('./stats.js')).command(require('./create.js')).option({
+    var args = _yargs2.default.detectLocale(false).wrap(100).command(require('./get.js')).command(require('./stats.js')).command(require('./create.js')).option({
         'no-color': {
             'global': true,
             'type': 'boolean',
@@ -41,7 +41,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
         }
     }).help().version().usage(usageText).epilogue(epilogueText).argv;
 
-    // If '--show-config' option is supplied, show default configuration values
+    // If "--show-config" is supplied, show default configuration
     if (args.showConfig) {
         var configPath = _path2.default.resolve(_path2.default.join(__dirname, '../etc/config.json'));
         try {
@@ -52,11 +52,11 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
             process.stderr.write(('Error: Failed to open file "' + configPath + '"\n').error);
             process.exit(1);
         }
-        // If supplied command is invalid, print error message
+        // If the command is invalid, print error message
     } else if (args._[0]) {
         process.stderr.write(('Error: "' + args._[0] + '" is not a functree command\n').error);
         process.exit(1);
-        // If any options are not supplied, show help and usage
+        // If any option is not supplied, show help and usage
     } else {
         _yargs2.default.showHelp();
         process.exit(1);

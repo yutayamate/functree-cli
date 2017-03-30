@@ -18,22 +18,24 @@ var _class = function () {
     function _class(root, config) {
         _classCallCheck(this, _class);
 
-        root.x0 = 0;
-        root.y0 = 0;
-        this.root = root;
         this.config = config;
-        this.nodes = this._getNodes();
+        this.root = root;
+        this.root.x0 = 0;
+        this.root.y0 = 0;
+        this.nodes = this.getNodes();
     }
 
-    // Return list of all nodes
+    // Return list of all nodes (assigning tree depth)
 
 
     _createClass(_class, [{
-        key: '_getNodes',
-        value: function _getNodes() {
+        key: 'getNodes',
+        value: function getNodes() {
             var d = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.root;
             var nodes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+            var depth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
+            d.depth = depth;
             nodes.push(d);
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
@@ -43,7 +45,7 @@ var _class = function () {
                 for (var _iterator = (d.children || d._children || [])[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                     var i = _step.value;
 
-                    this._getNodes(i, nodes);
+                    this.getNodes(i, nodes, depth + 1);
                 }
             } catch (err) {
                 _didIteratorError = true;
@@ -64,11 +66,11 @@ var _class = function () {
             return nodes;
         }
 
-        // Zero-initialize value and values
+        // Zero-initialize nodes
 
     }, {
-        key: 'init',
-        value: function init() {
+        key: 'initialize',
+        value: function initialize() {
             var nodes = this.nodes;
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
@@ -80,10 +82,7 @@ var _class = function () {
 
                     i.value = 0;
                     i.values = [];
-                    if (i.name.match(/md:M\d{5}|md:EPM\d{4}|Undefined MODULE/)) {
-                        if (this.config.openAllNodes) {
-                            continue;
-                        }
+                    if (i.depth === this.config.displayNodesLowerThan - 1) {
                         i._children = i.children;
                         i.children = null;
                     }
@@ -106,7 +105,7 @@ var _class = function () {
             return this;
         }
 
-        // Assign input data to all nodes
+        // Assign input data to nodes
 
     }, {
         key: 'mapping',
@@ -120,10 +119,9 @@ var _class = function () {
                 for (var _iterator3 = nodes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                     var i = _step3.value;
 
-                    if (i.depth < this.config.mapObjectsHigherThan || i.label.match('Undefined')) {
-                        continue;
+                    if (!(i.depth < this.config.mapObjectsHigherThan || i.label.match(/^Undefined/))) {
+                        Object.assign(i, data[i.name]);
                     }
-                    Object.assign(i, data[i.name]);
                 }
             } catch (err) {
                 _didIteratorError3 = true;
@@ -143,7 +141,7 @@ var _class = function () {
             return this;
         }
 
-        // Draw SVG on document.body
+        // Create visualization
 
     }, {
         key: 'visualize',
@@ -179,9 +177,9 @@ var _class = function () {
                 return _d2.default.max(layerMumOfValues);
             });
 
-            this._initSVG(document);
+            this._createSVG(document);
             this._updateRings(document, maxDepth);
-            this._updateLinks(document, links, this.root);
+            this._updateLinks(document, links);
             this._updateNodes(document, nodes);
             if (this.config.displayBars) {
                 this._updateCharts(document, nodes, maxDepth, maxSumOfValues, maxMaxOfValues);
@@ -192,14 +190,14 @@ var _class = function () {
             if (this.config.displayLabels) {
                 this._updateLabels(document, nodes);
             }
-            if (this.config.displayLegends && this.config.mappingStyle !== 'heatmap') {
-                this._updateLegends(document, this.root.keys);
+            if (this.config.displayLegends) {
+                this._updateLegends(document);
             }
         }
     }, {
-        key: '_initSVG',
-        value: function _initSVG(document) {
-            var svg = _d2.default.select(document.body).select('#' + this.config.targetElementId).append('svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('version', '1.1').attr('width', this.config.width).attr('height', this.config.height);
+        key: '_createSVG',
+        value: function _createSVG(document) {
+            var svg = _d2.default.select(document.body).select('#' + this.config.viewerElementId).append('svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('version', '1.1').attr('width', this.config.width).attr('height', this.config.height);
             var buffer = svg.append('g').attr('id', 'buffer').attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
             var legend = svg.append('g').attr('id', 'legend');
 
@@ -241,7 +239,7 @@ var _class = function () {
         }
     }, {
         key: '_updateLinks',
-        value: function _updateLinks(document, links, source) {
+        value: function _updateLinks(document, links) {
             var diagonal = _d2.default.svg.diagonal.radial().projection(function (d) {
                 return [d.y, d.x / 180 * Math.PI];
             });
@@ -439,19 +437,26 @@ var _class = function () {
         }
     }, {
         key: '_updateLegends',
-        value: function _updateLegends(document, keys) {
-            var color = _d2.default.scale.category20();
-            var legend = _d2.default.select(document.body).select('#legend').selectAll('g').data(keys);
-            var enter = legend.enter().append('g');
-            var text = enter.append('text').attr('font-family', 'Helvetica').attr('font-size', 14).attr('dominant-baseline', 'middle').attr('fill', '#555').attr('x', 20).attr('y', function (d, i) {
-                return 30 + i * 20;
-            });
-            text.append('tspan').attr('font-size', 14).attr('fill', function (d, i) {
-                return color(i);
-            }).text('■ ');
-            text.append('tspan').text(function (d) {
-                return d;
-            });
+        value: function _updateLegends(document) {
+            var _this5 = this;
+
+            (function () {
+                switch (_this5.config.mappingStyle) {
+                    case 'stacked':
+                    case 'stacked-100':
+                        var color = _d2.default.scale.category20();
+                        var legend = _d2.default.select(document.body).select('#legend').selectAll('text').data(_this5.root.keys);
+                        var enter = legend.enter().append('text').attr('font-family', 'Helvetica').attr('font-size', 14).attr('dominant-baseline', 'middle').attr('fill', '#555').attr('x', 20).attr('y', function (d, i) {
+                            return 30 + i * 20;
+                        }).html(function (d, i) {
+                            return '<tspan fill="' + color(i) + '">■</tspan> ' + d;
+                        });
+                        break;
+                    case 'heatmap':
+                        // in progress..
+                        break;
+                }
+            })();
         }
     }]);
 

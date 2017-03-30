@@ -92,7 +92,6 @@ export const handler = (args) => {
     }
 
     // Load user's input
-    // ToDo: Use stream API or readline API
     const data = {};
     const inputPath = path.resolve(args.input || '/dev/stdin');
     try {
@@ -138,8 +137,21 @@ export const handler = (args) => {
         process.exit(1);
     }
 
-    const funcTree = (new FuncTree(tree, config))
-        .init()
+    let funcTree = new FuncTree(tree, config);
+
+    // Re-define root node
+    if (config.rootNodeName) {
+        for (const i of funcTree.getNodes()) {
+            if (i.name === config.rootNodeName) {
+                i.keys = tree.keys;
+                tree = i;
+            }
+        }
+        funcTree = new FuncTree(tree, config);
+    }
+
+    // Create visualization
+    funcTree.initialize()
         .mapping(data)
         .visualize(document);
 

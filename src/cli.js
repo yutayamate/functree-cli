@@ -23,10 +23,10 @@ Usage: functree [command] [options...]`;
 
     const epilogueText =
 `For more information, see below:
-  https://github.com/yyuuta88/functree-cli/
-  http://www.bioviz.tokyo/functree2/`;
+  https://github.com/yyuuta88/functree-cli`;
 
     const args = yargs
+        .detectLocale(false)
         .wrap(100)
         .command(require('./get.js'))
         .command(require('./stats.js'))
@@ -48,7 +48,7 @@ Usage: functree [command] [options...]`;
         .epilogue(epilogueText)
         .argv;
 
-    // If '--show-config' option is supplied, show default configuration values
+    // If "--show-config" is supplied, show default configuration
     if (args.showConfig) {
         const configPath = path.resolve(path.join(__dirname, '../etc/config.json'));
         try {
@@ -59,11 +59,11 @@ Usage: functree [command] [options...]`;
             process.stderr.write(`Error: Failed to open file "${configPath}"\n`.error);
             process.exit(1);
         }
-    // If supplied command is invalid, print error message
+    // If the command is invalid, print error message
     } else if (args._[0]) {
         process.stderr.write(`Error: "${args._[0]}" is not a functree command\n`.error);
         process.exit(1)
-    // If any options are not supplied, show help and usage
+    // If any option is not supplied, show help and usage
     } else {
         yargs.showHelp();
         process.exit(1);
