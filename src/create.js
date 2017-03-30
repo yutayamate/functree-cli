@@ -158,10 +158,10 @@ export const handler = (args) => {
     // Output visualization to args.output
     let content;
     if (args.format === 'png') {
-       const buffer = document.getElementById(config.targetElementId).innerHTML + '\n';
+       const buffer = document.getElementById(config.viewerElementId).innerHTML + '\n';
        content = svg2png.sync(buffer);
     } else if (args.format === 'svg') {
-        content = document.getElementById(config.targetElementId).innerHTML + '\n';
+        content = document.getElementById(config.viewerElementId).innerHTML + '\n';
     } else if (args.format === 'html') {
         content = jsdom.serializeDocument(document) + '\n';
     }

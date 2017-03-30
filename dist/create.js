@@ -214,10 +214,10 @@ var handler = exports.handler = function handler(args) {
     // Output visualization to args.output
     var content = void 0;
     if (args.format === 'png') {
-        var _buffer = document.getElementById(config.targetElementId).innerHTML + '\n';
+        var _buffer = document.getElementById(config.viewerElementId).innerHTML + '\n';
         content = _svg2png2.default.sync(_buffer);
     } else if (args.format === 'svg') {
-        content = document.getElementById(config.targetElementId).innerHTML + '\n';
+        content = document.getElementById(config.viewerElementId).innerHTML + '\n';
     } else if (args.format === 'html') {
         content = _jsdom2.default.serializeDocument(document) + '\n';
     }
