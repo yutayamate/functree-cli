@@ -119,6 +119,7 @@ export default class {
             this._updateRounds(
                 document,
                 nodes,
+                maxDepth,
                 maxValue
             );
         }
@@ -347,7 +348,7 @@ export default class {
             });
     }
 
-    _updateRounds(document, nodes, maxValue) {
+    _updateRounds(document, nodes, maxDepth, maxValue) {
         const color = (n) => {
             const scheme = this.config.colorSchemeCategorical;
             const rgb = scheme[n % scheme.length];
@@ -363,8 +364,9 @@ export default class {
             .enter()
             .append('circle')
             .attr('r', (d) => {
+                const r = (this.config.diameter / 2 - 120) / maxDepth * 0.25;
                 if (this.config.normalizeCircleRadius) {
-                    return d.value / maxValue[d.depth] * 20 || 0.0;
+                    return d.value / maxValue[d.depth] * r || 0.0;
                 } else {
                     return d.value;
                 }

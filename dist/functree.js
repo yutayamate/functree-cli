@@ -185,7 +185,7 @@ var _class = function () {
                 this._updateCharts(document, nodes, maxDepth, maxSumOfValues, maxMaxOfValues);
             }
             if (this.config.displayCircles) {
-                this._updateRounds(document, nodes, maxValue);
+                this._updateRounds(document, nodes, maxDepth, maxValue);
             }
             if (this.config.displayLabels) {
                 this._updateLabels(document, nodes);
@@ -375,7 +375,7 @@ var _class = function () {
         }
     }, {
         key: '_updateRounds',
-        value: function _updateRounds(document, nodes, maxValue) {
+        value: function _updateRounds(document, nodes, maxDepth, maxValue) {
             var _this3 = this;
 
             var color = function color(n) {
@@ -387,8 +387,9 @@ var _class = function () {
                 return d.id;
             });
             var enter = circle.enter().append('circle').attr('r', function (d) {
+                var r = (_this3.config.diameter / 2 - 120) / maxDepth * 0.25;
                 if (_this3.config.normalizeCircleRadius) {
-                    return d.value / maxValue[d.depth] * 20 || 0.0;
+                    return d.value / maxValue[d.depth] * r || 0.0;
                 } else {
                     return d.value;
                 }
