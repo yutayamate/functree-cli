@@ -2,29 +2,17 @@
 [![npm version](https://img.shields.io/npm/v/functree-cli.svg)](https://www.npmjs.com/package/functree-cli)
 [![Dependency status](https://david-dm.org/yyuuta88/functree-cli.svg)](https://david-dm.org/yyuuta88/functree-cli)
 [![MIT License](https://img.shields.io/npm/l/functree-cli.svg)](LICENSE)
-```
-       _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
-      |  ___| | | | \ | |/ ___|_   _|  _ \| ____| ____|     / ___| |   |_ _|
-      | |_  | | | |  \| | |     | | | |_) |  _| |  _| _____| |   | |    | |
-      |  _| | |_| | |\  | |___  | | |  _ <| |___| |__|_____| |___| |___ | |
-      |_|    \___/|_| \_|\____| |_| |_| \_\_____|_____|     \____|_____|___|
 
-[ Visualization and analysis tool for omics data based on biological functional tree ]
-```
-
-## Description
 **FuncTree-CLI** is a command-line application, which allows user to visualize, customize, and compute statistical test to understand the biological functionality of their omics data. FuncTree-CLI allows user to map their omics data on to a pre-defined treemap, which is based on the [KEGG](http://www.genome.jp/kegg/) or other hierarchical functional databases. This allows user to quickly and comprehensively understand the functional potential of their data, and to develop further hypothesis and scientific insights.
 
-## Example
-FuncTree-CLI creates hierarchical visualization. In the treemap nodes represent particular biological functions and edges represent hierarchical relationships between functional categories.
+## Data Visualization
+FuncTree-CLI creates hierarchical visualization. In the treemap nodes represent particular biological functions and edges represent hierarchical relationships between the functions.
 
 ![example](docs/example.png)
-
 
 ## Requirements
 - [Node.js](https://nodejs.org/)
 - [Python](https://www.python.org/)
-
 
 ## Installation
 You can quickly install FuncTree-CLI on your system by using `npm`:
@@ -63,25 +51,21 @@ Or, you can use your own tree structure data for drawing treemap. It must be in 
   "id": "00001",
   "name": "path:map00010",
   "label": "Glycolysis / Gluconeogenesis",
-  "depth": 0,
   "children": [
     {
       "id": "00002",
       "name": "md:M00001",
       "label": "Glycolysis (Embden-Meyerhof pathway), glucose => pyruvate",
-      "depth": 1,
       "children": [
         {
           "id": "00003",
           "name": "ko:K00844",
-          "label": "HK; hexokinase [EC:2.7.1.1]",
-          "depth": 2
+          "label": "HK; hexokinase [EC:2.7.1.1]"
         },
         {
           "id": "00004",
           "name": "ko:K12407",
-          "label": "GCK; glucokinase [EC:2.7.1.2]",
-          "depth": 2
+          "label": "GCK; glucokinase [EC:2.7.1.2]"
         }
       ]
     }

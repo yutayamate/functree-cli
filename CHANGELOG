@@ -1,3 +1,9 @@
+0.1.3  (2017-03-30)
+
+	* Fix displaying heatmap
+	* Add configuration to specify root node
+	* Modify size of rounds
+
 0.1.2  (2017-03-27)
 
 	* Add displaying color legends
