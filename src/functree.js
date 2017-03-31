@@ -22,9 +22,8 @@ export default class {
     }
 
     // Zero-initialize nodes
-    initialize() {
-        const nodes = this.nodes;
-        for (const i of nodes) {
+    init() {
+        for (const i of this.nodes) {
             i.value = 0;
             i.values = [];
             if (i.depth === this.config.displayNodesLowerThan - 1) {
@@ -36,9 +35,8 @@ export default class {
     }
 
     // Assign input data to nodes
-    mapping(data) {
-        const nodes = this.nodes;
-        for (const i of nodes) {
+    assign(data) {
+        for (const i of this.nodes) {
             if (!(i.depth < this.config.mapObjectsHigherThan || i.label.match(/^Undefined/))) {
                 Object.assign(i, data[i.name]);
             }
@@ -126,10 +124,12 @@ export default class {
         if (this.config.displayLabels) {
             this._updateLabels(
                 document,
-                nodes
+                nodes,
+                maxValue,
+                maxSumOfValues
             );
         }
-        if (this.config.displayLegends) {
+        if (this.config.displayLegends && this.config.displayBars) {
             this._updateLegends(
                 document
             );
@@ -372,13 +372,15 @@ export default class {
                 }
             })
             .attr('fill', (d) => {
-                return color(d.depth);
+                return this.config.displayBars ? '#fff' : color(d.depth);
             })
-            .attr('stroke', '#fff')
+            .attr('stroke', () => {
+                return this.config.displayBars ? '#333' : '#fff';
+            })
             .attr('stroke-width', (d) => {
-                return 0.5;
+                return 1;
             })
-            .attr('opacity', 0.4)
+            .attr('opacity', 0.5)
             .attr('data-toggle', 'tooltip')
             .attr('data-original-title', (d) => {
                 return d.name + '; ' + d.label;
@@ -388,26 +390,31 @@ export default class {
             });
     }
 
-    _updateLabels(document, nodes) {
+    _updateLabels(document, nodes, maxValue, maxSumOfValues) {
         const data = nodes
             .filter((d) => {
-                const isValidNodeName = !d.label.match('Undefined');
-                const isValidLayer = (1 <= d.depth && d.depth <= 2);
+                const isValidNodeName = !d.label.match(/^Undefined/);
                 const isValidRange = (() => {
-                    const layerValueList = nodes
+                    const scoresInLayer = nodes
                         .filter((x) => {
-                            return d.depth === x.depth && x.value > 0.0;
-                        })
-                        .sort((x, y) => {
-                            return y.value - x.value;
+                            return d.depth === x.depth;
                         })
                         .map((x) => {
-                            return x.value;
+                            return this.config.displayCircles ?
+                                x.value :
+                                d3.sum(x.values);
+                        })
+                        .sort((x, y) => {
+                            return y - x;
                         });
-                    const rank = layerValueList.indexOf(d.value);
-                    return rank > Math.floor(layerValueList.length * (1 - this.config.displayLabelsThreshold));
+                    const score = this.config.displayCircles ?
+                        d.value :
+                        d3.sum(d.values);
+                    const rank = scoresInLayer.indexOf(score);
+                    const threshold = this.config.displayLabelsThresholds[d.depth] || 0;
+                    return rank < Math.floor(scoresInLayer.length * threshold);
                 })();
-                return isValidNodeName && (isValidLayer || isValidRange)
+                return isValidNodeName && isValidRange;
             });
 
         const label = d3.select(document.body)
@@ -419,9 +426,27 @@ export default class {
         const enter = label
             .enter()
             .append('text')
-            .attr('y', -10 / 2)
+            .attr('y', (d) => {
+                const max = this.config.displayCircles ?
+                    maxValue[d.depth] :
+                    maxSumOfValues[d.depth];
+                const score = this.config.displayCircles ?
+                    d.value :
+                    d3.sum(d.values);
+                const size = 5 + score / max * 10;
+                return -size / 2;
+            })
             .attr('font-family', 'Helvetica')
-            .attr('font-size', 10)
+            .attr('font-size', (d) => {
+                const max = this.config.displayCircles ?
+                    maxValue[d.depth] :
+                    maxSumOfValues[d.depth];
+                const score = this.config.displayCircles ?
+                    d.value :
+                    d3.sum(d.values);
+                const size = 5 + score / max * 10;
+                return size;
+            })
             .attr('text-anchor', 'middle')
             .attr('fill', '#555')
             .attr('transform', (d) => {
@@ -429,7 +454,9 @@ export default class {
             })
             .text((d) => {
                 const label = eval('d.' + this.config.labelDataKey);
-                const labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
+                const labelSubStr = label
+                    .replace(/ \[.*\]/, '')
+                    .split(', ')[0];
                 return labelSubStr;
         });
     }

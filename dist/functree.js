@@ -69,15 +69,14 @@ var _class = function () {
         // Zero-initialize nodes
 
     }, {
-        key: 'initialize',
-        value: function initialize() {
-            var nodes = this.nodes;
+        key: 'init',
+        value: function init() {
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
 
             try {
-                for (var _iterator2 = nodes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                for (var _iterator2 = this.nodes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                     var i = _step2.value;
 
                     i.value = 0;
@@ -108,15 +107,14 @@ var _class = function () {
         // Assign input data to nodes
 
     }, {
-        key: 'mapping',
-        value: function mapping(data) {
-            var nodes = this.nodes;
+        key: 'assign',
+        value: function assign(data) {
             var _iteratorNormalCompletion3 = true;
             var _didIteratorError3 = false;
             var _iteratorError3 = undefined;
 
             try {
-                for (var _iterator3 = nodes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                for (var _iterator3 = this.nodes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                     var i = _step3.value;
 
                     if (!(i.depth < this.config.mapObjectsHigherThan || i.label.match(/^Undefined/))) {
@@ -188,9 +186,9 @@ var _class = function () {
                 this._updateRounds(document, nodes, maxDepth, maxValue);
             }
             if (this.config.displayLabels) {
-                this._updateLabels(document, nodes);
+                this._updateLabels(document, nodes, maxValue, maxSumOfValues);
             }
-            if (this.config.displayLegends) {
+            if (this.config.displayLegends && this.config.displayBars) {
                 this._updateLegends(document);
             }
         }
@@ -284,27 +282,21 @@ var _class = function () {
     }, {
         key: '_updateCharts',
         value: function _updateCharts(document, nodes, maxDepth, maxSumOfValues, maxMaxOfValues) {
-            var _this2 = this;
-
             var config = this.config;
             var color = null;
-
-            (function () {
-                switch (_this2.config.mappingStyle) {
-                    case 'stacked':
-                    case 'stacked-100':
-                        color = _d2.default.scale.category20();
-                        break;
-                    case 'heatmap':
-                        var scheme = _this2.config.colorSchemeLinear.map(function (x) {
-                            return _d2.default.rgb(x);
-                        });
-                        color = function color(value, depth) {
-                            return _d2.default.scale.linear().domain([0, maxMaxOfValues[depth]]).range(scheme)(value);
-                        };
-                }
-            })();
-
+            switch (this.config.mappingStyle) {
+                case 'stacked':
+                case 'stacked-100':
+                    color = _d2.default.scale.category20();
+                    break;
+                case 'heatmap':
+                    var scheme = this.config.colorSchemeLinear.map(function (x) {
+                        return _d2.default.rgb(x);
+                    });
+                    color = function color(value, depth) {
+                        return _d2.default.scale.linear().domain([0, maxMaxOfValues[depth]]).range(scheme)(value);
+                    };
+            }
             var chart = _d2.default.select(document.body).select('#charts').selectAll('g').data(nodes, function (d) {
                 return d.id;
             });
@@ -376,10 +368,10 @@ var _class = function () {
     }, {
         key: '_updateRounds',
         value: function _updateRounds(document, nodes, maxDepth, maxValue) {
-            var _this3 = this;
+            var _this2 = this;
 
             var color = function color(n) {
-                var scheme = _this3.config.colorSchemeCategorical;
+                var scheme = _this2.config.colorSchemeCategorical;
                 var rgb = scheme[n % scheme.length];
                 return _d2.default.rgb(rgb);
             };
@@ -387,17 +379,19 @@ var _class = function () {
                 return d.id;
             });
             var enter = circle.enter().append('circle').attr('r', function (d) {
-                var r = (_this3.config.diameter / 2 - 120) / maxDepth * 0.25;
-                if (_this3.config.normalizeCircleRadius) {
+                var r = (_this2.config.diameter / 2 - 120) / maxDepth * 0.25;
+                if (_this2.config.normalizeCircleRadius) {
                     return d.value / maxValue[d.depth] * r || 0.0;
                 } else {
                     return d.value;
                 }
             }).attr('fill', function (d) {
-                return color(d.depth);
-            }).attr('stroke', '#fff').attr('stroke-width', function (d) {
-                return 0.5;
-            }).attr('opacity', 0.4).attr('data-toggle', 'tooltip').attr('data-original-title', function (d) {
+                return _this2.config.displayBars ? '#fff' : color(d.depth);
+            }).attr('stroke', function () {
+                return _this2.config.displayBars ? '#333' : '#fff';
+            }).attr('stroke-width', function (d) {
+                return 1;
+            }).attr('opacity', 0.5).attr('data-toggle', 'tooltip').attr('data-original-title', function (d) {
                 return d.name + '; ' + d.label;
             }).attr('transform', function (d) {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
@@ -405,33 +399,44 @@ var _class = function () {
         }
     }, {
         key: '_updateLabels',
-        value: function _updateLabels(document, nodes) {
-            var _this4 = this;
+        value: function _updateLabels(document, nodes, maxValue, maxSumOfValues) {
+            var _this3 = this;
 
             var data = nodes.filter(function (d) {
-                var isValidNodeName = !d.label.match('Undefined');
-                var isValidLayer = 1 <= d.depth && d.depth <= 2;
+                var isValidNodeName = !d.label.match(/^Undefined/);
                 var isValidRange = function () {
-                    var layerValueList = nodes.filter(function (x) {
-                        return d.depth === x.depth && x.value > 0.0;
-                    }).sort(function (x, y) {
-                        return y.value - x.value;
+                    var scoresInLayer = nodes.filter(function (x) {
+                        return d.depth === x.depth;
                     }).map(function (x) {
-                        return x.value;
+                        return _this3.config.displayCircles ? x.value : _d2.default.sum(x.values);
+                    }).sort(function (x, y) {
+                        return y - x;
                     });
-                    var rank = layerValueList.indexOf(d.value);
-                    return rank > Math.floor(layerValueList.length * (1 - _this4.config.displayLabelsThreshold));
+                    var score = _this3.config.displayCircles ? d.value : _d2.default.sum(d.values);
+                    var rank = scoresInLayer.indexOf(score);
+                    var threshold = _this3.config.displayLabelsThresholds[d.depth] || 0;
+                    return rank < Math.floor(scoresInLayer.length * threshold);
                 }();
-                return isValidNodeName && (isValidLayer || isValidRange);
+                return isValidNodeName && isValidRange;
             });
 
             var label = _d2.default.select(document.body).select('#labels').selectAll('text').data(data, function (d) {
                 return d.id;
             });
-            var enter = label.enter().append('text').attr('y', -10 / 2).attr('font-family', 'Helvetica').attr('font-size', 10).attr('text-anchor', 'middle').attr('fill', '#555').attr('transform', function (d) {
+            var enter = label.enter().append('text').attr('y', function (d) {
+                var max = _this3.config.displayCircles ? maxValue[d.depth] : maxSumOfValues[d.depth];
+                var score = _this3.config.displayCircles ? d.value : _d2.default.sum(d.values);
+                var size = 5 + score / max * 10;
+                return -size / 2;
+            }).attr('font-family', 'Helvetica').attr('font-size', function (d) {
+                var max = _this3.config.displayCircles ? maxValue[d.depth] : maxSumOfValues[d.depth];
+                var score = _this3.config.displayCircles ? d.value : _d2.default.sum(d.values);
+                var size = 5 + score / max * 10;
+                return size;
+            }).attr('text-anchor', 'middle').attr('fill', '#555').attr('transform', function (d) {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
             }).text(function (d) {
-                var label = eval('d.' + _this4.config.labelDataKey);
+                var label = eval('d.' + _this3.config.labelDataKey);
                 var labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
                 return labelSubStr;
             });
@@ -439,25 +444,21 @@ var _class = function () {
     }, {
         key: '_updateLegends',
         value: function _updateLegends(document) {
-            var _this5 = this;
-
-            (function () {
-                switch (_this5.config.mappingStyle) {
-                    case 'stacked':
-                    case 'stacked-100':
-                        var color = _d2.default.scale.category20();
-                        var legend = _d2.default.select(document.body).select('#legend').selectAll('text').data(_this5.root.keys);
-                        var enter = legend.enter().append('text').attr('font-family', 'Helvetica').attr('font-size', 14).attr('dominant-baseline', 'middle').attr('fill', '#555').attr('x', 20).attr('y', function (d, i) {
-                            return 30 + i * 20;
-                        }).html(function (d, i) {
-                            return '<tspan fill="' + color(i) + '">■</tspan> ' + d;
-                        });
-                        break;
-                    case 'heatmap':
-                        // in progress..
-                        break;
-                }
-            })();
+            switch (this.config.mappingStyle) {
+                case 'stacked':
+                case 'stacked-100':
+                    var color = _d2.default.scale.category20();
+                    var legend = _d2.default.select(document.body).select('#legend').selectAll('text').data(this.root.keys);
+                    var enter = legend.enter().append('text').attr('font-family', 'Helvetica').attr('font-size', 14).attr('dominant-baseline', 'middle').attr('fill', '#555').attr('x', 20).attr('y', function (d, i) {
+                        return 30 + i * 20;
+                    }).html(function (d, i) {
+                        return '<tspan fill="' + color(i) + '">■</tspan> ' + d;
+                    });
+                    break;
+                case 'heatmap':
+                    // in progress..
+                    break;
+            }
         }
     }]);
 

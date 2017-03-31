@@ -73,14 +73,14 @@ export const handler = (args) => {
         process.exit(1);
     }
 
-    // Load template HTML and create window.document
+    // Load viewer HTML and create window.document
     let document = null,
         window = null;
-    const templateHTMLPath = path.resolve(path.join(__dirname, '../templates/html/viewer.html'));
+    const viewerHTMLPath = path.resolve(path.join(__dirname, '../templates/html/viewer.html'));
     try {
-        const templateHTMLString = fs.readFileSync(templateHTMLPath);
+        const viewerHTMLString = fs.readFileSync(viewerHTMLPath);
         try {
-            document = jsdom.jsdom(templateHTMLString);
+            document = jsdom.jsdom(viewerHTMLString);
             window = document.defaultView;
         } catch (e) {
             process.stderr.write(`Error: Failed to parse HTML string "${treePath}"\n`.error);
@@ -91,7 +91,7 @@ export const handler = (args) => {
         process.exit(1);
     }
 
-    // Load user's input
+    // Load user input
     const data = {};
     const inputPath = path.resolve(args.input || '/dev/stdin');
     try {
@@ -104,7 +104,7 @@ export const handler = (args) => {
             }
             if (line.match(/^\t/)) {
                 const keys = line.trim().split('\t');
-                tree['keys'] = config.useFirstColumnAsCircleRadius ?
+                tree['keys'] = config.displayCircles ?
                     keys.slice(1) :
                     keys;
                 continue;
@@ -120,10 +120,10 @@ export const handler = (args) => {
                 });
                 const d = {
                     'name': name,
-                    'value': config.useFirstColumnAsCircleRadius ?
+                    'value': config.displayCircles ?
                         floatItem[0] :
                         0.0,
-                    'values': config.useFirstColumnAsCircleRadius ?
+                    'values': config.displayCircles ?
                         floatItem.slice(1) :
                         floatItem
                 };
@@ -151,21 +151,26 @@ export const handler = (args) => {
     }
 
     // Create visualization
-    funcTree.initialize()
-        .mapping(data)
+    funcTree
+        .init()
+        .assign(data)
         .visualize(document);
 
-    // Output visualization to args.output
     let content;
-    if (args.format === 'png') {
-       const buffer = document.getElementById(config.viewerElementId).innerHTML + '\n';
-       content = svg2png.sync(buffer);
-    } else if (args.format === 'svg') {
-        content = document.getElementById(config.viewerElementId).innerHTML + '\n';
-    } else if (args.format === 'html') {
-        content = jsdom.serializeDocument(document) + '\n';
+    switch (args.format) {
+        case 'png':
+            const buffer = document.getElementById(config.viewerElementId).innerHTML + '\n';
+            content = svg2png.sync(buffer);
+            break;
+        case 'png':
+            content = document.getElementById(config.viewerElementId).innerHTML + '\n';
+            break;
+        case 'html':
+            content = jsdom.serializeDocument(document) + '\n';
+            break;
     }
 
+    // Output visualization to args.output
     try {
         const stream = args.output ?
             // Output to file

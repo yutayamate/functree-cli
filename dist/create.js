@@ -94,14 +94,14 @@ var handler = exports.handler = function handler(args) {
         process.exit(1);
     }
 
-    // Load template HTML and create window.document
+    // Load viewer HTML and create window.document
     var document = null,
         window = null;
-    var templateHTMLPath = _path2.default.resolve(_path2.default.join(__dirname, '../templates/html/viewer.html'));
+    var viewerHTMLPath = _path2.default.resolve(_path2.default.join(__dirname, '../templates/html/viewer.html'));
     try {
-        var templateHTMLString = _fs2.default.readFileSync(templateHTMLPath);
+        var viewerHTMLString = _fs2.default.readFileSync(viewerHTMLPath);
         try {
-            document = _jsdom2.default.jsdom(templateHTMLString);
+            document = _jsdom2.default.jsdom(viewerHTMLString);
             window = document.defaultView;
         } catch (e) {
             process.stderr.write(('Error: Failed to parse HTML string "' + treePath + '"\n').error);
@@ -112,7 +112,7 @@ var handler = exports.handler = function handler(args) {
         process.exit(1);
     }
 
-    // Load user's input
+    // Load user input
     var data = {};
     var inputPath = _path2.default.resolve(args.input || '/dev/stdin');
     try {
@@ -132,7 +132,7 @@ var handler = exports.handler = function handler(args) {
                 }
                 if (line.match(/^\t/)) {
                     var keys = line.trim().split('\t');
-                    tree['keys'] = config.useFirstColumnAsCircleRadius ? keys.slice(1) : keys;
+                    tree['keys'] = config.displayCircles ? keys.slice(1) : keys;
                     continue;
                 }
                 try {
@@ -146,8 +146,8 @@ var handler = exports.handler = function handler(args) {
                     });
                     var d = {
                         'name': name,
-                        'value': config.useFirstColumnAsCircleRadius ? floatItem[0] : 0.0,
-                        'values': config.useFirstColumnAsCircleRadius ? floatItem.slice(1) : floatItem
+                        'value': config.displayCircles ? floatItem[0] : 0.0,
+                        'values': config.displayCircles ? floatItem.slice(1) : floatItem
                     };
                     data[name] = d;
                 } catch (e) {
@@ -209,19 +209,23 @@ var handler = exports.handler = function handler(args) {
     }
 
     // Create visualization
-    funcTree.initialize().mapping(data).visualize(document);
+    funcTree.init().assign(data).visualize(document);
 
-    // Output visualization to args.output
     var content = void 0;
-    if (args.format === 'png') {
-        var _buffer = document.getElementById(config.viewerElementId).innerHTML + '\n';
-        content = _svg2png2.default.sync(_buffer);
-    } else if (args.format === 'svg') {
-        content = document.getElementById(config.viewerElementId).innerHTML + '\n';
-    } else if (args.format === 'html') {
-        content = _jsdom2.default.serializeDocument(document) + '\n';
+    switch (args.format) {
+        case 'png':
+            var _buffer = document.getElementById(config.viewerElementId).innerHTML + '\n';
+            content = _svg2png2.default.sync(_buffer);
+            break;
+        case 'png':
+            content = document.getElementById(config.viewerElementId).innerHTML + '\n';
+            break;
+        case 'html':
+            content = _jsdom2.default.serializeDocument(document) + '\n';
+            break;
     }
 
+    // Output visualization to args.output
     try {
         var stream = args.output ?
         // Output to file
