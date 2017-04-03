@@ -19,11 +19,6 @@ export const builder = {
         'choices': ['kegg'],
         'demand': true,
         'describe': 'Name of source database'
-    },
-    'c': {
-        'alias': 'config',
-        'type': 'string',
-        'describe': 'Path to configuration JSON file'
     }
 };
 

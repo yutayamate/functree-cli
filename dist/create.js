@@ -77,6 +77,7 @@ var handler = exports.handler = function handler(args) {
         process.stderr.write(('Error: Failed to open file "' + configPath + '"\n').error);
         process.exit(1);
     }
+    Object.assign(config, args);
 
     // Load tree structure data
     var tree = null;

@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 import fs from 'fs';
 import path from 'path';
@@ -56,6 +56,7 @@ export const handler = (args) => {
         process.stderr.write(`Error: Failed to open file "${configPath}"\n`.error);
         process.exit(1);
     }
+    Object.assign(config, args);
 
     // Load tree structure data
     let tree = null;

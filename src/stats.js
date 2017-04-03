@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
+import tmp from 'tmp';
 
 export const command = 'stats [options...]';
 export const describe = 'Perform statistical analysis';
@@ -39,30 +40,56 @@ export const builder = {
 };
 
 export const handler = (args) => {
-    const childCommand = path.resolve(path.join(__dirname, '../scripts/stats.py'));
-
-    let childArgs = ['--tree', args.tree, '--method', args.method];
-    if (['mean', 'sum', 'var'].includes(args.method)) {
-        // In case that input file is specified, add '-i' argument
-        if (args.input) {
-            childArgs = childArgs.concat(['--input', args.input[0]]);
-        }
-        // In case that input is from stdin, do not add argument
-        //
-    } else if (['mannwhitneyu'].includes(args.method)) {
+    // Load configuration
+    let config = null;
+    const configPath = path.resolve(args.config || path.join(__dirname, '../etc/config.json'));
+    try {
+        const configString = fs.readFileSync(configPath);
         try {
-            if (args.input.length !== 2) {
-                throw e;
-            }
-            childArgs = childArgs.concat(['--input', args.input[0], args.input[1]]);
+            config = JSON.parse(configString);
         } catch (e) {
-            process.stderr.write('Error: Not enough arguments "-i, --input"\n'.error);
+            process.stderr.write(`Error: Failed to parse JSON string "${configPath}"\n`.error);
             process.exit(1);
         }
+    } catch (e) {
+        process.stderr.write(`Error: Failed to open file "${configPath}"\n`.error);
+        process.exit(1);
     }
-    // In case that configuration file is specified, add '-c' argument
-    if (args.config) {
-        childArgs = childArgs.concat(['--config', args.config]);
+    Object.assign(config, args);
+
+    // Write configuration to temporary file
+    const tmpObj = tmp.fileSync();
+    try {
+        const stream = fs.createWriteStream(null, {'fd': tmpObj.fd});
+        stream.write(JSON.stringify(config));
+    } catch (e) {
+        process.stderr.write(`Error: Filed to write to file "${tmpObj.name}"\n`.error);
+        process.exit(1);
+    }
+
+    // Generate child process arguments
+    const childCommand = path.resolve(path.join(__dirname, '../scripts/stats.py'));
+    let childArgs = ['--tree', args.tree, '--method', args.method, '--config', tmpObj.name];
+    switch (args.method) {
+        case 'mean':
+        case 'sum':
+        case 'var':
+            // If input file is specified, add "--input" argument
+            if (args.input) {
+                childArgs = childArgs.concat(['--input', args.input[0]]);
+            }
+            break;
+        case 'mannwhitneyu':
+            try {
+                if (args.input.length !== 2) {
+                    throw new Error();
+                }
+                childArgs = childArgs.concat(['--input', args.input[0], args.input[1]]);
+            } catch (e) {
+                process.stderr.write('Error: Not enough arguments "-i, --input"\n'.error);
+                process.exit(1);
+            }
+            break;
     }
 
     const option = {
