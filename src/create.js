@@ -163,7 +163,7 @@ export const handler = (args) => {
             const buffer = document.getElementById(config.viewerElementId).innerHTML + '\n';
             content = svg2png.sync(buffer);
             break;
-        case 'png':
+        case 'svg':
             content = document.getElementById(config.viewerElementId).innerHTML + '\n';
             break;
         case 'html':

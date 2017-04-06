@@ -16,18 +16,23 @@
   "labelDataKey": "label",
   "viewerElementId": "main",
   "colorSchemeCategorical": [
-    "rgb(0,104,183)",
-    "rgb(218,4,66)",
-    "rgb(0,156,210)",
-    "rgb(32,162,136)",
-    "rgb(241,140,67)",
-    "rgb(238,134,167)",
-    "rgb(174,3,120)",
-    "rgb(252,199,13)"
+    "#5f5f5f",
+    "#2F57D0",
+    "#5381DF",
+    "#41B360",
+    "#E0462F",
+    "#DA9F33"
   ],
   "colorSchemeLinear": [
-    "rgb(223,236,244)",
-    "rgb(45,69,91)"
+    "#2C7bb6",
+    "#00a6ca",
+    "#00ccbc",
+    "#90eb9d",
+    "#ffff8c",
+    "#f9d057",
+    "#f29e2e",
+    "#e76818",
+    "#d7191c"
   ],
   "mannwhitneyu": {
     "use_continuity": true,

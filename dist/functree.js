@@ -294,7 +294,12 @@ var _class = function () {
                         return _d2.default.rgb(x);
                     });
                     color = function color(value, depth) {
-                        return _d2.default.scale.linear().domain([0, maxMaxOfValues[depth]]).range(scheme)(value);
+                        var binWidth = (maxMaxOfValues[depth] - 0) / (scheme.length - 1);
+                        var domain = [];
+                        for (var i = 0; i < scheme.length; i++) {
+                            domain.push(binWidth * i);
+                        }
+                        return _d2.default.scale.linear().domain(domain).range(scheme)(value);
                     };
             }
             var chart = _d2.default.select(document.body).select('#charts').selectAll('g').data(nodes, function (d) {
@@ -391,7 +396,7 @@ var _class = function () {
                 return _this2.config.displayBars ? '#333' : '#fff';
             }).attr('stroke-width', function (d) {
                 return 1;
-            }).attr('opacity', 0.5).attr('data-toggle', 'tooltip').attr('data-original-title', function (d) {
+            }).attr('opacity', 0.75).attr('data-toggle', 'tooltip').attr('data-original-title', function (d) {
                 return d.name + '; ' + d.label;
             }).attr('transform', function (d) {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';

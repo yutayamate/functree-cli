@@ -259,8 +259,13 @@ export default class {
                         return d3.rgb(x);
                     });
                 color = (value, depth) => {
+                    const binWidth = (maxMaxOfValues[depth] - 0) / (scheme.length - 1);
+                    const domain = [];
+                    for (let i = 0; i < scheme.length; i++) {
+                        domain.push(binWidth * i);
+                    }
                     return d3.scale.linear()
-                        .domain([0, maxMaxOfValues[depth]])
+                        .domain(domain)
                         .range(scheme)(value);
                 };
         }
@@ -380,7 +385,7 @@ export default class {
             .attr('stroke-width', (d) => {
                 return 1;
             })
-            .attr('opacity', 0.5)
+            .attr('opacity', 0.75)
             .attr('data-toggle', 'tooltip')
             .attr('data-original-title', (d) => {
                 return d.name + '; ' + d.label;

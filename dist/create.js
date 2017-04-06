@@ -218,7 +218,7 @@ var handler = exports.handler = function handler(args) {
             var _buffer = document.getElementById(config.viewerElementId).innerHTML + '\n';
             content = _svg2png2.default.sync(_buffer);
             break;
-        case 'png':
+        case 'svg':
             content = document.getElementById(config.viewerElementId).innerHTML + '\n';
             break;
         case 'html':
