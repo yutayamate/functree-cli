@@ -75,14 +75,14 @@ export const handler = (args) => {
     }
 
     // Load viewer HTML and create window.document
-    let document = null,
-        window = null;
+    let document = null;
+    // let window = null;
     const viewerHTMLPath = path.resolve(path.join(__dirname, '../templates/html/viewer.html'));
     try {
         const viewerHTMLString = fs.readFileSync(viewerHTMLPath);
         try {
             document = jsdom.jsdom(viewerHTMLString);
-            window = document.defaultView;
+            // window = document.defaultView;
         } catch (e) {
             process.stderr.write(`Error: Failed to parse HTML string "${treePath}"\n`.error);
             process.exit(1);

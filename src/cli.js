@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 import fs from 'fs';
 import path from 'path';
@@ -62,7 +62,7 @@ Usage: functree [command] [options...]`;
     // If the command is invalid, print error message
     } else if (args._[0]) {
         process.stderr.write(`Error: "${args._[0]}" is not a functree command\n`.error);
-        process.exit(1)
+        process.exit(1);
     // If any option is not supplied, show help and usage
     } else {
         yargs.showHelp();

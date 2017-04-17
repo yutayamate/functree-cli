@@ -69,7 +69,7 @@ var handler = exports.handler = function handler(args) {
             }
         } else if (returnData.status > 0) {
             process.stderr.write(('Error: Aborted with error status (' + returnData.status + ') "' + childCommand + '"\n').error);
-            process.stderr.write("Check if \"python3\" and all required packages are installed in $PATH\n".error);
+            process.stderr.write('Check if "python3" and all required packages are installed in $PATH\n'.error);
             process.exit(1);
         }
 
@@ -79,7 +79,7 @@ var handler = exports.handler = function handler(args) {
             process.stderr.write(('Error: Failed to create child process "' + childCommand + '"\n').error);
             process.exit(1);
         } else {
-            process.stderr.write('Error: Unexpected error occurred"\n'.error);
+            process.stderr.write('Error: Unexpected error occurred\n'.error);
             process.exit(1);
         }
     }

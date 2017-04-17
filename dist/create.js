@@ -96,14 +96,14 @@ var handler = exports.handler = function handler(args) {
     }
 
     // Load viewer HTML and create window.document
-    var document = null,
-        window = null;
+    var document = null;
+    // let window = null;
     var viewerHTMLPath = _path2.default.resolve(_path2.default.join(__dirname, '../templates/html/viewer.html'));
     try {
         var viewerHTMLString = _fs2.default.readFileSync(viewerHTMLPath);
         try {
             document = _jsdom2.default.jsdom(viewerHTMLString);
-            window = document.defaultView;
+            // window = document.defaultView;
         } catch (e) {
             process.stderr.write(('Error: Failed to parse HTML string "' + treePath + '"\n').error);
             process.exit(1);

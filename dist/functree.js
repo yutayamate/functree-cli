@@ -62,7 +62,6 @@ var _class = function () {
                 }
             }
 
-            ;
             return nodes;
         }
 
@@ -197,7 +196,7 @@ var _class = function () {
         value: function _createSVG(document) {
             var svg = _d2.default.select(document.body).select('#' + this.config.viewerElementId).append('svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('version', '1.1').attr('width', this.config.width).attr('height', this.config.height);
             var buffer = svg.append('g').attr('id', 'buffer').attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
-            var legend = svg.append('g').attr('id', 'legend');
+            svg.append('g').attr('id', 'legend');
 
             var groupIDs = ['rings', 'links', 'nodes', 'charts', 'rounds', 'labels'];
             var _iteratorNormalCompletion4 = true;
@@ -231,7 +230,7 @@ var _class = function () {
             var _this = this;
 
             var ring = _d2.default.select(document.body).select('#rings').selectAll('circle').data(_d2.default.range(1, maxDepth, 2));
-            var enter = ring.enter().append('circle').attr('fill', 'none').attr('r', function (d) {
+            ring.enter().append('circle').attr('fill', 'none').attr('r', function (d) {
                 return (_this.config.diameter / 2 - 120) / maxDepth * (d + 0.5) || 0;
             }).attr('stroke', '#f8f8f8').attr('stroke-width', (this.config.diameter / 2 - 120) / maxDepth || 0);
         }
@@ -253,7 +252,7 @@ var _class = function () {
             var link = _d2.default.select(document.body).select('#links').selectAll('path').data(links, function (d) {
                 return d.target.id;
             });
-            var enter = link.enter().append('path').attr('fill', 'none').attr('stroke', '#999').attr('stroke-width', 0.3).attr('stroke-dasharray', function (d) {
+            link.enter().append('path').attr('fill', 'none').attr('stroke', '#999').attr('stroke-width', 0.3).attr('stroke-dasharray', function (d) {
                 if (d.source.depth === 0) {
                     return '3,3';
                 }
@@ -271,7 +270,7 @@ var _class = function () {
             var node = _d2.default.select(document.body).select('#nodes').selectAll('circle').data(nodes, function (d) {
                 return d.id;
             });
-            var enter = node.enter().append('circle').attr('transform', function (d) {
+            node.enter().append('circle').attr('transform', function (d) {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
             }).attr('r', 0.5).attr('fill', function (d) {
                 return d._children ? '#ddd' : '#fff';
@@ -305,13 +304,13 @@ var _class = function () {
             var chart = _d2.default.select(document.body).select('#charts').selectAll('g').data(nodes, function (d) {
                 return d.id;
             });
-            var chartEnter = chart.enter().append('g').attr('transform', function (d) {
+            chart.enter().append('g').attr('transform', function (d) {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
             });
             var rect = chart.selectAll('rect').data(function (d) {
                 return d.values;
             });
-            var rectEnter = rect.enter().append('rect')
+            rect.enter().append('rect')
             // Specify vertical postion
             .attr('x', function (d, i) {
                 var p = this.parentNode.__data__;
@@ -355,7 +354,7 @@ var _class = function () {
                 }
             }).attr('height', function () {
                 var p = this.parentNode.__data__;
-                return 2 + (maxDepth - p.depth) / maxDepth * 3;
+                return (2 + (maxDepth - p.depth) / maxDepth * 3) * config.diameter / 1200;
             }).attr('fill', function (d, i) {
                 var p = this.parentNode.__data__;
                 switch (config.mappingStyle) {
@@ -365,7 +364,7 @@ var _class = function () {
                     case 'heatmap':
                         return color(d, p.depth);
                 }
-            }).attr('data-toggle', 'tooltip').attr('data-original-title', function (d, i) {
+            }).attr('data-toggle', 'tooltip').attr('data-original-title', function () {
                 var p = this.parentNode.__data__;
                 return p.name + '; ' + p.label;
             });
@@ -383,7 +382,7 @@ var _class = function () {
             var circle = _d2.default.select(document.body).select('#rounds').selectAll('circle').data(nodes, function (d) {
                 return d.id;
             });
-            var enter = circle.enter().append('circle').attr('r', function (d) {
+            circle.enter().append('circle').attr('r', function (d) {
                 var r = (_this2.config.diameter / 2 - 120) / maxDepth * 0.25;
                 if (_this2.config.normalizeCircleRadius) {
                     return d.value / maxValue[d.depth] * r || 0.0;
@@ -394,9 +393,7 @@ var _class = function () {
                 return _this2.config.displayBars ? '#fff' : color(d.depth);
             }).attr('stroke', function () {
                 return _this2.config.displayBars ? '#333' : '#fff';
-            }).attr('stroke-width', function (d) {
-                return 1;
-            }).attr('opacity', 0.75).attr('data-toggle', 'tooltip').attr('data-original-title', function (d) {
+            }).attr('stroke-width', 1).attr('opacity', 0.75).attr('data-toggle', 'tooltip').attr('data-original-title', function (d) {
                 return d.name + '; ' + d.label;
             }).attr('transform', function (d) {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
@@ -428,7 +425,7 @@ var _class = function () {
             var label = _d2.default.select(document.body).select('#labels').selectAll('text').data(data, function (d) {
                 return d.id;
             });
-            var enter = label.enter().append('text').attr('y', function (d) {
+            label.enter().append('text').attr('y', function (d) {
                 var max = _this3.config.displayCircles ? maxValue[d.depth] : maxSumOfValues[d.depth];
                 var score = _this3.config.displayCircles ? d.value : _d2.default.sum(d.values);
                 var size = 5 + score / max * 10;
@@ -441,7 +438,7 @@ var _class = function () {
             }).attr('text-anchor', 'middle').attr('fill', '#555').attr('transform', function (d) {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
             }).text(function (d) {
-                var label = eval('d.' + _this3.config.labelDataKey);
+                var label = d[_this3.config.labelDataKey];
                 var labelSubStr = label.replace(/ \[.*\]/, '').split(', ')[0];
                 return labelSubStr;
             });
@@ -454,7 +451,7 @@ var _class = function () {
                 case 'stacked-100':
                     var color = _d2.default.scale.category20();
                     var legend = _d2.default.select(document.body).select('#legend').selectAll('text').data(this.root.keys);
-                    var enter = legend.enter().append('text').attr('font-family', 'Helvetica').attr('font-size', 14).attr('dominant-baseline', 'middle').attr('fill', '#555').attr('x', 20).attr('y', function (d, i) {
+                    legend.enter().append('text').attr('font-family', 'Helvetica').attr('font-size', 14).attr('dominant-baseline', 'middle').attr('fill', '#555').attr('x', 20).attr('y', function (d, i) {
                         return 30 + i * 20;
                     }).html(function (d, i) {
                         return '<tspan fill="' + color(i) + '">■</tspan> ' + d;
@@ -471,4 +468,3 @@ var _class = function () {
 }();
 
 exports.default = _class;
-;

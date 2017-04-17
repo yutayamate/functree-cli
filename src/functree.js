@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 import d3 from 'd3';
 
@@ -17,7 +17,7 @@ export default class {
         nodes.push(d);
         for (const i of (d.children || d._children || [])) {
             this.getNodes(i, nodes, depth + 1);
-        };
+        }
         return nodes;
     }
 
@@ -147,7 +147,7 @@ export default class {
         const buffer = svg.append('g')
             .attr('id', 'buffer')
             .attr('transform', 'translate(' + this.config.width / 2 + ',' + this.config.height / 2 + '),scale(1)');
-        const legend = svg.append('g')
+        svg.append('g')
             .attr('id', 'legend');
 
         const groupIDs = [
@@ -168,8 +168,7 @@ export default class {
             .select('#rings')
             .selectAll('circle')
             .data(d3.range(1, maxDepth, 2));
-        const enter = ring
-            .enter()
+        ring.enter()
             .append('circle')
             .attr('fill', 'none')
             .attr('r', (d) => {
@@ -199,8 +198,7 @@ export default class {
             .data(links, (d) => {
                 return d.target.id;
             });
-        const enter = link
-            .enter()
+        link.enter()
             .append('path')
             .attr('fill', 'none')
             .attr('stroke', '#999')
@@ -226,8 +224,7 @@ export default class {
             .data(nodes, (d) => {
                 return d.id;
             });
-        const enter = node
-            .enter()
+        node.enter()
             .append('circle')
             .attr('transform', (d) => {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
@@ -275,8 +272,7 @@ export default class {
             .data(nodes, (d) => {
                 return d.id;
             });
-        const chartEnter = chart
-            .enter()
+        chart.enter()
             .append('g')
             .attr('transform', (d) => {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + ')';
@@ -286,8 +282,7 @@ export default class {
             .data((d) => {
                 return d.values;
             });
-        const rectEnter = rect
-            .enter()
+        rect.enter()
             .append('rect')
             // Specify vertical postion
             .attr('x', function(d, i) {
@@ -334,7 +329,7 @@ export default class {
             })
             .attr('height', function() {
                 const p = this.parentNode.__data__;
-                return 2 + (maxDepth - p.depth) / maxDepth * 3;
+                return (2 + (maxDepth - p.depth) / maxDepth * 3) * config.diameter / 1200;
             })
             .attr('fill', function(d, i) {
                 const p = this.parentNode.__data__;
@@ -347,7 +342,7 @@ export default class {
                 }
             })
             .attr('data-toggle', 'tooltip')
-            .attr('data-original-title', function(d, i) {
+            .attr('data-original-title', function() {
                 const p = this.parentNode.__data__;
                 return p.name + '; ' + p.label;
             });
@@ -365,8 +360,7 @@ export default class {
             .data(nodes, (d) => {
                 return d.id;
             });
-        const enter = circle
-            .enter()
+        circle.enter()
             .append('circle')
             .attr('r', (d) => {
                 const r = (this.config.diameter / 2 - 120) / maxDepth * 0.25;
@@ -382,9 +376,7 @@ export default class {
             .attr('stroke', () => {
                 return this.config.displayBars ? '#333' : '#fff';
             })
-            .attr('stroke-width', (d) => {
-                return 1;
-            })
+            .attr('stroke-width', 1)
             .attr('opacity', 0.75)
             .attr('data-toggle', 'tooltip')
             .attr('data-original-title', (d) => {
@@ -428,8 +420,7 @@ export default class {
             .data(data, (d) => {
                 return d.id;
             });
-        const enter = label
-            .enter()
+        label.enter()
             .append('text')
             .attr('y', (d) => {
                 const max = this.config.displayCircles ?
@@ -458,12 +449,12 @@ export default class {
                 return 'rotate(' + (d.x - 90) + '),translate(' + d.y + '),rotate(' + (90 - d.x) + ')';
             })
             .text((d) => {
-                const label = eval('d.' + this.config.labelDataKey);
+                const label = d[this.config.labelDataKey];
                 const labelSubStr = label
                     .replace(/ \[.*\]/, '')
                     .split(', ')[0];
                 return labelSubStr;
-        });
+            });
     }
 
     _updateLegends(document) {
@@ -475,8 +466,7 @@ export default class {
                     .select('#legend')
                     .selectAll('text')
                     .data(this.root.keys);
-                const enter = legend
-                    .enter()
+                legend.enter()
                     .append('text')
                     .attr('font-family', 'Helvetica')
                     .attr('font-size', 14)
@@ -495,4 +485,4 @@ export default class {
                 break;
         }
     }
-};
+}
