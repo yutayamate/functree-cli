@@ -9,8 +9,7 @@ gulp.task('lint', () => {
     return gulp.src('./src/*.js')
         .pipe(plumber())
         .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failAfterError());
+        .pipe(eslint.format());
 });
 
 gulp.task('babel', () => {
