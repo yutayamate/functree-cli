@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="functree_get" name="Get tree strcuture data from database" version="0.1.4">
+<tool id="functree_get" name="Get tree strcuture data from database" version="0.2.0">
     <description></description>
     <command><![CDATA[
     functree get
     --output $output
     --database $database
-
-    #if $config.enable_config == "true":
-        --config $config.config_data
-    #end if
     ]]></command>
     <inputs>
         <param name="database" type="select" label="Source database">
             <option value="kegg">KEGG</option>
         </param>
-        <conditional name="config">
-            <param name="enable_config" type="boolean" label="Customize other detail parameters" />
-            <when value="true">
-                <param name="config_data" type="data" format="json" label="Configuration file" />
-            </when>
-        </conditional>
     </inputs>
     <outputs>
         <data name="output" format="json" />
