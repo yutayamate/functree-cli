@@ -1,6 +1,6 @@
 {
   "name": "functree-cli",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Visualization and analysis tool for omics data based on biological functional tree",
   "author": {
     "name": "Yuta Yamate",
