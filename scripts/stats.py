@@ -19,44 +19,39 @@ def main():
         description='FuncTree statistical analysis tool'
     )
     parser.add_argument(
-        '-v',
-        '--version',
+        '-v', '--version',
         action='version',
         version='%(prog)s 0.0.1'
     )
     parser.add_argument(
-        '-i',
-        '--input',
+        '-i', '--input',
         type=argparse.FileType('r'),
         nargs='*',
         default=[sys.stdin],
         help='specify input file(s)'
     )
-    parser.add_argument('-o',
-        '--output',
+    parser.add_argument(
+        '-o', '--output',
         type=argparse.FileType('w'),
         nargs='?',
         default=sys.stdout,
         help='specify output file'
     )
     parser.add_argument(
-        '-t',
-        '--tree',
+        '-t', '--tree',
         type=argparse.FileType('r'),
         nargs='?',
         required=True,
         help='specify reference database'
     )
     parser.add_argument(
-        '-c',
-        '--config',
+        '-c', '--config',
         type=argparse.FileType('r'),
         nargs='?',
         help='specify configuration file'
     )
     parser.add_argument(
-        '-m',
-        '--method',
+        '-m', '--method',
         type=str,
         choices=['sum', 'mean', 'var', 'mannwhitneyu'],
         required=True,
@@ -64,16 +59,16 @@ def main():
     )
     args = parser.parse_args()
 
-
     try:
         config = json.load(args.config)
     except:
-        config_f = open(os.path.join(os.path.dirname(__file__), '../etc/config.json'), 'r')
+        config_p = os.path.join(os.path.dirname(__file__),
+                                '../etc/config.json')
+        config_f = open(config_p, 'r')
         config = json.load(config_f)
 
     root = json.load(args.tree)
     nodes = get_nodes(root)
-
 
     if len(args.input) == 1 and args.method in ['sum', 'mean', 'var']:
         input_str = io.StringIO(args.input[0].read())
@@ -88,7 +83,8 @@ def main():
 
         # Get original header information
         input_str.seek(0)
-        header_original = ''.join(filter(lambda x: re.match('#', x), input_str.readlines()))
+        header_list = filter(lambda x: re.match('#', x), input_str.readlines())
+        header_original = ''.join(header_list)
 
         for i in nodes:
             if 'children' not in i:
@@ -97,7 +93,7 @@ def main():
                 except:
                     continue
             else:
-                targets = [ x['name'] for x in get_nodes(i) if 'children' not in x ]
+                targets = [x['name'] for x in get_nodes(i) if 'children' not in x]
                 ix = input_df.ix[targets]
 
                 if args.method == 'sum':
@@ -108,7 +104,6 @@ def main():
                     d = ix.var()
 
             output_df.ix[i['name']] = d
-
 
     elif len(args.input) == 2 and args.method in ['mannwhitneyu']:
         input_df_0 = pd.read_csv(
@@ -151,18 +146,16 @@ def main():
                 continue
 
     else:
-        sys.stderr.write('Error: Incongruous arguments and input(s)\n')
-        sys.exit(1)
-
+        raise ValueError("Error: Incongruous arguments and input(s)")
 
     try:
         args.output.write(header_original)
     except:
         pass
 
-
-    header = '#date=' + time.ctime(time.time()) + '\n'
-    #header = '#date=' + time.ctime(time.time()) + ';cmd=' + ' '.join(sys.argv) + '\n'
+    header = "#date={0}\n".format(time.ctime(time.time()))
+    # header = "#date={0};cmd={1}\n".format(time.ctime, "".join(sys.argv))
+    '#date=' + time.ctime(time.time()) + ';cmd=' + ' '.join(sys.argv) + '\n'
     args.output.write(header)
     output_df.fillna(0.0).sort_index().to_csv(args.output, sep='\t')
     sys.exit(0)
