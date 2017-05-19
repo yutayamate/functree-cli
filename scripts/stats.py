@@ -1,164 +1,150 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-import sys
-import os
-import re
-import json
-import time
-import argparse
-import pandas as pd
-import numpy as np
-import scipy.stats
-import io
+import sys, os, re, json, time, argparse, io, warnings
+import numpy as np, scipy.stats, pandas as pd
 
-
-def main():
+def parse_argument():
     parser = argparse.ArgumentParser(
         prog='stats.py',
-        description='FuncTree statistical analysis tool'
+        description='FuncTree-CLI statistical analysis tool'
     )
     parser.add_argument(
         '-v', '--version',
         action='version',
-        version='%(prog)s 0.0.1'
+        version='%(prog)s 0.2.1'
     )
     parser.add_argument(
         '-i', '--input',
         type=argparse.FileType('r'),
         nargs='*',
         default=[sys.stdin],
-        help='specify input file(s)'
+        help='path to input abundance table(s)'
     )
     parser.add_argument(
         '-o', '--output',
         type=argparse.FileType('w'),
         nargs='?',
         default=sys.stdout,
-        help='specify output file'
+        help='output result to file'
     )
     parser.add_argument(
         '-t', '--tree',
         type=argparse.FileType('r'),
         nargs='?',
         required=True,
-        help='specify reference database'
-    )
-    parser.add_argument(
-        '-c', '--config',
-        type=argparse.FileType('r'),
-        nargs='?',
-        help='specify configuration file'
+        help='path to tree structure data JSON file'
     )
     parser.add_argument(
         '-m', '--method',
         type=str,
         choices=['sum', 'mean', 'var', 'mannwhitneyu'],
         required=True,
-        help='specify analysis method'
+        help='specify statistical analysis method'
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        '-c', '--config',
+        type=argparse.FileType('r'),
+        nargs='?',
+        help='path to configuration JSON file'
+    )
+    return parser.parse_args()
 
-    try:
-        config = json.load(args.config)
-    except:
-        config_p = os.path.join(os.path.dirname(__file__),
-                                '../etc/config.json')
-        config_f = open(config_p, 'r')
-        config = json.load(config_f)
 
-    root = json.load(args.tree)
-    nodes = get_nodes(root)
+def load_config(config_f):
+    if not config_f:
+        config_path = os.path.join(
+            os.path.dirname(__file__),
+            '../etc/config.json'
+        )
+        config_f = open(config_path, 'r')
+    return json.load(config_f)
 
-    if len(args.input) == 1 and args.method in ['sum', 'mean', 'var']:
-        input_str = io.StringIO(args.input[0].read())
-        input_df = pd.read_csv(
+
+def load_input(inputs):
+    dfs = []
+    headers = []
+    for input_path in inputs:
+        input_str = io.StringIO(input_path.read())
+        df_in = pd.read_csv(
             input_str,
             delimiter='\t',
             comment='#',
             header=0,
             index_col=0
         )
-        output_df = pd.DataFrame(columns=input_df.columns)
-
-        # Get original header information
+        dfs.append(df_in)
         input_str.seek(0)
-        header_list = filter(lambda x: re.match('#', x), input_str.readlines())
-        header_original = ''.join(header_list)
+        header_lines = filter(lambda x: re.match('#', x), input_str.readlines())
+        header = ''.join(header_lines)
+        headers.append(header)
+    return [dfs, headers]
 
-        for i in nodes:
-            if 'children' not in i:
+
+def assign_abundances(dfs, nodes, method):
+    df_out = pd.DataFrame(columns=dfs[0].columns)
+    for i in nodes:
+        if 'children' not in i:
+            if i['name'] in dfs[0].index:
+                d = dfs[0].ix[i['name']]
+        else:
+            targets = [x['name'] for x in get_nodes(i) if 'children' not in x]
+            ix = dfs[0].ix[targets]
+
+            if method == 'sum':
+                d = ix.sum()
+            elif method == 'mean':
+                d = ix.mean()
+            elif method == 'var':
+                d = ix.var()
+        df_out.ix[i['name']] = d
+    return df_out
+
+
+def do_statistical_test(dfs, nodes, method, config):
+    df_out = pd.DataFrame()
+    for i in nodes:
+        if i['name'] in dfs[0].index and i['name'] in dfs[1].index:
+            x = dfs[0].ix[i['name']]
+            y = dfs[1].ix[i['name']]
+
+            if method == 'mannwhitneyu':
                 try:
-                    d = input_df.ix[i['name']]
-                except:
+                    d = scipy.stats.mannwhitneyu(
+                        x,
+                        y,
+                        use_continuity=config[method]['use_continuity'],
+                        alternative=config[method]['alternative']
+                    )
+                except ValueError:
                     continue
+            if d.pvalue < 0.05:
+                score = -np.log10(d.pvalue)
             else:
-                targets = [x['name'] for x in get_nodes(i) if 'children' not in x]
-                ix = input_df.ix[targets]
+                score = 0.0
+            df_out.ix[i['name'], '-log10(pvalue)*'] = score
+            df_out.ix[i['name'], 'pvalue'] = d.pvalue
+        else:
+            warnings.warn('"{0}" is not found on input'.format(i['name']))
+    return df_out
 
-                if args.method == 'sum':
-                    d = ix.sum()
-                elif args.method == 'mean':
-                    d = ix.mean()
-                elif args.method == 'var':
-                    d = ix.var()
 
-            output_df.ix[i['name']] = d
+def main():
+    args = parse_argument()
+    config = load_config(args.config)
+    root = json.load(args.tree)
+    nodes = get_nodes(root)
+    dfs, headers = load_input(args.input)
 
+    if len(args.input) == 1 and args.method in ['sum', 'mean', 'var']:
+        df_out = assign_abundances(dfs, nodes, args.method)
     elif len(args.input) == 2 and args.method in ['mannwhitneyu']:
-        input_df_0 = pd.read_csv(
-            args.input[0],
-            delimiter='\t',
-            comment='#',
-            header=0,
-            index_col=0
-        )
-        input_df_1 = pd.read_csv(
-            args.input[1],
-            delimiter='\t',
-            comment='#',
-            header=0,
-            index_col=0
-        )
-        output_df = pd.DataFrame()
-
-        for i in nodes:
-            try:
-                x = input_df_0.ix[i['name']]
-                y = input_df_1.ix[i['name']]
-                d = scipy.stats.mannwhitneyu(
-                    x,
-                    y,
-                    use_continuity=config['mannwhitneyu']['use_continuity'],
-                    alternative=config['mannwhitneyu']['alternative']
-                )
-                try:
-                    if d.pvalue < 0.05:
-                        score = np.log10(1 / d.pvalue)
-                    else:
-                        score = 0.0
-                except:
-                    score = 0.0
-                output_df.ix[i['name'], 'log10(1_pvalue*)'] = score
-                output_df.ix[i['name'], 'pvalue'] = d.pvalue
-            except:
-                # sys.stderr.write('Missing entry: \'' + i['name'] + '\'\n')
-                continue
-
+        df_out = do_statistical_test(dfs, nodes, args.method, config)
     else:
-        raise ValueError("Error: Incongruous arguments and input(s)")
+        raise ValueError('Incongruous arguments and input(s)')
 
-    try:
-        args.output.write(header_original)
-    except:
-        pass
-
-    header = "#date={0}\n".format(time.ctime(time.time()))
-    # header = "#date={0};cmd={1}\n".format(time.ctime, "".join(sys.argv))
-    '#date=' + time.ctime(time.time()) + ';cmd=' + ' '.join(sys.argv) + '\n'
+    header = '#date={0}\n'.format(time.ctime(time.time())) + headers[0]
     args.output.write(header)
-    output_df.fillna(0.0).sort_index().to_csv(args.output, sep='\t')
-    sys.exit(0)
+    df_out.fillna(0.0).sort_index().to_csv(args.output, sep='\t')
 
 
 def get_nodes(d, nodes=None):
