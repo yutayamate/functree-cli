@@ -45,7 +45,7 @@ FuncTree-CLI provides the simple way to get tree structure data from [KEGG](http
 $ functree get -d kegg -o kegg.json
 ```
 
-Or, you can use your own tree structure data for drawing treemap. It must be in the JSON format and have the structure corresponded to the following example.
+You can use your own tree structure data for drawing treemap. It must be in the JSON format and have the structure corresponded to the following example.
 ```json
 {
   "id": "00001",
@@ -109,14 +109,13 @@ $ functree stats -t kegg.json -m mannwhitneyu -i all_abundance_1.tsv all_abundan
 ### Create visualization
 This feature is the main part of FuncTree-CLI. This helps you create a insightful visualization with your own data. If necessary, you can specify output image format type (SVG (default), PNG or interactive HTML) with `-f, --format` option.
 
-Example usage and available options and  are listed below:
+Example usage and available options are listed below:
 ```bash
 $ functree create -t kegg.json -i all_abundance.tsv -o image.png -f png
 ```
 
 | Option | Long option | Description |
 |:--|:--|:--|
-| -t | --theme | Specify theme of visualization |
 | -i | --input | Path to input abundance table |
 | -o | --output | Output visualization image to file |
 | -t | --tree | Path to tree structure data JSON file |
@@ -128,10 +127,11 @@ $ functree create -t kegg.json -i all_abundance.tsv -o image.png -f png
 1. Run `npm install` to install the dependencies.
 1. Run `npm run build` to compile the ES6 codes (`src/*.js`).
 
-## Link
+## See also
 - FuncTree 2 - http://www.bioviz.tokyo/functree2/
+- Galaxy Yamada Lab - http://www.bioviz.tokyo/galaxy/
 
-## Reference
+## Publications
 - Uchiyama T, Irie M, Mori H, Kurokawa K, Yamada T. FuncTree: Functional Analysis and Visualization for Large-Scale Omics Data. PLoS One. 2015 May 14;10(5):e0126967. doi: 10.1371/journal.pone.0126967. eCollection 2015. PubMed PMID: 25974630; PubMed Central PMCID: PMC4431737.
 
 ## License

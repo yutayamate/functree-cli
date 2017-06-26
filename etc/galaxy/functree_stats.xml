@@ -78,7 +78,7 @@ This section provides an interface for performing statistical analysis.
 
 - **Tree strcture data:** JSON file that includes information of hierachical relationship between functional categories.
 
-- **Configuration file:** JSON file that includes values of detail parameters. Example file can be downloaded from here (https://raw.githubusercontent.com/yyuuta88/functree-cli/master/config/config.json).
+- **Configuration file:** JSON file that includes values of detail parameters. Example file can be downloaded from here (https://raw.githubusercontent.com/yyuuta88/functree-cli/master/etc/config.json).
 
 - **Output:** Tab-separated abundance table.
 

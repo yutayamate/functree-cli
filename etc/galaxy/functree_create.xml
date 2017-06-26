@@ -64,7 +64,7 @@ This section provides an interface for creating visualization.
 
 - **Output image format:** Choose PNG, SVG or HTML as a format of the output.
 
-- **Configuration file:** JSON file that includes values of detail parameters. Example file can be downloaded from here (https://raw.githubusercontent.com/yyuuta88/functree-cli/master/config/config.json).
+- **Configuration file:** JSON file that includes values of detail parameters. Example file can be downloaded from here (https://raw.githubusercontent.com/yyuuta88/functree-cli/master/etc/config.json).
 
 - **Output:** PNG image, SVG image or interactive HTML file.
 
