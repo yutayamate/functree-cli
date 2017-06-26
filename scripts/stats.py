@@ -3,7 +3,8 @@
 import sys, os, re, json, time, argparse, io, warnings
 import numpy as np, scipy.stats, pandas as pd
 
-def parse_argument():
+
+def parse_arguments():
     parser = argparse.ArgumentParser(
         prog='stats.py',
         description='FuncTree-CLI statistical analysis tool'
@@ -60,7 +61,7 @@ def load_config(config_f):
     return json.load(config_f)
 
 
-def load_input(inputs):
+def load_inputs(inputs):
     dfs = []
     headers = []
     for input_path in inputs:
@@ -80,15 +81,15 @@ def load_input(inputs):
     return [dfs, headers]
 
 
-def assign_abundances(dfs, nodes, method):
-    df_out = pd.DataFrame(columns=dfs[0].columns)
+def assign_abundances(df, nodes, method):
+    df_out = pd.DataFrame(columns=df.columns)
     for i in nodes:
         if 'children' not in i:
-            if i['name'] in dfs[0].index:
-                d = dfs[0].ix[i['name']]
+            if i['name'] in df.index:
+                d = df.ix[i['name']]
         else:
             targets = [x['name'] for x in get_nodes(i) if 'children' not in x]
-            ix = dfs[0].ix[targets]
+            ix = df.ix[targets]
 
             if method == 'sum':
                 d = ix.sum()
@@ -128,25 +129,6 @@ def do_statistical_test(dfs, nodes, method, config):
     return df_out
 
 
-def main():
-    args = parse_argument()
-    config = load_config(args.config)
-    root = json.load(args.tree)
-    nodes = get_nodes(root)
-    dfs, headers = load_input(args.input)
-
-    if len(args.input) == 1 and args.method in ['sum', 'mean', 'var']:
-        df_out = assign_abundances(dfs, nodes, args.method)
-    elif len(args.input) == 2 and args.method in ['mannwhitneyu']:
-        df_out = do_statistical_test(dfs, nodes, args.method, config)
-    else:
-        raise ValueError('Incongruous arguments and input(s)')
-
-    header = '#date={0}\n'.format(time.ctime(time.time())) + headers[0]
-    args.output.write(header)
-    df_out.fillna(0.0).sort_index().to_csv(args.output, sep='\t')
-
-
 def get_nodes(d, nodes=None):
     if nodes is None:
         nodes = []
@@ -155,6 +137,25 @@ def get_nodes(d, nodes=None):
         for i in d['children']:
             get_nodes(i, nodes)
     return nodes
+
+
+def main():
+    args = parse_arguments()
+    config = load_config(args.config)
+    root = json.load(args.tree)
+    nodes = get_nodes(root)
+    dfs, headers = load_inputs(args.input)
+
+    if len(args.input) == 1 and args.method in ['sum', 'mean', 'var']:
+        df_out = assign_abundances(dfs[0], nodes, args.method)
+    elif len(args.input) == 2 and args.method in ['mannwhitneyu']:
+        df_out = do_statistical_test(dfs, nodes, args.method, config)
+    else:
+        raise ValueError('Incongruous arguments and input(s)')
+
+    header = '#date={0}\n'.format(time.ctime(time.time())) + headers[0]
+    args.output.write(header)
+    df_out.fillna(0.0).sort_index().to_csv(args.output, sep='\t')
 
 
 if __name__ == '__main__':
