@@ -6,7 +6,7 @@ import colors from 'colors';
 import yargs from 'yargs';
 
 {
-    colors.setTheme('colors/themes/generic-logging');
+    colors.setTheme(require('colors/themes/generic-logging'));
     const version = require('../package.json').version;
     const usageText= String.raw`
      _____ _   _ _   _  ____ _____ ____  _____ _____       ____ _     ___
