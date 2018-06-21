@@ -15,11 +15,31 @@ FuncTree-CLI creates hierarchical visualization. In the treemap nodes represent 
 - [Python](https://www.python.org/)
 
 ## Installation
-You can quickly install FuncTree-CLI on your system by using `npm`:
+### Docker 
 ```bash
-$ npm install --global functree-cli
+# Clone this repository
+git clone https://github.com/yyuuta88/functree-cli.git
+cd functree-cli
+# build it with docker
+docker build -t functree/cli:master .
 ```
-
+### Ubuntu
+```bash
+# Clone this repository
+git clone https://github.com/yyuuta88/functree-cli.git
+cd functree-cli
+# install javascript dependencies.
+npm install
+# Compile ES6 code (`src/*.js`).
+npm run build
+# install python dependencies
+apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pkg-resources \
+    python3-numpy \
+    python3-scipy \
+    python3-pandas
+```
 ## Usage
 ### Overview
 Basic usage and available commands and options are listed below:
@@ -45,7 +65,14 @@ FuncTree-CLI provides the simple way to get tree structure data from [KEGG](http
 $ functree get -d kegg -o kegg.json
 ```
 
-You can use your own tree structure data for drawing treemap. It must be in the JSON format and have the structure corresponded to the following example.
+Or with Docker 
+
+```bash
+docker run --rm --volume ${PWD}:/wd  --workdir /wd functree/cli:master get -d kegg -o kegg.json
+```
+Notice that a volume is used to map the current working directory to the workdir in the container.  
+
+For using your own tree structure data instead, please provide a JSON file that follows the structure of the following example.
 ```json
 {
   "id": "00001",
@@ -116,22 +143,18 @@ $ functree create -t kegg.json -i all_abundance.tsv -o image.png -f png
 
 | Option | Long option | Description |
 |:--|:--|:--|
+| -t | --theme | Specify theme of visualization |
 | -i | --input | Path to input abundance table |
 | -o | --output | Output visualization image to file |
 | -t | --tree | Path to tree structure data JSON file |
 | -f | --format | Specify output format type |
 | -c | --config | Path to configuration JSON file |
 
-## Building
-1. Clone this repository.
-1. Run `npm install` to install the dependencies.
-1. Run `npm run build` to compile the ES6 codes (`src/*.js`).
 
-## See also
+## Link
 - FuncTree 2 - http://www.bioviz.tokyo/functree2/
-- Galaxy Yamada Lab - http://www.bioviz.tokyo/galaxy/
 
-## Publications
+## Reference
 - Uchiyama T, Irie M, Mori H, Kurokawa K, Yamada T. FuncTree: Functional Analysis and Visualization for Large-Scale Omics Data. PLoS One. 2015 May 14;10(5):e0126967. doi: 10.1371/journal.pone.0126967. eCollection 2015. PubMed PMID: 25974630; PubMed Central PMCID: PMC4431737.
 
 ## License
